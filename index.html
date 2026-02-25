@@ -478,7 +478,7 @@
             </div>
             <div style="display:flex; gap:0.5rem;">
                 <button class="download-btn" id="download-btn" style="display:none;" onclick="downloadReport()">Download
-                    CSV Report</button>
+                    JSON Report</button>
                 <button class="reset-btn" onclick="location.reload()">Upload New Report</button>
             </div>
         </div>
@@ -557,20 +557,24 @@
         let globalData = null;
 
         // Auto-fetch logic for synchronized DevSecOps pipeline
-        document.addEventListener("DOMContentLoaded", async () => {
+        async function fetchLatestReport() {
             try {
-                // Append a timestamp to the URL to prevent the browser from caching the report
                 const cacheBuster = new Date().getTime();
                 const response = await fetch(`./final-security-report.json?t=${cacheBuster}`);
                 if (!response.ok) throw new Error("File not found");
 
                 globalData = await response.json();
-                console.log("Auto-loaded final-security-report.json from repository");
+                console.log("Auto-loaded latest final-security-report.json");
                 renderDashboard(globalData);
             } catch (err) {
-                console.log("Could not auto-fetch local report. Falling back to Drag and Drop.");
-                // Leave upload section visible
+                console.log("Could not auto-fetch report. Falling back to manual mode.");
             }
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            fetchLatestReport();
+            // Poller: Check for updates every 60 seconds
+            setInterval(fetchLatestReport, 60000);
         });
 
         // UI Interactions
@@ -702,33 +706,12 @@
 
         // --- EXPORT LOGIC ---
         function downloadReport() {
-            if (!globalData || !globalData.findings) return;
+            if (!globalData) return;
 
-            const findings = globalData.findings;
-            const headers = ["Tool", "Severity", "Title", "Location", "Package/CVE", "Description"];
-
-            const csvRows = [];
-            csvRows.push(headers.join(","));
-
-            findings.forEach(f => {
-                const row = [
-                    `"${f.tool || ''}"`,
-                    `"${f.severity || ''}"`,
-                    `"${(f.title || f.rule_id || '').replace(/"/g, '""')}"`,
-                    `"${f.file || f.manifest_path || ''}${f.line ? ':' + f.line : ''}"`,
-                    `"${f.package || f.cve || ''}"`,
-                    `"${(f.description || '').replace(/"/g, '""').replace(/\n/g, ' ')}"`
-                ];
-                csvRows.push(row.join(","));
-            });
-
-            const csvString = csvRows.join("\n");
-            const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
-            const url = URL.createObjectURL(blob);
-
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(globalData, null, 2));
             const downloadAnchorNode = document.createElement('a');
-            downloadAnchorNode.setAttribute("href", url);
-            downloadAnchorNode.setAttribute("download", `security-report-${new Date().toISOString().split('T')[0]}.csv`);
+            downloadAnchorNode.setAttribute("href", dataStr);
+            downloadAnchorNode.setAttribute("download", `security-report-${new Date().toISOString().split('T')[0]}.json`);
             document.body.appendChild(downloadAnchorNode);
             downloadAnchorNode.click();
             downloadAnchorNode.remove();
