@@ -21,18 +21,17 @@ jobs:
   secret-scan:
     name: "🔑 Secret Scan (Gitleaks)"
     runs-on: ubuntu-latest
-    container:
-      image: zricethezav/gitleaks:v8
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Run Gitleaks
+      - name: Run Gitleaks via pure Docker
         id: gitleaks
         run: |
-          # --no-git forces Gitleaks to scan the CURRENT files on disk every run,
-          # rather than only scanning the exact commit that was just pushed.
-          gitleaks detect --no-git --source=. --report-format=json --report-path=gitleaks-report.json --exit-code=1
+          # Use docker manually because the gitleaks container lacks bash,
+          # which standard GitHub Actions container directives require.
+          # -v mounts the checked-out code into the container at /src
+          docker run --rm -v ${{ github.workspace }}:/src zricethezav/gitleaks:v8 detect --no-git --source=/src --report-format=json --report-path=/src/gitleaks-report.json --exit-code=1
         continue-on-error: false   # ← CI BREAKS if secrets are found
 
       - name: Upload Gitleaks report
