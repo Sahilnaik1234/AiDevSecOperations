@@ -31,7 +31,7 @@ jobs:
           # Use docker manually because the gitleaks container lacks bash,
           # which standard GitHub Actions container directives require.
           # -v mounts the checked-out code into the container at /src
-          docker run --rm -v ${{ github.workspace }}:/src zricethezav/gitleaks:v8 detect --no-git --source=/src --report-format=json --report-path=/src/gitleaks-report.json --exit-code=1
+          docker run --rm -v ${{ github.workspace }}:/src zricethezav/gitleaks:latest detect --no-git --source=/src --report-format=json --report-path=/src/gitleaks-report.json --exit-code=1
         continue-on-error: false   # ← CI BREAKS if secrets are found
 
       - name: Upload Gitleaks report
