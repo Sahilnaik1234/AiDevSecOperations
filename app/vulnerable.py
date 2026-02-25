@@ -80,4 +80,31 @@ def insecure_api_call():
     """
     import requests
     # HIPAA requires encryption in transit (HTTPS)
-    requests.get("http://internal-health-system.local/api/records") 
+    requests.get("http://internal-health-system.local/api/records")
+
+# ── 14: Cloud/Infra HIPAA Violations ──────────────────────────────────────────
+import boto3
+
+def insecure_s3_phi_storage():
+    """
+    VULNERABLE (HIPAA): Creating an S3 bucket for PHI without server-side encryption.
+    HIPAA Requires Encryption at Rest.
+    """
+    s3 = boto3.client('s3')
+    # Violation: No 'ServerSideEncryption' specified
+    s3.create_bucket(Bucket='patient-medical-records-backup')
+
+def expose_phi_in_response(patient_data):
+    """
+    VULNERABLE (HIPAA): Returning raw PHI in an insecure way.
+    """
+    try:
+        from flask import Flask, jsonify
+        app = Flask(__name__)
+        
+        @app.route('/patient/view')
+        def view_patient():
+            # Violation: Exposing full patient record on unauthenticated/unencrypted route
+            return jsonify(patient_data)
+    except ImportError:
+        pass
