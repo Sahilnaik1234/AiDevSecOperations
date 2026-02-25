@@ -478,7 +478,7 @@
             </div>
             <div style="display:flex; gap:0.5rem;">
                 <button class="download-btn" id="download-btn" style="display:none;" onclick="downloadReport()">Download
-                    JSON Report</button>
+                    CSV Report</button>
                 <button class="reset-btn" onclick="location.reload()">Upload New Report</button>
             </div>
         </div>
@@ -702,12 +702,33 @@
 
         // --- EXPORT LOGIC ---
         function downloadReport() {
-            if (!globalData) return;
+            if (!globalData || !globalData.findings) return;
 
-            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(globalData, null, 2));
+            const findings = globalData.findings;
+            const headers = ["Tool", "Severity", "Title", "Location", "Package/CVE", "Description"];
+
+            const csvRows = [];
+            csvRows.push(headers.join(","));
+
+            findings.forEach(f => {
+                const row = [
+                    `"${f.tool || ''}"`,
+                    `"${f.severity || ''}"`,
+                    `"${(f.title || f.rule_id || '').replace(/"/g, '""')}"`,
+                    `"${f.file || f.manifest_path || ''}${f.line ? ':' + f.line : ''}"`,
+                    `"${f.package || f.cve || ''}"`,
+                    `"${(f.description || '').replace(/"/g, '""').replace(/\n/g, ' ')}"`
+                ];
+                csvRows.push(row.join(","));
+            });
+
+            const csvString = csvRows.join("\n");
+            const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+
             const downloadAnchorNode = document.createElement('a');
-            downloadAnchorNode.setAttribute("href", dataStr);
-            downloadAnchorNode.setAttribute("download", `security-report-${new Date().toISOString().split('T')[0]}.json`);
+            downloadAnchorNode.setAttribute("href", url);
+            downloadAnchorNode.setAttribute("download", `security-report-${new Date().toISOString().split('T')[0]}.csv`);
             document.body.appendChild(downloadAnchorNode);
             downloadAnchorNode.click();
             downloadAnchorNode.remove();
