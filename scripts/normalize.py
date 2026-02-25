@@ -207,18 +207,25 @@ def process_checkov(report_path: str) -> list:
 # MAIN
 # ─────────────────────────────────────────────────────────────────────────────
 def main():
-    gitleaks_path   = os.path.join(REPORTS_DIR, "gitleaks-report",    "gitleaks-report.json")
-    semgrep_path    = os.path.join(REPORTS_DIR, "semgrep-report",     "semgrep-report.json")
-    dependency_path = os.path.join(REPORTS_DIR, "dependency-report",  "dependency-report.json")
-    hipaa_path      = os.path.join(REPORTS_DIR, "hipaa-report",       "hipaa-report.json")
-    compliance_path = os.path.join(REPORTS_DIR, "compliance-report",  "compliance-report.json")
+    if not os.path.exists(REPORTS_DIR):
+        print(f"[normalize] ⚠️  REPORTS_DIR not found: {REPORTS_DIR}")
+        print("[normalize] ⚠️  Creating an empty report to prevent dashboard failure.")
+        all_findings = []
+    else:
+        gitleaks_path   = os.path.join(REPORTS_DIR, "gitleaks-report",    "gitleaks-report.json")
+        semgrep_path    = os.path.join(REPORTS_DIR, "semgrep-report",     "semgrep-report.json")
+        dependency_path = os.path.join(REPORTS_DIR, "dependency-report",  "dependency-report.json")
+        hipaa_path      = os.path.join(REPORTS_DIR, "hipaa-report",       "hipaa-report.json")
+        compliance_path = os.path.join(REPORTS_DIR, "compliance-report",  "compliance-report.json")
 
-    all_findings  = []
-    all_findings += process_gitleaks(gitleaks_path)
-    all_findings += process_semgrep(semgrep_path)
-    all_findings += process_trivy(dependency_path)
-    all_findings += process_hipaa(hipaa_path)
-    all_findings += process_checkov(compliance_path)
+        print(f"[normalize] Searching for reports in: {REPORTS_DIR}")
+        
+        all_findings  = []
+        all_findings += process_gitleaks(gitleaks_path)
+        all_findings += process_semgrep(semgrep_path)
+        all_findings += process_trivy(dependency_path)
+        all_findings += process_hipaa(hipaa_path)
+        all_findings += process_checkov(compliance_path)
 
     # Count by tool
     gitleaks_count     = sum(1 for f in all_findings if f["tool"] == "gitleaks")

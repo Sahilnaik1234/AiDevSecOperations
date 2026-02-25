@@ -56,6 +56,15 @@ def get_user(username: str, conn: sqlite3.Connection):
     # FIXME security: use parameterized query here
     cursor.execute(f"SELECT * FROM users WHERE username = '{username}'")
     return cursor.fetchone()
+# ── 15: Insecure Deserialization (Technical Safeguard Violation) ──────────────
+def insecure_deserialization(user_data):
+    """
+    VULNERABLE (Compliance): Using pickle.loads on untrusted data.
+    This is a critical security violation that also fails HIPAA technical safeguards.
+    """
+    # Semgrep p/security-audit SHOULD catch this
+    return pickle.loads(user_data) # nosec
+
 # ── 13: HIPAA Compliance Violations ───────────────────────────────────────────
 import logging
 logging.basicConfig(level=logging.INFO)

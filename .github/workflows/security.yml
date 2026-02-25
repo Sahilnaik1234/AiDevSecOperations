@@ -125,11 +125,16 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Run Multi-Language HIPAA Compliance Scan
+      - name: Debug - List Files
+        run: ls -R
+
+      - name: Run Multi-Language Compliance Scan (HIPAA Alignment)
         run: |
           semgrep \
-            --config=p/owasp-top-10 \
             --config=p/security-audit \
+            --config=p/owasp-top-10 \
+            --config=p/python \
+            --config=p/javascript \
             --json \
             --output=hipaa-report.json \
             .
@@ -189,6 +194,9 @@ jobs:
           path: scan-reports
         continue-on-error: true    # If a scan job failed, its artifact may not exist
 
+      - name: Debug Artifact Directory Structure
+        run: ls -R scan-reports
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
@@ -201,14 +209,19 @@ jobs:
         run: |
           echo "===== SECURITY REPORT SUMMARY ====="
           python3 -c "
-          import json
-          with open('final-security-report.json') as f:
-              report = json.load(f)
-          summary = report.get('summary', {})
-          print(f\"Total findings : {summary.get('total_findings', 0)}\")
-          print(f\"Gitleaks (secrets) : {summary.get('gitleaks', 0)}\")
-          print(f\"Semgrep (SAST)     : {summary.get('semgrep', 0)}\")
-          print(f\"Dependabot (deps)  : {summary.get('dependabot', 0)}\")
+          import json, os
+          path = 'final-security-report.json'
+          if os.path.exists(path):
+              with open(path) as f:
+                  report = json.load(f)
+              summary = report.get('summary', {})
+              print(f\"Total findings : {summary.get('total_findings', 0)}\")
+              print(f\"Secrets (Gitleaks) : {summary.get('gitleaks', 0)}\")
+              print(f\"SAST (Semgrep)     : {summary.get('semgrep', 0)}\")
+              print(f\"SCA (Dependencies) : {summary.get('dependency', 0)}\")
+              print(f\"Compliance (HIPAA) : {summary.get('compliance', 0)}\")
+          else:
+              print('Error: final-security-report.json not generated.')
           "
 
       - name: Upload final unified report
