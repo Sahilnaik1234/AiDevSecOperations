@@ -101,9 +101,9 @@ def process_semgrep(report_path: str) -> list:
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# DEPENDABOT  — GitHub REST API schema: list of alert objects
+# PIP-AUDIT — JSON output schema
 # ─────────────────────────────────────────────────────────────────────────────
-def process_dependabot(report_path: str) -> list:
+def process_pip_audit(report_path: str) -> list:
     findings = []
     if not os.path.isfile(report_path):
         print(f"[normalize] ⚠️  Dependency report not found at {report_path} — skipping")
@@ -116,30 +116,32 @@ def process_dependabot(report_path: str) -> list:
             print(f"[normalize] ⚠️  Could not parse Dependency report: {e}")
             return findings
 
-    if not isinstance(data, list):
-        print("[normalize] ⚠️  Unexpected Dependabot report format — expected a list")
-        return findings
+    # Data is expected to be {"dependencies": [{"name": "...", "version": "...", "vulns": [...]}]}
+    dependencies = data.get("dependencies", [])
 
-    for alert in data:
-        advisory  = alert.get("security_advisory", {})
-        vuln      = alert.get("security_vulnerability", {})
-        pkg       = vuln.get("package", {})
-        severity  = advisory.get("severity", "UNKNOWN").upper()
-        findings.append({
-            "tool"             : "dependabot",
-            "severity"         : severity,
-            "title"            : advisory.get("summary", "Dependency vulnerability"),
-            "rule_id"          : advisory.get("ghsa_id", ""),
-            "cve"              : advisory.get("cve_id", ""),
-            "package"          : pkg.get("name", ""),
-            "ecosystem"        : pkg.get("ecosystem", ""),
-            "affected_range"   : vuln.get("vulnerable_version_range", ""),
-            "fixed_in"         : vuln.get("first_patched_version", {}).get("identifier", ""),
-            "manifest_path"    : alert.get("dependency", {}).get("manifest_path", ""),
-            "alert_url"        : alert.get("html_url", ""),
-        })
+    for dep in dependencies:
+        pkg_name = dep.get("name", "")
+        pkg_vers = dep.get("version", "")
+        vulns = dep.get("vulns", [])
+        
+        for v in vulns:
+            # pip-audit currently doesn't map full descriptions to a unified severity directly in all JSONs,
+            # but usually it's considered HIGH/CRITICAL if it has a CVE.
+            findings.append({
+                "tool"             : "pip-audit",
+                "severity"         : "CRITICAL",
+                "title"            : v.get("fix_versions", ["No fix"])[0] + " fix available",
+                "rule_id"          : v.get("id", ""),
+                "cve"              : v.get("id", ""),
+                "package"          : pkg_name,
+                "ecosystem"        : "pip",
+                "affected_range"   : pkg_vers,
+                "fixed_in"         : ", ".join(v.get("fix_versions", [])),
+                "manifest_path"    : "requirements.txt",
+                "alert_url"        : f"https://osv.dev/vulnerability/{v.get('id', '')}",
+            })
 
-    print(f"[normalize] Dependabot: {len(findings)} finding(s)")
+    print(f"[normalize] pip-audit: {len(findings)} finding(s)")
     return findings
 
 
@@ -149,17 +151,17 @@ def process_dependabot(report_path: str) -> list:
 def main():
     gitleaks_path   = os.path.join(REPORTS_DIR, "gitleaks-report",    "gitleaks-report.json")
     semgrep_path    = os.path.join(REPORTS_DIR, "semgrep-report",     "semgrep-report.json")
-    dependabot_path = os.path.join(REPORTS_DIR, "dependency-report",  "dependency-report.json")
+    dependency_path = os.path.join(REPORTS_DIR, "dependency-report",  "dependency-report.json")
 
     all_findings  = []
     all_findings += process_gitleaks(gitleaks_path)
     all_findings += process_semgrep(semgrep_path)
-    all_findings += process_dependabot(dependabot_path)
+    all_findings += process_pip_audit(dependency_path)
 
     # Count by tool
-    gitleaks_count   = sum(1 for f in all_findings if f["tool"] == "gitleaks")
-    semgrep_count    = sum(1 for f in all_findings if f["tool"] == "semgrep")
-    dependabot_count = sum(1 for f in all_findings if f["tool"] == "dependabot")
+    gitleaks_count     = sum(1 for f in all_findings if f["tool"] == "gitleaks")
+    semgrep_count      = sum(1 for f in all_findings if f["tool"] == "semgrep")
+    dependency_count   = sum(1 for f in all_findings if f["tool"] == "pip-audit")
 
     # Count by severity
     severity_counts = {}
@@ -173,7 +175,7 @@ def main():
             "total_findings" : len(all_findings),
             "gitleaks"       : gitleaks_count,
             "semgrep"        : semgrep_count,
-            "dependabot"     : dependabot_count,
+            "dependabot"     : dependency_count,
             "by_severity"    : severity_counts,
         },
         "findings"     : all_findings,
@@ -184,7 +186,7 @@ def main():
 
     print(f"\n[normalize] ✅  Final report written to: {os.path.abspath(OUTPUT_FILE)}")
     print(f"[normalize]     Total findings: {len(all_findings)}")
-    print(f"[normalize]     Breakdown — Gitleaks: {gitleaks_count} | Semgrep: {semgrep_count} | Dependabot: {dependabot_count}")
+    print(f"[normalize]     Breakdown — Gitleaks: {gitleaks_count} | Semgrep: {semgrep_count} | pip-audit: {dependency_count}")
 
 
 if __name__ == "__main__":

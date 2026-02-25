@@ -83,57 +83,50 @@ jobs:
           if-no-files-found: warn
 
   # ============================================================
-  # JOB 3: DEPENDENCY SCAN — Dependabot / GitHub Advisory DB
-  # Fetches open Dependabot vulnerability alerts via the
-  # GitHub REST API (no install needed — works for ANY language
-  # that GitHub's dependency graph supports).
+  # JOB 3: DEPENDENCY SCAN — pip-audit (Inline SCA)
+  # Synchronously scans requirements.txt for CVEs in real-time,
+  # breaking the CI process if known vulnerabilities are found.
+  # Much faster and more reliable in CI than waiting for the 
+  # async Dependabot REST API.
   # Runs in parallel with secret-scan and sast
   # ============================================================
   dependency-scan:
-    name: "📦 Dependency Scan (Dependabot API)"
+    name: "📦 Dependency Scan (pip-audit)"
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      security-events: write
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Fetch Dependabot alerts via GitHub API
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install pip-audit
+        run: pip install pip-audit
+
+      - name: Run inline dependency scan (pip-audit)
         id: dep_check
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          REPO: ${{ github.repository }}
         run: |
-          echo "Fetching Dependabot vulnerability alerts..."
-          HTTP_STATUS=$(curl -s -o dependency-report.json -w "%{http_code}" \
-            -H "Authorization: Bearer $GH_TOKEN" \
-            -H "Accept: application/vnd.github+json" \
-            -H "X-GitHub-Api-Version: 2022-11-28" \
-            "https://api.github.com/repos/$REPO/dependabot/alerts?state=open&per_page=100")
-
-          echo "HTTP status: $HTTP_STATUS"
-          cat dependency-report.json
-
-          # If API returns 403/404 (Dependabot not enabled), create an empty report
-          if [ "$HTTP_STATUS" != "200" ]; then
-            echo "[]" > dependency-report.json
-            echo "⚠️  Dependabot API returned $HTTP_STATUS — ensure Dependabot alerts are enabled for this repo."
-          fi
-
-          # Count critical/high alerts and fail the job if any exist
-          CRITICAL=$(python3 -c "
+          echo "Scanning requirements.txt for CVEs..."
+          # Run audit and export JSON; exit code 1 if vulns found
+          pip-audit -r requirements.txt -f json -o dependency-report.json || true
+          
+          # Check if the report has vulns and break CI if true
+          VULNS=$(python -c '
           import json, sys
           try:
-              alerts = json.load(open('dependency-report.json'))
-              critical = [a for a in alerts if isinstance(a, dict) and a.get('security_advisory', {}).get('severity') in ('critical', 'high')]
-              print(len(critical))
-          except Exception as e:
-              print(0)
-          ")
-          echo "Critical/High alerts: $CRITICAL"
-          if [ "$CRITICAL" -gt 0 ]; then
-            echo "❌ $CRITICAL critical/high dependency vulnerabilities found. CI failing."
+            data = json.load(open("dependency-report.json"))
+            vuln_count = sum(1 for pkg in data.get("dependencies", []) if pkg.get("vulns"))
+            print(vuln_count)
+          except:
+            print(0)
+          ')
+          
+          echo "Packages with vulnerabilities: $VULNS"
+          
+          if [ "$VULNS" -gt 0 ]; then
+            echo "❌ $VULNS vulnerable packages found inline. CI failing."
             exit 1
           fi
 
