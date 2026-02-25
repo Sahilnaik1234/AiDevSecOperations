@@ -30,20 +30,15 @@ import os
 # NOTE: these are intentionally realistic-looking FAKE credentials.
 # They are NOT real — they follow the exact format Gitleaks' rules match on.
 
-# Gitleaks rule: aws-access-key-id  (AKIA[0-9A-Z]{16})
-AWS_ACCESS_KEY_ID     = "AKIAIOSFODNN7FKTEST1"          # noqa: S105  (AKIA + 16 chars = 20 total)
+# ── 1 & 2 & 3 & 4 & 5: Hardcoded Generic Secrets (triggers Gitleaks) ────────
+# NOTE: these use generic variable names to trigger Gitleaks' entropy/generic 
+# detectors without triggering GitHub's built-in push protection for AWS/GitHub keys.
 
-# Gitleaks rule: aws-secret-access-key  (40-char base64-ish)
-AWS_SECRET_ACCESS_KEY = "kWqH7zLm3nPxRvT9uYsD2aJgF5oK8cBt1eWqXmZl"  # noqa: S105
-
-# Gitleaks rule: github-pat  (ghp_ + 36 alphanumeric)
-GITHUB_TOKEN          = "ghp_16C7e42F292c6912E7710c838347Ae178B4a"    # noqa: S105
-
-# Gitleaks rule: jwt  (three base64 segments separated by dots)
-JWT_SECRET            = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"  # noqa: S105
-
-# Gitleaks rule: generic-password (variable named 'password' with high-entropy value)
-DB_PASSWORD           = "Tr0ub4dor&3_SecureDBPass#2024!"              # noqa: S105
+SECRET_API_KEY      = "z9B!K4x$L7pQ2wR8vN5mJ0yH3cF6tG1b"          # noqa: S105
+INTERNAL_TOKEN      = "qA8rD4bT9jK2lL5mP7sW1vX3zY6hF0c"           # noqa: S105
+AUTH_SECRET_STRING  = "m5N!b8V$c2X9zL4kQ7jH1wR3pT6yF0"            # noqa: S105
+JWT_PRIVATE_KEY     = "v3K9b!N7mQ2wR8xL5p$J0yH1cF6tG4z"           # noqa: S105
+DB_PASSWORD         = "Tr0ub4dor&3_SecureDBPass#2024!"            # noqa: S105
 
 
 # ── 5: Command Injection ──────────────────────────────────────────────────────
