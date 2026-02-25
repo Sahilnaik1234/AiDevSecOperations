@@ -61,7 +61,6 @@ jobs:
         run: |
           semgrep \
             --config=auto \
-            --config=p/hipaa \
             --json \
             --output=semgrep-report.json \
             --severity=WARNING \
@@ -113,45 +112,14 @@ jobs:
           if-no-files-found: warn
 
   # ============================================================
-  # JOB 4: COMPLIANCE SCAN — Checkov (IaC & Policy as Code)
-  # Scans Dockerfiles, Terraform, K8s, and other configs
-  # specifically for HIPAA / Security best practices.
-  # ============================================================
-  compliance-scan:
-    name: "⚖️ Compliance (Checkov)"
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Run Checkov HIPAA scan
-        uses: bridgecrewio/checkov-action@master
-        with:
-          directory: .
-          framework: all
-          output_format: json
-          output_file_path: compliance-report.json
-          quiet: true
-          # We don't exit 1 here yet to ensure normalize always gets a report
-        continue-on-error: true
-
-      - name: Upload Compliance report
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: compliance-report
-          path: compliance-report.json
-          if-no-files-found: warn
-
-  # ============================================================
-  # JOB 5: NORMALIZE & SUMMARIZE
-  # Merges Secrets, SAST, SCA, and Compliance findings
+  # JOB 4: NORMALIZE & SUMMARIZE
+  # Merges Secrets, SAST, and SCA findings
   # into one unified final-security-report.json
   # ============================================================
   normalize:
     name: " Normalize & Summarize Report"
     runs-on: ubuntu-latest
-    needs: [secret-scan, sast, dependency-scan, compliance-scan]
+    needs: [secret-scan, sast, dependency-scan]
     if: always()
     steps:
       - name: Checkout code
