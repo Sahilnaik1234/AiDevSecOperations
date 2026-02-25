@@ -1,13 +1,14 @@
 {
-  "generated_at": "2026-02-25T11:25:04.328838+00:00",
+  "generated_at": "2026-02-25T11:30:33.380083+00:00",
   "summary": {
-    "total_findings": 10,
+    "total_findings": 14,
     "gitleaks": 3,
-    "semgrep": 0,
+    "semgrep": 4,
     "dependency": 7,
-    "compliance": 0,
     "by_severity": {
       "CRITICAL": 5,
+      "ERROR": 3,
+      "WARNING": 1,
       "HIGH": 5
     }
   },
@@ -47,6 +48,73 @@
       "author": "",
       "match": "GITHUB_PAT_TOKEN    = \"xB9cF2vN4mK7pQ1wR8tG3yH5zL0jD6b\"",
       "fingerprint": "/src/app/vulnerable.py:generic-api-key:51"
+    },
+    {
+      "tool": "semgrep",
+      "severity": "ERROR",
+      "title": "The last user in the container is 'root'. This is a security hazard because if an attacker gains control of the container they will have root access. Switch back to another user after running commands as 'root'.",
+      "rule_id": "dockerfile.security.last-user-is-root.last-user-is-root",
+      "file": "Dockerfile",
+      "line": 6,
+      "code": "requires login",
+      "cwe": [
+        "CWE-269: Improper Privilege Management"
+      ],
+      "owasp": [
+        "A04:2021 - Insecure Design",
+        "A06:2025 - Insecure Design"
+      ]
+    },
+    {
+      "tool": "semgrep",
+      "severity": "ERROR",
+      "title": "Found 'subprocess' function 'run' with 'shell=True'. This is dangerous because this call will spawn the command using a shell process. Doing so propagates current shell settings and variables, which makes it much easier for a malicious actor to execute commands. Use 'shell=False' instead.",
+      "rule_id": "python.lang.security.audit.subprocess-shell-true.subprocess-shell-true",
+      "file": "app/vulnerable.py",
+      "line": 46,
+      "code": "requires login",
+      "cwe": [
+        "CWE-78: Improper Neutralization of Special Elements used in an OS Command ('OS Command Injection')"
+      ],
+      "owasp": [
+        "A01:2017 - Injection",
+        "A03:2021 - Injection",
+        "A05:2025 - Injection"
+      ]
+    },
+    {
+      "tool": "semgrep",
+      "severity": "WARNING",
+      "title": "Detected possible formatted SQL query. Use parameterized queries instead.",
+      "rule_id": "python.lang.security.audit.formatted-sql-query.formatted-sql-query",
+      "file": "app/vulnerable.py",
+      "line": 57,
+      "code": "requires login",
+      "cwe": [
+        "CWE-89: Improper Neutralization of Special Elements used in an SQL Command ('SQL Injection')"
+      ],
+      "owasp": [
+        "A01:2017 - Injection",
+        "A03:2021 - Injection",
+        "A05:2025 - Injection"
+      ]
+    },
+    {
+      "tool": "semgrep",
+      "severity": "ERROR",
+      "title": "Avoiding SQL string concatenation: untrusted input concatenated with raw SQL query can result in SQL Injection. In order to execute raw query safely, prepared statement should be used. SQLAlchemy provides TextualSQL to easily used prepared statement with named parameters. For complex SQL composition, use SQL Expression Language or Schema Definition Language. In most cases, SQLAlchemy ORM will be a better option.",
+      "rule_id": "python.sqlalchemy.security.sqlalchemy-execute-raw-query.sqlalchemy-execute-raw-query",
+      "file": "app/vulnerable.py",
+      "line": 57,
+      "code": "requires login",
+      "cwe": [
+        "CWE-89: Improper Neutralization of Special Elements used in an SQL Command ('SQL Injection')"
+      ],
+      "owasp": [
+        "A01:2017 - Injection",
+        "A03:2021 - Injection",
+        "A05:2025 - Injection"
+      ]
     },
     {
       "tool": "trivy",
