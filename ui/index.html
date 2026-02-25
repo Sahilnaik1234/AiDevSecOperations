@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DevSecOps Unified Dashboard</title>
+    <!-- Modern Web Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-color: #0f1015;
+            --surface: rgba(26, 27, 38, 0.7);
+            --surface-hover: rgba(45, 47, 65, 0.8);
+            --border: rgba(255, 255, 255, 0.08);
+            --accent-primary: #8b5cf6;
+            --accent-secondary: #0ea5e9;
+            --text-main: #f8fafc;
+            --text-dim: #94a3b8;
+            
+            /* Severity Colors */
+            --sev-critical: #ef4444;
+            --sev-high: #f97316;
+            --sev-medium: #eab308;
+            --sev-low: #3b82f6;
+            --sev-info: #8b5cf6;
+            
+            /* Tool Colors */
+            --tool-gitleaks: #ec4899;
+            --tool-semgrep: #8b5cf6;
+            --tool-trivy: #0ea5e9;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            min-height: 100vh;
+            background-image: 
+                radial-gradient(circle at 15% 50%, rgba(139, 92, 246, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 85% 30%, rgba(14, 165, 233, 0.15) 0%, transparent 40%);
+            background-attachment: fixed;
+            line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            padding: 2rem;
+            text-align: center;
+            border-bottom: 1px solid var(--border);
+            background: rgba(15, 16, 21, 0.6);
+            backdrop-filter: blur(12px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        h1 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #fff, #94a3b8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+            letter-spacing: -1px;
+        }
+
+        header p {
+            color: var(--text-dim);
+            font-size: 1rem;
+        }
+
+        /* --- UPLOAD ZONE --- */
+        #upload-section {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-grow: 1;
+            padding: 4rem 2rem;
+        }
+
+        .drop-zone {
+            width: 100%;
+            max-width: 600px;
+            background: var(--surface);
+            border: 2px dashed rgba(139, 92, 246, 0.4);
+            border-radius: 1.5rem;
+            padding: 4rem 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 30px -10px rgba(0,0,0,0.5);
+        }
+
+        .drop-zone:hover, .drop-zone.dragover {
+            border-color: var(--accent-primary);
+            background: rgba(139, 92, 246, 0.1);
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px -10px rgba(139, 92, 246, 0.2);
+        }
+
+        .drop-zone svg {
+            width: 64px;
+            height: 64px;
+            color: var(--accent-primary);
+            margin-bottom: 1.5rem;
+            opacity: 0.8;
+            transition: transform 0.3s;
+        }
+        
+        .drop-zone:hover svg {
+            transform: scale(1.1);
+        }
+
+        .drop-zone h3 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .drop-zone p {
+            color: var(--text-dim);
+            font-size: 0.95rem;
+        }
+
+        #file-input { display: none; }
+
+        /* --- DASHBOARD VIEW --- */
+        #dashboard-section {
+            display: none;
+            padding: 3rem 5%;
+            width: 100%;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 1rem;
+        }
+
+        .meta-info { color: var(--text-dim); font-size: 0.9rem; }
+        
+        .reset-btn {
+            background: transparent;
+            color: var(--accent-secondary);
+            border: 1px solid var(--border);
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-family: inherit;
+            transition: all 0.2s;
+        }
+        .reset-btn:hover { background: rgba(255,255,255,0.05); color: #fff;}
+
+        /* --- METRICS GRID --- */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .metric-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            backdrop-filter: blur(8px);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+        }
+
+        .metric-card:hover { transform: translateY(-2px); }
+
+        .metric-title {
+            color: var(--text-dim);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .metric-value {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 3rem;
+            font-weight: 700;
+            line-height: 1;
+            margin-bottom: 1rem;
+        }
+
+        .breakdown-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin-top: auto;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            padding-top: 1rem;
+        }
+
+        .breakdown-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.9rem;
+            color: var(--text-dim);
+        }
+
+        .breakdown-badge {
+            padding: 2px 8px;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        /* Card Glows */
+        .card-total { box-shadow: inset 0 2px 0 0 var(--accent-primary); }
+        .card-gitleaks { box-shadow: inset 0 2px 0 0 var(--tool-gitleaks); }
+        .card-semgrep { box-shadow: inset 0 2px 0 0 var(--tool-semgrep); }
+        .card-trivy { box-shadow: inset 0 2px 0 0 var(--tool-trivy); }
+
+        /* --- FINDINGS LIST --- */
+        .findings-controls {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            color: var(--text-dim);
+            padding: 0.6rem 1.2rem;
+            border-radius: 2rem;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .filter-btn:hover { background: rgba(255,255,255,0.1); color: #fff;}
+        .filter-btn.active { background: #fff; color: #000; }
+
+        .finding-item {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            gap: 1.5rem;
+            align-items: center;
+            transition: background 0.2s;
+        }
+
+        .finding-item:hover { background: var(--surface-hover); }
+
+        .severity-indicator {
+            width: 4px;
+            height: 100%;
+            border-radius: 4px;
+            align-self: stretch;
+        }
+
+        .finding-content {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .finding-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .finding-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .finding-meta {
+            font-family: monospace;
+            font-size: 0.85rem;
+            color: var(--text-dim);
+            background: rgba(0,0,0,0.3);
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+        }
+
+        .finding-path {
+            font-size: 0.9rem;
+            color: var(--text-dim);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .tool-badge {
+            padding: 0.3rem 0.8rem;
+            border-radius: 2rem;
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        /* Dynamic Classes */
+        .text-gitleaks { color: var(--tool-gitleaks); }
+        .text-semgrep { color: var(--tool-semgrep); }
+        .text-trivy { color: var(--tool-trivy); }
+        
+        .bg-cr { background: var(--sev-critical); }
+        .bg-hi { background: var(--sev-high); }
+        .bg-me { background: var(--sev-medium); }
+        .bg-lo { background: var(--sev-low); }
+
+        .pill-cr { background: rgba(239,68,68,0.2) !important; color: #fca5a5 !important; border-color: rgba(239,68,68,0.5) !important; }
+        .pill-hi { background: rgba(249,115,22,0.2) !important; color: #fdba74 !important; border-color: rgba(249,115,22,0.5) !important; }
+
+        .external-link {
+            color: var(--accent-secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+        .external-link:hover { text-decoration: underline; }
+
+        @media (max-width: 768px) {
+            .finding-item {
+                grid-template-columns: 1fr;
+            }
+            .severity-indicator {
+                height: 4px;
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>DevSecOps Unified Dashboard</h1>
+        <p>Drop your `final-security-report.json` to visualize vulnerabilities.</p>
+    </header>
+
+    <!-- Upload Section -->
+    <main id="upload-section">
+        <label for="file-input" class="drop-zone" id="drop-zone">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+            </svg>
+            <h3>Upload Report</h3>
+            <p>Drag & Drop or click to browse JSON</p>
+            <input type="file" id="file-input" accept=".json">
+        </label>
+    </main>
+
+    <!-- Dashboard Section -->
+    <main id="dashboard-section">
+        <div class="dashboard-header">
+            <div>
+                <h2 style="font-family: 'Space Grotesk', sans-serif;">Report Overview</h2>
+                <div class="meta-info" id="report-meta">Generated: N/A</div>
+            </div>
+            <button class="reset-btn" onclick="location.reload()">Upload New Report</button>
+        </div>
+
+        <div class="metrics-grid">
+            <!-- Total Findings -->
+            <div class="metric-card card-total">
+                <div class="metric-title">Total Findings</div>
+                <div class="metric-value" id="val-total">0</div>
+                <ul class="breakdown-list">
+                    <li class="breakdown-item">Critical <span class="breakdown-badge" style="background:var(--sev-critical)" id="sev-cr">0</span></li>
+                    <li class="breakdown-item">High <span class="breakdown-badge" style="background:var(--sev-high)" id="sev-hi">0</span></li>
+                    <li class="breakdown-item">Medium <span class="breakdown-badge" style="background:var(--sev-medium)" id="sev-me">0</span></li>
+                    <li class="breakdown-item">Low <span class="breakdown-badge" style="background:var(--sev-low)" id="sev-lo">0</span></li>
+                </ul>
+            </div>
+
+            <!-- Secrets -->
+            <div class="metric-card card-gitleaks">
+                <div class="metric-title text-gitleaks">Secrets & Keys</div>
+                <div class="metric-value">
+                    <span id="val-gitleaks">0</span>
+                    <span style="font-size: 1rem; color: var(--text-dim); margin-left: 5px;">Exposures</span>
+                </div>
+                <p style="color:var(--text-dim); font-size: 0.9rem; margin-top: auto;">Detected by <b>Gitleaks</b></p>
+            </div>
+
+            <!-- Code Flaws -->
+            <div class="metric-card card-semgrep">
+                <div class="metric-title text-semgrep">Code Flaws (SAST)</div>
+                <div class="metric-value">
+                    <span id="val-semgrep">0</span>
+                    <span style="font-size: 1rem; color: var(--text-dim); margin-left: 5px;">Vulnerabilities</span>
+                </div>
+                <p style="color:var(--text-dim); font-size: 0.9rem; margin-top: auto;">Detected by <b>Semgrep</b></p>
+            </div>
+
+            <!-- Dependencies -->
+            <div class="metric-card card-trivy">
+                <div class="metric-title text-trivy">Dependencies (SCA)</div>
+                <div class="metric-value">
+                    <span id="val-trivy">0</span>
+                    <span style="font-size: 1rem; color: var(--text-dim); margin-left: 5px;">Vulns</span>
+                </div>
+                <p style="color:var(--text-dim); font-size: 0.9rem; margin-top: auto;">Detected by <b>Trivy</b></p>
+            </div>
+        </div>
+
+        <!-- Filter Controls -->
+        <div class="findings-controls">
+            <button class="filter-btn active" data-filter="all">All Findings</button>
+            <button class="filter-btn" data-filter="gitleaks">🗝️ Secrets (Gitleaks)</button>
+            <button class="filter-btn" data-filter="semgrep">🐛 Code (Semgrep)</button>
+            <button class="filter-btn" data-filter="trivy">📦 Deps (Trivy)</button>
+        </div>
+
+        <!-- Findings List Area -->
+        <div id="findings-list">
+            <!-- Findings dynamically injected here via JS -->
+        </div>
+
+    </main>
+
+    <script>
+        const dropZone = document.getElementById('drop-zone');
+        const fileInput = document.getElementById('file-input');
+        const uploadSection = document.getElementById('upload-section');
+        const dashboardSection = document.getElementById('dashboard-section');
+        const findingsContainer = document.getElementById('findings-list');
+        const filterBtns = document.querySelectorAll('.filter-btn');
+
+        let globalData = null;
+
+        // UI Interactions
+        dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('dragover'); });
+        dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault(); dropZone.classList.remove('dragover');
+            if (e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]);
+        });
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length) handleFile(e.target.files[0]);
+        });
+
+        function handleFile(file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    globalData = JSON.parse(e.target.result);
+                    renderDashboard(globalData);
+                } catch (err) {
+                    alert('Invalid JSON file. Please drop the final-security-report.json.');
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        // Dashboard Rendering Logic
+        function renderDashboard(data) {
+            // Hide upload, show dashboard
+            uploadSection.style.display = 'none';
+            dashboardSection.style.display = 'block';
+
+            // Extract Summary Objects safely fallback
+            const summary = data.summary || {};
+            const sv = summary.by_severity || {};
+
+            // Render Header & Metrics
+            document.getElementById('report-meta').innerText = `Generated: ${new Date(data.generated_at).toLocaleString()}`;
+            document.getElementById('val-total').innerText = summary.total_findings || 0;
+            
+            // Render specific tools (Trivy might be listed as 'dependency' or 'dependabot' depending on the script)
+            document.getElementById('val-gitleaks').innerText = summary.gitleaks || 0;
+            document.getElementById('val-semgrep').innerText = summary.semgrep || 0;
+            document.getElementById('val-trivy').innerText = summary.dependency || summary.dependabot || summary.trivy || 0;
+
+            // Render Severity Counts
+            document.getElementById('sev-cr').innerText = (sv["CRITICAL"] || 0) + (sv["ERROR"] || 0); // Semgrep uses ERROR
+            document.getElementById('sev-hi').innerText = sv["HIGH"] || 0;
+            document.getElementById('sev-me').innerText = (sv["MEDIUM"] || 0) + (sv["WARNING"] || 0); // Semgrep uses WARNING
+            document.getElementById('sev-lo').innerText = (sv["LOW"] || 0) + (sv["INFO"] || 0);
+
+            // Render Findings Feed
+            renderFindingsList('all');
+        }
+
+        function renderFindingsList(filterParam) {
+            findingsContainer.innerHTML = '';
+            
+            let items = globalData.findings || [];
+            if (filterParam !== 'all') {
+                items = items.filter(f => f.tool === filterParam || (filterParam === 'trivy' && f.tool.includes('trivy')));
+            }
+
+            if (items.length === 0) {
+                findingsContainer.innerHTML = `<div style="text-align:center; padding: 4rem; color:var(--text-dim);">🎉 No findings match this filter!</div>`;
+                return;
+            }
+
+            // Map severities to CSS colors safely
+            const sevColorMap = {
+                CRITICAL: 'bg-cr', ERROR: 'bg-cr',
+                HIGH: 'bg-hi',
+                MEDIUM: 'bg-me', WARNING: 'bg-me',
+                LOW: 'bg-lo', INFO: 'bg-lo'
+            };
+
+            const pillColorMap = {
+                CRITICAL: 'pill-cr', ERROR: 'pill-cr',
+                HIGH: 'pill-hi'
+            };
+
+            items.forEach(f => {
+                const sevRaw = (f.severity || "UNKNOWN").toUpperCase();
+                const cssCol = sevColorMap[sevRaw] || 'bg-me';
+                const pillCol = pillColorMap[sevRaw] || '';
+
+                // Build path string based on context (code format)
+                let locationStr = f.file || f.manifest_path || "Unknown location";
+                if (f.line) locationStr += `:${f.line}`;
+                if (f.ecosystem) locationStr += ` (${f.ecosystem})`;
+
+                // Extra context per tool
+                let extraHtml = '';
+                if (f.cve && f.cve !== "") {
+                    extraHtml += `<span class="finding-meta">CVE: ${f.cve}</span>`;
+                }
+                if (f.package && f.package !== "") {
+                    extraHtml += `<span class="finding-meta">Package: ${f.package} (${f.affected_range || ''})</span>`;
+                }
+
+                // The Card Template
+                const card = document.createElement('div');
+                card.className = 'finding-item';
+                card.innerHTML = `
+                    <div class="severity-indicator ${cssCol}"></div>
+                    <div class="finding-content">
+                        <div class="finding-header">
+                            <span class="tool-badge ${pillCol}">${sevRaw}</span>
+                            <span class="tool-badge" style="text-transform:lowercase; font-size:0.7rem; opacity:0.8;">via ${f.tool}</span>
+                        </div>
+                        <div class="finding-title">${f.title || f.rule_id || "Uncategorized Flaw"}</div>
+                        <div class="finding-path">
+                            <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path></svg>
+                            ${locationStr}
+                        </div>
+                        <div style="display:flex; gap:0.5rem; flex-wrap:wrap; margin-top:0.5rem;">
+                            ${extraHtml}
+                        </div>
+                    </div>
+                    <div>
+                        ${f.alert_url ? `<a href="${f.alert_url}" target="_blank" class="external-link">Learn More ↗</a>` : ''}
+                        ${f.match ? `<br><code style="font-size:0.7rem; color:var(--text-dim); background:rgba(0,0,0,0.5); padding:4px;">${f.match.substring(0,30)}...</code>` : ''}
+                    </div>
+                `;
+                findingsContainer.appendChild(card);
+            });
+        }
+
+        // Filtering Logic
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                filterBtns.forEach(b => b.classList.remove('active'));
+                e.target.classList.add('active');
+                renderFindingsList(e.target.dataset.filter);
+            });
+        });
+
+    </script>
+</body>
+</html>
