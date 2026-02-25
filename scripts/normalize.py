@@ -80,11 +80,18 @@ def process_semgrep(report_path: str) -> list:
     for r in results:
         meta     = r.get("extra", {})
         severity = meta.get("severity", "WARNING").upper()
+        rule_id  = r.get("check_id", "")
+        
+        # Categorize HIPAA findings for the Compliance section in UI
+        tool_name = "semgrep"
+        if "hipaa" in rule_id.lower():
+            tool_name = "checkov" # Map to the compliance filter/card
+
         findings.append({
-            "tool"       : "semgrep",
+            "tool"       : tool_name,
             "severity"   : severity,
-            "title"      : meta.get("message", r.get("check_id", "Finding")),
-            "rule_id"    : r.get("check_id", ""),
+            "title"      : meta.get("message", rule_id),
+            "rule_id"    : rule_id,
             "file"       : r.get("path", ""),
             "line"       : r.get("start", {}).get("line", 0),
             "code"       : meta.get("lines", ""),
@@ -159,24 +166,25 @@ def process_checkov(report_path: str) -> list:
             return findings
 
     # Checkov can return a single object or a list of objects if multiple frameworks used
-    if isinstance(data, dict):
-        results_list = [data]
-    else:
-        results_list = data
+    results_list = [data] if isinstance(data, dict) else data
 
     for result in results_list:
-        passed_checks = result.get("results", {}).get("passed_checks", [])
-        failed_checks = result.get("results", {}).get("failed_checks", [])
+        # Robust access logic to handle null results/findings
+        res_inner = result.get("results")
+        if not res_inner:
+            continue
+            
+        failed_checks = res_inner.get("failed_checks") or []
         
         for check in failed_checks:
             findings.append({
                 "tool"       : "checkov",
-                "severity"   : "HIGH", # Checkov doesn't always provide clean severity in generic JSON
+                "severity"   : "HIGH", 
                 "title"      : check.get("check_name", "Compliance violation"),
                 "rule_id"    : check.get("check_id", ""),
                 "file"       : check.get("file_path", ""),
                 "line"       : check.get("file_line_range", [0, 0])[0], 
-                "description": f"HIPAA/Security Check: {check.get('check_id')}",
+                "description": f"Compliance Check: {check.get('check_id')}",
                 "alert_url"  : check.get("guideline", "")
             })
 
