@@ -31,7 +31,9 @@ jobs:
         id: gitleaks
         uses: gitleaks/gitleaks-action@v2
         with:
-          args: detect --source=. --report-format=json --report-path=gitleaks-report.json --exit-code=1
+          # --no-git forces Gitleaks to scan the CURRENT files on disk every run,
+          # rather than only scanning the exact commit that was just pushed.
+          args: detect --no-git --source=. --report-format=json --report-path=gitleaks-report.json --exit-code=1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITLEAKS_LICENSE: ${{ secrets.GITLEAKS_LICENSE }}   # Only needed for orgs; leave secret unset for public repos
