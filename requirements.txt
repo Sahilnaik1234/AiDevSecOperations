@@ -1,0 +1,23 @@
+# requirements.txt — intentionally pinned to old, vulnerable versions
+# to demonstrate Dependabot detection.
+#
+# DO NOT use these versions in production.
+#
+# CVEs these versions carry:
+#   flask==0.5          → Various pre-1.0 security issues
+#   pyyaml==3.13        → CVE-2017-18342 (arbitrary code exec via yaml.load)
+#   requests==2.19.1    → CVE-2018-18074 (credentials leak on redirect)
+#   cryptography==1.4   → Multiple CVEs in old OpenSSL bindings
+#   django==1.11.0      → CVE-2019-6975, CVE-2021-3281 and others
+#   pillow==5.4.1       → CVE-2019-19911, CVE-2020-5313 and others
+#   urllib3==1.24.1     → CVE-2019-11324 (CRLF injection)
+#   sqlalchemy==1.2.0   → Various older issues
+
+flask==0.5
+pyyaml==3.13
+requests==2.19.1
+cryptography==1.4
+django==1.11.0
+pillow==5.4.1
+urllib3==1.24.1
+sqlalchemy==1.2.0

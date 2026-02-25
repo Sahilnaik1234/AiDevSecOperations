@@ -1,0 +1,195 @@
+name: DevSecOps Security Pipeline
+
+on:
+  push:
+    branches:
+      - dev
+  pull_request:
+    branches:
+      - dev
+
+permissions:
+  contents: read
+  security-events: write
+
+jobs:
+  # ============================================================
+  # JOB 1: SECRET SCANNING — Gitleaks
+  # Scans full git history for exposed secrets/credentials
+  # Runs in parallel with sast and dependency-scan
+  # ============================================================
+  secret-scan:
+    name: "🔑 Secret Scan (Gitleaks)"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code (full history)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0          # Full history so Gitleaks scans every commit
+
+      - name: Run Gitleaks
+        id: gitleaks
+        uses: gitleaks/gitleaks-action@v2
+        with:
+          args: detect --source=. --report-format=json --report-path=gitleaks-report.json --exit-code=1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITLEAKS_LICENSE: ${{ secrets.GITLEAKS_LICENSE }}   # Only needed for orgs; leave secret unset for public repos
+        continue-on-error: false   # ← CI BREAKS if secrets are found
+
+      - name: Upload Gitleaks report
+        if: always()               # Upload even if the step fails so we have evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: gitleaks-report
+          path: gitleaks-report.json
+          if-no-files-found: warn
+
+  # ============================================================
+  # JOB 2: STATIC APPLICATION SECURITY TESTING — Semgrep
+  # Language-agnostic SAST — auto-detects Python, JS/TS, Java,
+  # Go, C/C++, C#, Ruby, PHP, Kotlin, Rust, Terraform, Docker
+  # Runs in parallel with secret-scan and dependency-scan
+  # ============================================================
+  sast:
+    name: "🔍 SAST (Semgrep)"
+    runs-on: ubuntu-latest
+    container:
+      image: semgrep/semgrep
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run Semgrep SAST
+        run: |
+          semgrep \
+            --config=auto \
+            --json \
+            --output=semgrep-report.json \
+            --severity=WARNING \
+            --severity=ERROR \
+            --error \
+            .
+        env:
+          SEMGREP_APP_TOKEN: ${{ secrets.SEMGREP_APP_TOKEN }}   # Optional — enables Semgrep Cloud dashboard
+        continue-on-error: false   # ← CI BREAKS if vulnerabilities are found
+
+      - name: Upload Semgrep report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: semgrep-report
+          path: semgrep-report.json
+          if-no-files-found: warn
+
+  # ============================================================
+  # JOB 3: DEPENDENCY SCAN — Dependabot / GitHub Advisory DB
+  # Fetches open Dependabot vulnerability alerts via the
+  # GitHub REST API (no install needed — works for ANY language
+  # that GitHub's dependency graph supports).
+  # Runs in parallel with secret-scan and sast
+  # ============================================================
+  dependency-scan:
+    name: "📦 Dependency Scan (Dependabot API)"
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Fetch Dependabot alerts via GitHub API
+        id: dep_check
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+        run: |
+          echo "Fetching Dependabot vulnerability alerts..."
+          HTTP_STATUS=$(curl -s -o dependency-report.json -w "%{http_code}" \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            "https://api.github.com/repos/$REPO/dependabot/alerts?state=open&per_page=100")
+
+          echo "HTTP status: $HTTP_STATUS"
+          cat dependency-report.json
+
+          # If API returns 403/404 (Dependabot not enabled), create an empty report
+          if [ "$HTTP_STATUS" != "200" ]; then
+            echo "[]" > dependency-report.json
+            echo "⚠️  Dependabot API returned $HTTP_STATUS — ensure Dependabot alerts are enabled for this repo."
+          fi
+
+          # Count critical/high alerts and fail the job if any exist
+          CRITICAL=$(python3 -c "
+          import json, sys
+          try:
+              alerts = json.load(open('dependency-report.json'))
+              critical = [a for a in alerts if isinstance(a, dict) and a.get('security_advisory', {}).get('severity') in ('critical', 'high')]
+              print(len(critical))
+          except Exception as e:
+              print(0)
+          ")
+          echo "Critical/High alerts: $CRITICAL"
+          if [ "$CRITICAL" -gt 0 ]; then
+            echo "❌ $CRITICAL critical/high dependency vulnerabilities found. CI failing."
+            exit 1
+          fi
+
+      - name: Upload Dependency report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dependency-report
+          path: dependency-report.json
+          if-no-files-found: warn
+
+  # ============================================================
+  # JOB 4: NORMALIZE & SUMMARIZE
+  # Downloads all three artifacts and merges them into one
+  # unified final-security-report.json
+  # Only runs after ALL three parallel scans complete
+  # ============================================================
+  normalize:
+    name: "📊 Normalize & Summarize Report"
+    runs-on: ubuntu-latest
+    needs: [secret-scan, sast, dependency-scan]   # Waits for all 3 parallel jobs
+    if: always()                                    # Run even if a scan job fails, so we get a report
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Download all scan artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: scan-reports
+        continue-on-error: true    # If a scan job failed, its artifact may not exist
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Merge reports into final security report
+        run: python scripts/normalize.py
+
+      - name: Print summary to job log
+        run: |
+          echo "===== SECURITY REPORT SUMMARY ====="
+          python3 -c "
+          import json
+          with open('final-security-report.json') as f:
+              report = json.load(f)
+          summary = report.get('summary', {})
+          print(f\"Total findings : {summary.get('total_findings', 0)}\")
+          print(f\"Gitleaks (secrets) : {summary.get('gitleaks', 0)}\")
+          print(f\"Semgrep (SAST)     : {summary.get('semgrep', 0)}\")
+          print(f\"Dependabot (deps)  : {summary.get('dependabot', 0)}\")
+          "
+
+      - name: Upload final unified report
+        uses: actions/upload-artifact@v4
+        with:
+          name: final-security-report
+          path: final-security-report.json

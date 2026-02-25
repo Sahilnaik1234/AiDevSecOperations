@@ -1,0 +1,64 @@
+# .semgrep.yml — Semgrep rule configuration
+# Docs: https://semgrep.dev/docs/writing-rules/rule-syntax/
+#
+# Using `--config=auto` in the CI workflow lets Semgrep auto-select
+# the best rulesets for every language it detects in your repo.
+# This file provides ADDITIONAL custom rules on top of that.
+
+rules:
+  # ─────────────────────────────────────────
+  # Python — Hardcoded credentials
+  # ─────────────────────────────────────────
+  - id: python-hardcoded-password
+    languages: [python]
+    severity: ERROR
+    message: |
+      Hardcoded password detected in variable '$VAR'. Move secrets to
+      environment variables or a secrets manager.
+    pattern: |
+      $VAR = "..."
+    pattern-regex: >
+      (password|passwd|pwd|secret|token|api_key)\s*=\s*["'][^"']{6,}["']
+    metadata:
+      category: security
+      cwe: "CWE-259: Use of Hard-coded Password"
+
+  # ─────────────────────────────────────────
+  # JavaScript / TypeScript — eval() usage
+  # ─────────────────────────────────────────
+  - id: js-eval-usage
+    languages: [javascript, typescript]
+    severity: WARNING
+    message: |
+      Use of eval() is dangerous and can lead to code injection.
+      Refactor to avoid dynamic code execution.
+    pattern: eval(...)
+    metadata:
+      category: security
+      cwe: "CWE-95: Improper Neutralization of Directives in Dynamically Evaluated Code"
+
+  # ─────────────────────────────────────────
+  # Java — SQL string concatenation
+  # ─────────────────────────────────────────
+  - id: java-sqli-string-concat
+    languages: [java]
+    severity: ERROR
+    message: |
+      Possible SQL Injection: string concatenation used inside a query.
+      Use PreparedStatement with parameterized queries instead.
+    pattern: |
+      $STMT.executeQuery("..." + $INPUT + "...")
+    metadata:
+      category: security
+      cwe: "CWE-89: SQL Injection"
+
+  # ─────────────────────────────────────────
+  # Generic — TODO/FIXME security notes
+  # ─────────────────────────────────────────
+  - id: fixme-security
+    languages: [generic]
+    severity: WARNING
+    message: "Security FIXME/TODO found. Resolve before merging."
+    pattern-regex: "(FIXME|TODO).*(?i)(security|vuln|exploit|injection|auth)"
+    metadata:
+      category: security
