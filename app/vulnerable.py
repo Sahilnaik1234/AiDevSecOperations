@@ -31,7 +31,7 @@ import os
 # They are NOT real — they follow the exact format Gitleaks' rules match on.
 
 # Gitleaks rule: aws-access-key-id  (AKIA[0-9A-Z]{16})
-AWS_ACCESS_KEY_ID     = "AKIAIOSFODNN7FKTEST"           # noqa: S105
+AWS_ACCESS_KEY_ID     = "AKIAIOSFODNN7FKTEST1"          # noqa: S105  (AKIA + 16 chars = 20 total)
 
 # Gitleaks rule: aws-secret-access-key  (40-char base64-ish)
 AWS_SECRET_ACCESS_KEY = "kWqH7zLm3nPxRvT9uYsD2aJgF5oK8cBt1eWqXmZl"  # noqa: S105
