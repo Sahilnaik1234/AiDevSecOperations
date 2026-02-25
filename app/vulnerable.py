@@ -34,11 +34,11 @@ import os
 # NOTE: these use generic variable names to trigger Gitleaks' entropy/generic 
 # detectors without triggering GitHub's built-in push protection for AWS/GitHub keys.
 
-SECRET_API_KEY      = "z9B!K4x$L7pQ2wR8vN5mJ0yH3cF6tG1b"          # noqa: S105
-INTERNAL_TOKEN      = "qA8rD4bT9jK2lL5mP7sW1vX3zY6hF0c"           # noqa: S105
-AUTH_SECRET_STRING  = "m5N!b8V$c2X9zL4kQ7jH1wR3pT6yF0"            # noqa: S105
-JWT_PRIVATE_KEY     = "v3K9b!N7mQ2wR8xL5p$J0yH1cF6tG4z"           # noqa: S105
-DB_PASSWORD         = "Tr0ub4dor&3_SecureDBPass#2024!"            # noqa: S105
+AWS_ACCESS_TOKEN    = "qA8rD4bT9jK2lL5mP7sW1vX3zY6hF0c"           # noqa: S105
+GITHUB_PAT_TOKEN    = "xB9cF2vN4mK7pQ1wR8tG3yH5zL0jD6b"           # noqa: S105
+STRIPE_SECRET_KEY   = "vN4mK7pQ1wR8tG3yH5zL0jD6bxB9cF2"           # noqa: S105
+DB_ROOT_PASSWORD    = "L5mP7sW1vX3zY6hF0cqA8rD4bT9jK2l"           # noqa: S105
+SLACK_OAUTH_TOKEN   = "G3yH5zL0jD6bxB9cF2vN4mK7pQ1wR8t"           # noqa: S105
 
 
 # ── 5: Command Injection ──────────────────────────────────────────────────────
