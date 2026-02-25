@@ -13,11 +13,5 @@
 #   urllib3==1.24.1     → CVE-2019-11324 (CRLF injection)
 #   sqlalchemy==1.2.0   → Various older issues
 
-flask==0.5
-pyyaml==3.13
-requests==2.19.1
-cryptography==1.4
-django==1.11.0
-pillow==5.4.1
 urllib3==1.24.1
 sqlalchemy==1.2.0

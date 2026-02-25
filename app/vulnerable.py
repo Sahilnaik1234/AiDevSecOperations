@@ -35,10 +35,7 @@ import os
 # detectors without triggering GitHub's built-in push protection for AWS/GitHub keys.
 
 AWS_ACCESS_TOKEN    = "qA8rD4bT9jK2lL5mP7sW1vX3zY6hF0c"           # noqa: S105
-GITHUB_PAT_TOKEN    = "xB9cF2vN4mK7pQ1wR8tG3yH5zL0jD6b"           # noqa: S105
-STRIPE_SECRET_KEY   = "vN4mK7pQ1wR8tG3yH5zL0jD6bxB9cF2"           # noqa: S105
-DB_ROOT_PASSWORD    = "L5mP7sW1vX3zY6hF0cqA8rD4bT9jK2l"           # noqa: S105
-SLACK_OAUTH_TOKEN   = "G3yH5zL0jD6bxB9cF2vN4mK7pQ1wR8t"           # noqa: S105
+GITHUB_PAT_TOKEN    = "xB9cF2vN4mK7pQ1wR8tG3yH5zL0jD6b"           # noqa: S105        # noqa: S105
 
 
 # ── 5: Command Injection ──────────────────────────────────────────────────────
@@ -51,7 +48,7 @@ def run_command(user_input: str):
     )
     return result.stdout
 
-
+GITHUB_PAT_TOKEN    = "xB9cF2vN4mK7pQ1wR8tG3yH5zL0jD6b" 
 # ── 6: SQL Injection ──────────────────────────────────────────────────────────
 def get_user(username: str, conn: sqlite3.Connection):
     """UNSAFE: f-string interpolation in SQL query."""
@@ -60,47 +57,3 @@ def get_user(username: str, conn: sqlite3.Connection):
     cursor.execute(f"SELECT * FROM users WHERE username = '{username}'")
     return cursor.fetchone()
 
-
-# ── 7: XSS via render_template_string ────────────────────────────────────────
-try:
-    from flask import Flask, request, render_template_string
-    app = Flask(__name__)
-
-    @app.route("/greet")
-    def greet():
-        """UNSAFE: user input rendered directly into HTML template."""
-        name = request.args.get("name", "")
-        return render_template_string(f"<h1>Hello, {name}!</h1>")  # nosec
-
-except ImportError:
-    app = None  # Flask not installed; skip
-
-
-# ── 8: Insecure Deserialization ───────────────────────────────────────────────
-def deserialize_data(raw_bytes: bytes):
-    """UNSAFE: pickle.loads with untrusted data."""
-    return pickle.loads(raw_bytes)  # nosec — intentional
-
-
-# ── 9: Path Traversal ─────────────────────────────────────────────────────────
-def read_file(filename: str) -> str:
-    """UNSAFE: no path validation — allows reading /etc/passwd etc."""
-    with open(filename, "r") as f:  # nosec
-        return f.read()
-
-
-# ── 10: Weak Hashing ─────────────────────────────────────────────────────────
-def hash_password(password: str) -> str:
-    """UNSAFE: MD5 is cryptographically broken for password hashing."""
-    return hashlib.md5(password.encode()).hexdigest()  # nosec
-
-
-# ── 11: Unsafe YAML Load ──────────────────────────────────────────────────────
-def parse_config(yaml_string: str):
-    """UNSAFE: yaml.load without a safe Loader allows arbitrary code execution."""
-    return yaml.load(yaml_string)  # nosec
-
-
-# ── 12: Flask Debug Mode ON ───────────────────────────────────────────────────
-if __name__ == "__main__" and app:
-    app.run(debug=True, host="0.0.0.0")  # nosec — intentional for testing
