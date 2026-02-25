@@ -536,7 +536,9 @@
         // Auto-fetch logic for synchronized DevSecOps pipeline
         document.addEventListener("DOMContentLoaded", async () => {
             try {
-                const response = await fetch("./final-security-report.json");
+                // Append a timestamp to the URL to prevent the browser from caching the report
+                const cacheBuster = new Date().getTime();
+                const response = await fetch(`./final-security-report.json?t=${cacheBuster}`);
                 if (!response.ok) throw new Error("File not found");
 
                 globalData = await response.json();
