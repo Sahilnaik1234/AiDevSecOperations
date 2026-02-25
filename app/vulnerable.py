@@ -26,12 +26,24 @@ import hashlib
 import yaml
 import os
 
-# ── 1 & 2 & 3 & 4: Hardcoded Secrets (triggers Gitleaks) ─────────────────────
-AWS_ACCESS_KEY_ID     = "AKIAIOSFODNN7EXAMPLE"          # noqa: S105
-AWS_SECRET_ACCESS_KEY = "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"  # noqa: S105
-GITHUB_TOKEN          = "ghp_AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"    # noqa: S105
-JWT_SECRET            = "super-secret-jwt-key-do-not-share"           # noqa: S105
-DB_PASSWORD           = "password123"                                  # noqa: S105
+# ── 1 & 2 & 3 & 4 & 5: Hardcoded Secrets (triggers Gitleaks) ────────────────
+# NOTE: these are intentionally realistic-looking FAKE credentials.
+# They are NOT real — they follow the exact format Gitleaks' rules match on.
+
+# Gitleaks rule: aws-access-key-id  (AKIA[0-9A-Z]{16})
+AWS_ACCESS_KEY_ID     = "AKIAIOSFODNN7FKTEST"           # noqa: S105
+
+# Gitleaks rule: aws-secret-access-key  (40-char base64-ish)
+AWS_SECRET_ACCESS_KEY = "kWqH7zLm3nPxRvT9uYsD2aJgF5oK8cBt1eWqXmZl"  # noqa: S105
+
+# Gitleaks rule: github-pat  (ghp_ + 36 alphanumeric)
+GITHUB_TOKEN          = "ghp_16C7e42F292c6912E7710c838347Ae178B4a"    # noqa: S105
+
+# Gitleaks rule: jwt  (three base64 segments separated by dots)
+JWT_SECRET            = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"  # noqa: S105
+
+# Gitleaks rule: generic-password (variable named 'password' with high-entropy value)
+DB_PASSWORD           = "Tr0ub4dor&3_SecureDBPass#2024!"              # noqa: S105
 
 
 # ── 5: Command Injection ──────────────────────────────────────────────────────
