@@ -56,4 +56,28 @@ def get_user(username: str, conn: sqlite3.Connection):
     # FIXME security: use parameterized query here
     cursor.execute(f"SELECT * FROM users WHERE username = '{username}'")
     return cursor.fetchone()
+# ── 13: HIPAA Compliance Violations ───────────────────────────────────────────
+import logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
+def process_patient_data(patient_name: str, patient_ssn: str, medical_history: str):
+    """
+    VULNERABLE (HIPAA): Logging Protected Health Information (PHI).
+    HIPAA technical safeguards prohibit logging or exposing PHI in cleartext.
+    """
+    logger.info(f"Processing record for patient: {patient_name}")
+    # CRITICAL HIPAA VIOLATION: Logging SSN and medical history
+    logger.debug(f"DEBUG: Patient SSN {patient_ssn} - History: {medical_history}")
+    
+    # Insecure storage of PHI
+    with open("patient_data.txt", "a") as f:
+        f.write(f"{patient_name},{patient_ssn},{medical_history}\n")
+
+def insecure_api_call():
+    """
+    VULNERABLE (HIPAA): Using insecure HTTP transmission for sensitive data.
+    """
+    import requests
+    # HIPAA requires encryption in transit (HTTPS)
+    requests.get("http://internal-health-system.local/api/records") 
