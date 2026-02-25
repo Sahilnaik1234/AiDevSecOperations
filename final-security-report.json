@@ -1,15 +1,15 @@
 {
-  "generated_at": "2026-02-25T11:41:55.126649+00:00",
+  "generated_at": "2026-02-25T11:49:41.976353+00:00",
   "summary": {
-    "total_findings": 14,
+    "total_findings": 16,
     "gitleaks": 3,
-    "semgrep": 4,
+    "semgrep": 6,
     "dependency": 7,
     "compliance": 0,
     "by_severity": {
       "CRITICAL": 5,
       "ERROR": 3,
-      "WARNING": 1,
+      "WARNING": 3,
       "HIGH": 5
     }
   },
@@ -65,6 +65,32 @@
         "A04:2021 - Insecure Design",
         "A06:2025 - Insecure Design"
       ]
+    },
+    {
+      "tool": "semgrep",
+      "severity": "WARNING",
+      "title": "Checks for any usage of http servers instead of https servers. Encourages the usage of https protocol instead of http, which does not have TLS and is therefore unencrypted. Using http can lead to man-in-the-middle attacks in which the attacker is able to read sensitive information.",
+      "rule_id": "problem-based-packs.insecure-transport.js-node.using-http-server.using-http-server",
+      "file": "app/vulnerable.js",
+      "line": 13,
+      "code": "requires login",
+      "cwe": "CWE-319: Cleartext Transmission of Sensitive Information",
+      "owasp": [
+        "A02:2021 - Cryptographic Failures",
+        "A03:2017 - Sensitive Data Exposure",
+        "A04:2025 - Cryptographic Failures"
+      ]
+    },
+    {
+      "tool": "semgrep",
+      "severity": "WARNING",
+      "title": "Checks for requests sent to http:// URLs. This is dangerous as the server is attempting to connect to a website that does not encrypt traffic with TLS. Instead, only send requests to https:// URLs.",
+      "rule_id": "problem-based-packs.insecure-transport.js-node.http-request.http-request",
+      "file": "app/vulnerable.js",
+      "line": 13,
+      "code": "requires login",
+      "cwe": "CWE-319: Cleartext Transmission of Sensitive Information",
+      "owasp": "A03:2017 - Sensitive Data Exposure"
     },
     {
       "tool": "semgrep",
