@@ -83,52 +83,28 @@ jobs:
           if-no-files-found: warn
 
   # ============================================================
-  # JOB 3: DEPENDENCY SCAN — pip-audit (Inline SCA)
-  # Synchronously scans requirements.txt for CVEs in real-time,
-  # breaking the CI process if known vulnerabilities are found.
-  # Much faster and more reliable in CI than waiting for the 
-  # async Dependabot REST API.
+  # JOB 3: DEPENDENCY SCAN — Trivy (Inline universal SCA)
+  # Synchronously scans all lockfiles (requirements.txt, package.json,
+  # pom.xml, go.mod, etc.) for CVEs in real-time.
+  # Breaks the CI process if HIGH/CRITICAL vulnerabilities are found.
   # Runs in parallel with secret-scan and sast
   # ============================================================
   dependency-scan:
-    name: "📦 Dependency Scan (pip-audit)"
+    name: "📦 Dependency Scan (Trivy)"
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
         with:
-          python-version: "3.11"
-
-      - name: Install pip-audit
-        run: pip install pip-audit
-
-      - name: Run inline dependency scan (pip-audit)
-        id: dep_check
-        run: |
-          echo "Scanning requirements.txt for CVEs..."
-          # Run audit and export JSON; exit code 1 if vulns found
-          pip-audit -r requirements.txt -f json -o dependency-report.json || true
-          
-          # Check if the report has vulns and break CI if true
-          VULNS=$(python -c '
-          import json, sys
-          try:
-            data = json.load(open("dependency-report.json"))
-            vuln_count = sum(1 for pkg in data.get("dependencies", []) if pkg.get("vulns"))
-            print(vuln_count)
-          except:
-            print(0)
-          ')
-          
-          echo "Packages with vulnerabilities: $VULNS"
-          
-          if [ "$VULNS" -gt 0 ]; then
-            echo "❌ $VULNS vulnerable packages found inline. CI failing."
-            exit 1
-          fi
+          scan-type: 'fs'              # Scans the file system for any dependency lockfiles
+          format: 'json'               # Outputs JSON for the normalizer script
+          output: 'dependency-report.json'
+          severity: 'HIGH,CRITICAL'
+          exit-code: '1'               # Breaks CI if high/critical vulns are found
+        continue-on-error: false
 
       - name: Upload Dependency report
         if: always()

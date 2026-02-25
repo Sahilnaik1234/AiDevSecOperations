@@ -101,9 +101,9 @@ def process_semgrep(report_path: str) -> list:
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# PIP-AUDIT — JSON output schema
+# TRIVY — JSON output schema
 # ─────────────────────────────────────────────────────────────────────────────
-def process_pip_audit(report_path: str) -> list:
+def process_trivy(report_path: str) -> list:
     findings = []
     if not os.path.isfile(report_path):
         print(f"[normalize] ⚠️  Dependency report not found at {report_path} — skipping")
@@ -116,32 +116,29 @@ def process_pip_audit(report_path: str) -> list:
             print(f"[normalize] ⚠️  Could not parse Dependency report: {e}")
             return findings
 
-    # Data is expected to be {"dependencies": [{"name": "...", "version": "...", "vulns": [...]}]}
-    dependencies = data.get("dependencies", [])
+    # Trivy exports {"Results": [{"Target": "package.json", "Vulnerabilities": [...]}]}
+    results = data.get("Results", [])
 
-    for dep in dependencies:
-        pkg_name = dep.get("name", "")
-        pkg_vers = dep.get("version", "")
-        vulns = dep.get("vulns", [])
+    for r in results:
+        target = r.get("Target", "")
+        vulns  = r.get("Vulnerabilities", [])
         
         for v in vulns:
-            # pip-audit currently doesn't map full descriptions to a unified severity directly in all JSONs,
-            # but usually it's considered HIGH/CRITICAL if it has a CVE.
             findings.append({
-                "tool"             : "pip-audit",
-                "severity"         : "CRITICAL",
-                "title"            : v.get("fix_versions", ["No fix"])[0] + " fix available",
-                "rule_id"          : v.get("id", ""),
-                "cve"              : v.get("id", ""),
-                "package"          : pkg_name,
-                "ecosystem"        : "pip",
-                "affected_range"   : pkg_vers,
-                "fixed_in"         : ", ".join(v.get("fix_versions", [])),
-                "manifest_path"    : "requirements.txt",
-                "alert_url"        : f"https://osv.dev/vulnerability/{v.get('id', '')}",
+                "tool"             : "trivy",
+                "severity"         : v.get("Severity", "UNKNOWN").upper(),
+                "title"            : v.get("Title", "Dependency vulnerability"),
+                "rule_id"          : v.get("VulnerabilityID", ""),
+                "cve"              : v.get("VulnerabilityID", ""),
+                "package"          : v.get("PkgName", ""),
+                "ecosystem"        : target.split(".")[-1], # generic fallback
+                "affected_range"   : v.get("InstalledVersion", ""),
+                "fixed_in"         : v.get("FixedVersion", ""),
+                "manifest_path"    : target,
+                "alert_url"        : v.get("PrimaryURL", ""),
             })
 
-    print(f"[normalize] pip-audit: {len(findings)} finding(s)")
+    print(f"[normalize] Trivy: {len(findings)} finding(s)")
     return findings
 
 
@@ -156,12 +153,12 @@ def main():
     all_findings  = []
     all_findings += process_gitleaks(gitleaks_path)
     all_findings += process_semgrep(semgrep_path)
-    all_findings += process_pip_audit(dependency_path)
+    all_findings += process_trivy(dependency_path)
 
     # Count by tool
     gitleaks_count     = sum(1 for f in all_findings if f["tool"] == "gitleaks")
     semgrep_count      = sum(1 for f in all_findings if f["tool"] == "semgrep")
-    dependency_count   = sum(1 for f in all_findings if f["tool"] == "pip-audit")
+    dependency_count   = sum(1 for f in all_findings if f["tool"] == "trivy")
 
     # Count by severity
     severity_counts = {}
@@ -175,7 +172,7 @@ def main():
             "total_findings" : len(all_findings),
             "gitleaks"       : gitleaks_count,
             "semgrep"        : semgrep_count,
-            "dependabot"     : dependency_count,
+            "dependency"     : dependency_count,
             "by_severity"    : severity_counts,
         },
         "findings"     : all_findings,
@@ -186,7 +183,7 @@ def main():
 
     print(f"\n[normalize] ✅  Final report written to: {os.path.abspath(OUTPUT_FILE)}")
     print(f"[normalize]     Total findings: {len(all_findings)}")
-    print(f"[normalize]     Breakdown — Gitleaks: {gitleaks_count} | Semgrep: {semgrep_count} | pip-audit: {dependency_count}")
+    print(f"[normalize]     Breakdown — Gitleaks: {gitleaks_count} | Semgrep: {semgrep_count} | Trivy: {dependency_count}")
 
 
 if __name__ == "__main__":
