@@ -1,15 +1,15 @@
 {
-  "generated_at": "2026-02-25T11:49:41.976353+00:00",
+  "generated_at": "2026-02-25T11:53:08.308164+00:00",
   "summary": {
-    "total_findings": 16,
+    "total_findings": 17,
     "gitleaks": 3,
-    "semgrep": 6,
+    "semgrep": 7,
     "dependency": 7,
     "compliance": 0,
     "by_severity": {
       "CRITICAL": 5,
       "ERROR": 3,
-      "WARNING": 3,
+      "WARNING": 4,
       "HIGH": 5
     }
   },
@@ -141,6 +141,23 @@
         "A01:2017 - Injection",
         "A03:2021 - Injection",
         "A05:2025 - Injection"
+      ]
+    },
+    {
+      "tool": "semgrep",
+      "severity": "WARNING",
+      "title": "Avoid using `pickle`, which is known to lead to code execution vulnerabilities. When unpickling, the serialized data could be manipulated to run arbitrary code. Instead, consider serializing the relevant data as JSON or a similar text-based serialization format.",
+      "rule_id": "python.lang.security.deserialization.pickle.avoid-pickle",
+      "file": "app/vulnerable.py",
+      "line": 66,
+      "code": "requires login",
+      "cwe": [
+        "CWE-502: Deserialization of Untrusted Data"
+      ],
+      "owasp": [
+        "A08:2017 - Insecure Deserialization",
+        "A08:2021 - Software and Data Integrity Failures",
+        "A08:2025 - Software or Data Integrity Failures"
       ]
     },
     {
