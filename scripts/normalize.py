@@ -143,22 +143,67 @@ def process_trivy(report_path: str) -> list:
 
 
 # ─────────────────────────────────────────────────────────────────────────────
+# CHECKOV (Compliance) — JSON output schema
+# ─────────────────────────────────────────────────────────────────────────────
+def process_checkov(report_path: str) -> list:
+    findings = []
+    if not os.path.isfile(report_path):
+        print(f"[normalize] ⚠️  Compliance report not found at {report_path} — skipping")
+        return findings
+
+    with open(report_path, encoding="utf-8") as f:
+        try:
+            data = json.load(f)
+        except json.JSONDecodeError as e:
+            print(f"[normalize] ⚠️  Could not parse Compliance report: {e}")
+            return findings
+
+    # Checkov can return a single object or a list of objects if multiple frameworks used
+    if isinstance(data, dict):
+        results_list = [data]
+    else:
+        results_list = data
+
+    for result in results_list:
+        passed_checks = result.get("results", {}).get("passed_checks", [])
+        failed_checks = result.get("results", {}).get("failed_checks", [])
+        
+        for check in failed_checks:
+            findings.append({
+                "tool"       : "checkov",
+                "severity"   : "HIGH", # Checkov doesn't always provide clean severity in generic JSON
+                "title"      : check.get("check_name", "Compliance violation"),
+                "rule_id"    : check.get("check_id", ""),
+                "file"       : check.get("file_path", ""),
+                "line"       : check.get("file_line_range", [0, 0])[0], 
+                "description": f"HIPAA/Security Check: {check.get('check_id')}",
+                "alert_url"  : check.get("guideline", "")
+            })
+
+    print(f"[normalize] Checkov: {len(findings)} finding(s)")
+    return findings
+
+
+# ─────────────────────────────────────────────────────────────────────────────
 # MAIN
 # ─────────────────────────────────────────────────────────────────────────────
 def main():
     gitleaks_path   = os.path.join(REPORTS_DIR, "gitleaks-report",    "gitleaks-report.json")
     semgrep_path    = os.path.join(REPORTS_DIR, "semgrep-report",     "semgrep-report.json")
     dependency_path = os.path.join(REPORTS_DIR, "dependency-report",  "dependency-report.json")
+    compliance_path = os.path.join(REPORTS_DIR, "compliance-report",  "compliance-report.json")
 
     all_findings  = []
     all_findings += process_gitleaks(gitleaks_path)
     all_findings += process_semgrep(semgrep_path)
     all_findings += process_trivy(dependency_path)
+    all_findings += process_checkov(compliance_path)
 
     # Count by tool
     gitleaks_count     = sum(1 for f in all_findings if f["tool"] == "gitleaks")
     semgrep_count      = sum(1 for f in all_findings if f["tool"] == "semgrep")
     dependency_count   = sum(1 for f in all_findings if f["tool"] == "trivy")
+    compliance_count   = sum(1 for f in all_findings if f["tool"] == "checkov")
 
     # Count by severity
     severity_counts = {}
@@ -173,6 +218,7 @@ def main():
             "gitleaks"       : gitleaks_count,
             "semgrep"        : semgrep_count,
             "dependency"     : dependency_count,
+            "compliance"     : compliance_count,
             "by_severity"    : severity_counts,
         },
         "findings"     : all_findings,
@@ -183,7 +229,7 @@ def main():
 
     print(f"\n[normalize] ✅  Final report written to: {os.path.abspath(OUTPUT_FILE)}")
     print(f"[normalize]     Total findings: {len(all_findings)}")
-    print(f"[normalize]     Breakdown — Gitleaks: {gitleaks_count} | Semgrep: {semgrep_count} | Trivy: {dependency_count}")
+    print(f"[normalize]     Breakdown — Gitleaks: {gitleaks_count} | Semgrep: {semgrep_count} | Trivy: {dependency_count} | Checkov: {compliance_count}")
 
 
 if __name__ == "__main__":
