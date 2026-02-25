@@ -125,16 +125,15 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Run Semgrep HIPAA Scan
+      - name: Run Multi-Language HIPAA Compliance Scan
         run: |
           semgrep \
-            --config=p/hipaa \
+            --config=p/owasp-top-10 \
+            --config=p/security-audit \
             --json \
             --output=hipaa-report.json \
             .
-        env:
-          SEMGREP_APP_TOKEN: ${{ secrets.SEMGREP_APP_TOKEN }}
-        continue-on-error: true    # Let dashboard handle findings
+        continue-on-error: true    # Ensure findings are reported to dashboard even on failure
 
       - name: Upload HIPAA report
         if: always()
