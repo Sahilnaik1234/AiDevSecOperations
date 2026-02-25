@@ -533,6 +533,21 @@
 
         let globalData = null;
 
+        // Auto-fetch logic for synchronized DevSecOps pipeline
+        document.addEventListener("DOMContentLoaded", async () => {
+            try {
+                const response = await fetch("./final-security-report.json");
+                if (!response.ok) throw new Error("File not found");
+
+                globalData = await response.json();
+                console.log("Auto-loaded final-security-report.json from repository");
+                renderDashboard(globalData);
+            } catch (err) {
+                console.log("Could not auto-fetch local report. Falling back to Drag and Drop.");
+                // Leave upload section visible
+            }
+        });
+
         // UI Interactions
         dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('dragover'); });
         dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
