@@ -159,3 +159,15 @@ jobs:
         with:
           name: final-security-report
           path: final-security-report.json
+
+      - name: Prepare Dashboard Deployment
+        run: cp final-security-report.json ui/final-security-report.json
+
+      - name: Deploy Dashboard to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: gh-pages
+          publish_dir: ./ui
+          keep_files: false
+          commit_message: "docs(dashboard): build universal unified security dashboard [skip ci]"

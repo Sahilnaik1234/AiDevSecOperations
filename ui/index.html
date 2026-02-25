@@ -1,12 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DevSecOps Unified Dashboard</title>
     <!-- Modern Web Font -->
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
-    
+    <link
+        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=Inter:wght@400;500;700&display=swap"
+        rel="stylesheet">
+
     <style>
         :root {
             --bg-color: #0f1015;
@@ -17,14 +20,14 @@
             --accent-secondary: #0ea5e9;
             --text-main: #f8fafc;
             --text-dim: #94a3b8;
-            
+
             /* Severity Colors */
             --sev-critical: #ef4444;
             --sev-high: #f97316;
             --sev-medium: #eab308;
             --sev-low: #3b82f6;
             --sev-info: #8b5cf6;
-            
+
             /* Tool Colors */
             --tool-gitleaks: #ec4899;
             --tool-semgrep: #8b5cf6;
@@ -42,7 +45,7 @@
             background-color: var(--bg-color);
             color: var(--text-main);
             min-height: 100vh;
-            background-image: 
+            background-image:
                 radial-gradient(circle at 15% 50%, rgba(139, 92, 246, 0.15) 0%, transparent 40%),
                 radial-gradient(circle at 85% 30%, rgba(14, 165, 233, 0.15) 0%, transparent 40%);
             background-attachment: fixed;
@@ -68,6 +71,7 @@
             font-weight: 700;
             background: linear-gradient(135deg, #fff, #94a3b8);
             -webkit-background-clip: text;
+            background-clip: text;
             -webkit-text-fill-color: transparent;
             margin-bottom: 0.5rem;
             letter-spacing: -1px;
@@ -98,10 +102,11 @@
             cursor: pointer;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             backdrop-filter: blur(10px);
-            box-shadow: 0 10px 30px -10px rgba(0,0,0,0.5);
+            box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
         }
 
-        .drop-zone:hover, .drop-zone.dragover {
+        .drop-zone:hover,
+        .drop-zone.dragover {
             border-color: var(--accent-primary);
             background: rgba(139, 92, 246, 0.1);
             transform: translateY(-4px);
@@ -116,7 +121,7 @@
             opacity: 0.8;
             transition: transform 0.3s;
         }
-        
+
         .drop-zone:hover svg {
             transform: scale(1.1);
         }
@@ -132,7 +137,9 @@
             font-size: 0.95rem;
         }
 
-        #file-input { display: none; }
+        #file-input {
+            display: none;
+        }
 
         /* --- DASHBOARD VIEW --- */
         #dashboard-section {
@@ -152,8 +159,11 @@
             padding-bottom: 1rem;
         }
 
-        .meta-info { color: var(--text-dim); font-size: 0.9rem; }
-        
+        .meta-info {
+            color: var(--text-dim);
+            font-size: 0.9rem;
+        }
+
         .reset-btn {
             background: transparent;
             color: var(--accent-secondary);
@@ -164,7 +174,11 @@
             font-family: inherit;
             transition: all 0.2s;
         }
-        .reset-btn:hover { background: rgba(255,255,255,0.05); color: #fff;}
+
+        .reset-btn:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: #fff;
+        }
 
         /* --- METRICS GRID --- */
         .metrics-grid {
@@ -184,11 +198,13 @@
             flex-direction: column;
             position: relative;
             overflow: hidden;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
             transition: transform 0.2s;
         }
 
-        .metric-card:hover { transform: translateY(-2px); }
+        .metric-card:hover {
+            transform: translateY(-2px);
+        }
 
         .metric-title {
             color: var(--text-dim);
@@ -213,7 +229,7 @@
             flex-direction: column;
             gap: 0.5rem;
             margin-top: auto;
-            border-top: 1px solid rgba(255,255,255,0.05);
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
             padding-top: 1rem;
         }
 
@@ -234,10 +250,21 @@
         }
 
         /* Card Glows */
-        .card-total { box-shadow: inset 0 2px 0 0 var(--accent-primary); }
-        .card-gitleaks { box-shadow: inset 0 2px 0 0 var(--tool-gitleaks); }
-        .card-semgrep { box-shadow: inset 0 2px 0 0 var(--tool-semgrep); }
-        .card-trivy { box-shadow: inset 0 2px 0 0 var(--tool-trivy); }
+        .card-total {
+            box-shadow: inset 0 2px 0 0 var(--accent-primary);
+        }
+
+        .card-gitleaks {
+            box-shadow: inset 0 2px 0 0 var(--tool-gitleaks);
+        }
+
+        .card-semgrep {
+            box-shadow: inset 0 2px 0 0 var(--tool-semgrep);
+        }
+
+        .card-trivy {
+            box-shadow: inset 0 2px 0 0 var(--tool-trivy);
+        }
 
         /* --- FINDINGS LIST --- */
         .findings-controls {
@@ -258,8 +285,15 @@
             transition: all 0.2s;
         }
 
-        .filter-btn:hover { background: rgba(255,255,255,0.1); color: #fff;}
-        .filter-btn.active { background: #fff; color: #000; }
+        .filter-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+        }
+
+        .filter-btn.active {
+            background: #fff;
+            color: #000;
+        }
 
         .finding-item {
             background: var(--surface);
@@ -274,7 +308,9 @@
             transition: background 0.2s;
         }
 
-        .finding-item:hover { background: var(--surface-hover); }
+        .finding-item:hover {
+            background: var(--surface-hover);
+        }
 
         .severity-indicator {
             width: 4px;
@@ -306,7 +342,7 @@
             font-family: monospace;
             font-size: 0.85rem;
             color: var(--text-dim);
-            background: rgba(0,0,0,0.3);
+            background: rgba(0, 0, 0, 0.3);
             padding: 0.25rem 0.5rem;
             border-radius: 0.25rem;
         }
@@ -326,34 +362,66 @@
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(255,255,255,0.1);
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         /* Dynamic Classes */
-        .text-gitleaks { color: var(--tool-gitleaks); }
-        .text-semgrep { color: var(--tool-semgrep); }
-        .text-trivy { color: var(--tool-trivy); }
-        
-        .bg-cr { background: var(--sev-critical); }
-        .bg-hi { background: var(--sev-high); }
-        .bg-me { background: var(--sev-medium); }
-        .bg-lo { background: var(--sev-low); }
+        .text-gitleaks {
+            color: var(--tool-gitleaks);
+        }
 
-        .pill-cr { background: rgba(239,68,68,0.2) !important; color: #fca5a5 !important; border-color: rgba(239,68,68,0.5) !important; }
-        .pill-hi { background: rgba(249,115,22,0.2) !important; color: #fdba74 !important; border-color: rgba(249,115,22,0.5) !important; }
+        .text-semgrep {
+            color: var(--tool-semgrep);
+        }
+
+        .text-trivy {
+            color: var(--tool-trivy);
+        }
+
+        .bg-cr {
+            background: var(--sev-critical);
+        }
+
+        .bg-hi {
+            background: var(--sev-high);
+        }
+
+        .bg-me {
+            background: var(--sev-medium);
+        }
+
+        .bg-lo {
+            background: var(--sev-low);
+        }
+
+        .pill-cr {
+            background: rgba(239, 68, 68, 0.2) !important;
+            color: #fca5a5 !important;
+            border-color: rgba(239, 68, 68, 0.5) !important;
+        }
+
+        .pill-hi {
+            background: rgba(249, 115, 22, 0.2) !important;
+            color: #fdba74 !important;
+            border-color: rgba(249, 115, 22, 0.5) !important;
+        }
 
         .external-link {
             color: var(--accent-secondary);
             text-decoration: none;
             font-size: 0.9rem;
         }
-        .external-link:hover { text-decoration: underline; }
+
+        .external-link:hover {
+            text-decoration: underline;
+        }
 
         @media (max-width: 768px) {
             .finding-item {
                 grid-template-columns: 1fr;
             }
+
             .severity-indicator {
                 height: 4px;
                 width: 100%;
@@ -361,6 +429,7 @@
         }
     </style>
 </head>
+
 <body>
 
     <header>
@@ -372,7 +441,8 @@
     <main id="upload-section">
         <label for="file-input" class="drop-zone" id="drop-zone">
             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                    d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
             </svg>
             <h3>Upload Report</h3>
             <p>Drag & Drop or click to browse JSON</p>
@@ -396,10 +466,14 @@
                 <div class="metric-title">Total Findings</div>
                 <div class="metric-value" id="val-total">0</div>
                 <ul class="breakdown-list">
-                    <li class="breakdown-item">Critical <span class="breakdown-badge" style="background:var(--sev-critical)" id="sev-cr">0</span></li>
-                    <li class="breakdown-item">High <span class="breakdown-badge" style="background:var(--sev-high)" id="sev-hi">0</span></li>
-                    <li class="breakdown-item">Medium <span class="breakdown-badge" style="background:var(--sev-medium)" id="sev-me">0</span></li>
-                    <li class="breakdown-item">Low <span class="breakdown-badge" style="background:var(--sev-low)" id="sev-lo">0</span></li>
+                    <li class="breakdown-item">Critical <span class="breakdown-badge"
+                            style="background:var(--sev-critical)" id="sev-cr">0</span></li>
+                    <li class="breakdown-item">High <span class="breakdown-badge" style="background:var(--sev-high)"
+                            id="sev-hi">0</span></li>
+                    <li class="breakdown-item">Medium <span class="breakdown-badge" style="background:var(--sev-medium)"
+                            id="sev-me">0</span></li>
+                    <li class="breakdown-item">Low <span class="breakdown-badge" style="background:var(--sev-low)"
+                            id="sev-lo">0</span></li>
                 </ul>
             </div>
 
@@ -496,7 +570,7 @@
             // Render Header & Metrics
             document.getElementById('report-meta').innerText = `Generated: ${new Date(data.generated_at).toLocaleString()}`;
             document.getElementById('val-total').innerText = summary.total_findings || 0;
-            
+
             // Render specific tools (Trivy might be listed as 'dependency' or 'dependabot' depending on the script)
             document.getElementById('val-gitleaks').innerText = summary.gitleaks || 0;
             document.getElementById('val-semgrep').innerText = summary.semgrep || 0;
@@ -514,7 +588,7 @@
 
         function renderFindingsList(filterParam) {
             findingsContainer.innerHTML = '';
-            
+
             let items = globalData.findings || [];
             if (filterParam !== 'all') {
                 items = items.filter(f => f.tool === filterParam || (filterParam === 'trivy' && f.tool.includes('trivy')));
@@ -578,7 +652,7 @@
                     </div>
                     <div>
                         ${f.alert_url ? `<a href="${f.alert_url}" target="_blank" class="external-link">Learn More ↗</a>` : ''}
-                        ${f.match ? `<br><code style="font-size:0.7rem; color:var(--text-dim); background:rgba(0,0,0,0.5); padding:4px;">${f.match.substring(0,30)}...</code>` : ''}
+                        ${f.match ? `<br><code style="font-size:0.7rem; color:var(--text-dim); background:rgba(0,0,0,0.5); padding:4px;">${f.match.substring(0, 30)}...</code>` : ''}
                     </div>
                 `;
                 findingsContainer.appendChild(card);
@@ -596,4 +670,5 @@
 
     </script>
 </body>
+
 </html>
