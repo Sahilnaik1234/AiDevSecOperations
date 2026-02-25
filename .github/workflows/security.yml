@@ -112,14 +112,71 @@ jobs:
           if-no-files-found: warn
 
   # ============================================================
-  # JOB 4: NORMALIZE & SUMMARIZE
-  # Merges Secrets, SAST, and SCA findings
-  # into one unified final-security-report.json
+  # JOB 4: HIPAA COMPLIANCE SCAN — Semgrep
+  # Specifically targets HIPAA Privacy and Security rules
+  # Runs in parallel with other scans
+  # ============================================================
+  hipaa-scan:
+    name: "⚖️ HIPAA Compliance (Semgrep)"
+    runs-on: ubuntu-latest
+    container:
+      image: semgrep/semgrep
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run Semgrep HIPAA Scan
+        run: |
+          semgrep \
+            --config=p/hipaa \
+            --json \
+            --output=hipaa-report.json \
+            .
+        continue-on-error: true    # Let dashboard handle findings
+
+      - name: Upload HIPAA report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: hipaa-report
+          path: hipaa-report.json
+
+  # ============================================================
+  # JOB 5: INFRA COMPLIANCE SCAN — Checkov
+  # Scans Dockerfiles and configs for HIPAA best practices
+  # ============================================================
+  compliance-scan:
+    name: "🏥 Infra Compliance (Checkov)"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run Checkov scan
+        uses: bridgecrewio/checkov-action@master
+        with:
+          directory: .
+          framework: all
+          output_format: json
+          output_file_path: compliance-report.json
+          quiet: true
+        continue-on-error: true
+
+      - name: Upload Compliance report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: compliance-report
+          path: compliance-report.json
+
+  # ============================================================
+  # JOB 6: NORMALIZE & SUMMARIZE
+  # Merges all findings into one unified report
   # ============================================================
   normalize:
     name: " Normalize & Summarize Report"
     runs-on: ubuntu-latest
-    needs: [secret-scan, sast, dependency-scan]
+    needs: [secret-scan, sast, dependency-scan, hipaa-scan, compliance-scan]
     if: always()
     steps:
       - name: Checkout code

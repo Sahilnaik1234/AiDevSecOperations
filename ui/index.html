@@ -27,6 +27,7 @@
             --sev-medium: #eab308;
             --sev-low: #10b981;
             --sev-info: #3b82f6;
+            --sev-compliance: #06b6d4;
 
             /* Tool Colors */
             --tool-gitleaks: #ec4899;
@@ -285,6 +286,10 @@
             box-shadow: inset 0 2px 0 0 var(--tool-trivy);
         }
 
+        .card-compliance {
+            box-shadow: inset 0 2px 0 0 var(--sev-compliance);
+        }
+
         /* --- FINDINGS LIST --- */
         .findings-controls {
             display: flex;
@@ -398,6 +403,10 @@
             color: var(--tool-trivy);
         }
 
+        .text-compliance {
+            color: var(--sev-compliance);
+        }
+
         .bg-cr {
             background: var(--sev-critical);
         }
@@ -424,6 +433,12 @@
             background: rgba(249, 115, 22, 0.2) !important;
             color: #fdba74 !important;
             border-color: rgba(249, 115, 22, 0.5) !important;
+        }
+
+        .pill-compliance {
+            background: rgba(6, 182, 212, 0.2) !important;
+            color: #cffafe !important;
+            border-color: rgba(6, 182, 212, 0.5) !important;
         }
 
         .external-link {
@@ -529,6 +544,17 @@
                 </div>
                 <p style="color:var(--text-dim); font-size: 0.9rem; margin-top: auto;">Detected by <b>Trivy</b></p>
             </div>
+
+            <!-- Compliance -->
+            <div class="metric-card card-compliance">
+                <div class="metric-title text-compliance">HIPAA Compliance</div>
+                <div class="metric-value">
+                    <span id="val-compliance">0</span>
+                    <span style="font-size: 1rem; color: var(--text-dim); margin-left: 5px;">⚠️ Violations</span>
+                </div>
+                <p style="color:var(--text-dim); font-size: 0.9rem; margin-top: auto;">Audited by <b>Semgrep &
+                        Checkov</b></p>
+            </div>
         </div>
 
         <!-- Filter Controls -->
@@ -537,6 +563,7 @@
             <button class="filter-btn" data-filter="gitleaks">🗝️ Secrets (Gitleaks)</button>
             <button class="filter-btn" data-filter="semgrep">🐛 Code (Semgrep)</button>
             <button class="filter-btn" data-filter="trivy">📦 Deps (Trivy)</button>
+            <button class="filter-btn" data-filter="compliance">⚖️ Compliance (HIPAA)</button>
         </div>
 
         <!-- Findings List Area -->
@@ -620,6 +647,7 @@
             document.getElementById('val-gitleaks').innerText = summary.gitleaks || 0;
             document.getElementById('val-semgrep').innerText = summary.semgrep || 0;
             document.getElementById('val-trivy').innerText = summary.dependency || summary.dependabot || summary.trivy || 0;
+            document.getElementById('val-compliance').innerText = summary.compliance || 0;
 
             // Render Severity Counts
             document.getElementById('sev-cr').innerText = (sv["CRITICAL"] || 0) + (sv["ERROR"] || 0); // Semgrep uses ERROR
@@ -654,7 +682,8 @@
 
             const pillColorMap = {
                 CRITICAL: 'pill-cr', ERROR: 'pill-cr',
-                HIGH: 'pill-hi'
+                HIGH: 'pill-hi',
+                CHECK: 'pill-compliance'
             };
 
             items.forEach(f => {

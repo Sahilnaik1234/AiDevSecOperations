@@ -1,8 +1,7 @@
-# HIPAA Violation: Using an old, unmaintained image with many vulnerabilities
+# HIPAA Violation: Using an old, unmaintained image
 FROM node:10.15.3
 
 # HIPAA Violation: Running as root
-# HIPAA technical safeguards require least privilege access control
 USER root
 
 WORKDIR /app

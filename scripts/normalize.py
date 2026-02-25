@@ -143,22 +143,88 @@ def process_trivy(report_path: str) -> list:
 
 
 # ─────────────────────────────────────────────────────────────────────────────
+# HIPAA & COMPLIANCE — Semgrep & Checkov
+# ─────────────────────────────────────────────────────────────────────────────
+def process_hipaa(report_path: str) -> list:
+    findings = []
+    if not os.path.isfile(report_path):
+        print(f"[normalize] ⚠️  HIPAA report not found at {report_path} — skipping")
+        return findings
+
+    with open(report_path, encoding="utf-8") as f:
+        try:
+            data = json.load(f)
+        except json.JSONDecodeError:
+            return findings
+
+    results = data.get("results", [])
+    for r in results:
+        meta = r.get("extra", {})
+        findings.append({
+            "tool"       : "compliance",  # Tagged for HIPAA filter
+            "severity"   : meta.get("severity", "WARNING").upper(),
+            "title"      : f"HIPAA: {meta.get('message', r.get('check_id'))}",
+            "rule_id"    : r.get("check_id", ""),
+            "file"       : r.get("path", ""),
+            "line"       : r.get("start", {}).get("line", 0),
+        })
+    print(f"[normalize] HIPAA Scan: {len(findings)} finding(s)")
+    return findings
+
+
+def process_checkov(report_path: str) -> list:
+    findings = []
+    if not os.path.isfile(report_path):
+        print(f"[normalize] ⚠️  Compliance report not found at {report_path} — skipping")
+        return findings
+
+    with open(report_path, encoding="utf-8") as f:
+        try:
+            data = json.load(f)
+        except json.JSONDecodeError:
+            return findings
+
+    results_list = [data] if isinstance(data, dict) else data
+    for result in results_list:
+        res_inner = result.get("results")
+        if not res_inner: continue
+        failed_checks = res_inner.get("failed_checks") or []
+        for check in failed_checks:
+            findings.append({
+                "tool"       : "compliance",
+                "severity"   : "HIGH",
+                "title"      : f"Compliance: {check.get('check_name')}",
+                "rule_id"    : check.get("check_id", ""),
+                "file"       : check.get("file_path", ""),
+                "line"       : check.get("file_line_range", [0, 0])[0],
+                "alert_url"  : check.get("guideline", "")
+            })
+    print(f"[normalize] Infra Compliance: {len(findings)} finding(s)")
+    return findings
+
+
+# ─────────────────────────────────────────────────────────────────────────────
 # MAIN
 # ─────────────────────────────────────────────────────────────────────────────
 def main():
     gitleaks_path   = os.path.join(REPORTS_DIR, "gitleaks-report",    "gitleaks-report.json")
     semgrep_path    = os.path.join(REPORTS_DIR, "semgrep-report",     "semgrep-report.json")
     dependency_path = os.path.join(REPORTS_DIR, "dependency-report",  "dependency-report.json")
+    hipaa_path      = os.path.join(REPORTS_DIR, "hipaa-report",       "hipaa-report.json")
+    compliance_path = os.path.join(REPORTS_DIR, "compliance-report",  "compliance-report.json")
 
     all_findings  = []
     all_findings += process_gitleaks(gitleaks_path)
     all_findings += process_semgrep(semgrep_path)
     all_findings += process_trivy(dependency_path)
+    all_findings += process_hipaa(hipaa_path)
+    all_findings += process_checkov(compliance_path)
 
     # Count by tool
     gitleaks_count     = sum(1 for f in all_findings if f["tool"] == "gitleaks")
     semgrep_count      = sum(1 for f in all_findings if f["tool"] == "semgrep")
     dependency_count   = sum(1 for f in all_findings if f["tool"] == "trivy")
+    compliance_count   = sum(1 for f in all_findings if f["tool"] == "compliance")
 
     # Count by severity
     severity_counts = {}
@@ -173,6 +239,7 @@ def main():
             "gitleaks"       : gitleaks_count,
             "semgrep"        : semgrep_count,
             "dependency"     : dependency_count,
+            "compliance"     : compliance_count,
             "by_severity"    : severity_counts,
         },
         "findings"     : all_findings,
@@ -183,7 +250,7 @@ def main():
 
     print(f"\n[normalize] ✅  Final report written to: {os.path.abspath(OUTPUT_FILE)}")
     print(f"[normalize]     Total findings: {len(all_findings)}")
-    print(f"[normalize]     Breakdown — Gitleaks: {gitleaks_count} | Semgrep: {semgrep_count} | Trivy: {dependency_count}")
+    print(f"[normalize]     Breakdown — Secrets: {gitleaks_count} | SAST: {semgrep_count} | SCA: {dependency_count} | Compliance: {compliance_count}")
 
 
 if __name__ == "__main__":
