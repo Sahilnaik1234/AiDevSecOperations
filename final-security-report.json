@@ -1,17 +1,17 @@
 {
-  "generated_at": "2026-02-26T11:36:52.973814+00:00",
+  "generated_at": "2026-02-26T11:41:31.349754+00:00",
   "summary": {
-    "total_findings": 55,
+    "total_findings": 53,
     "gitleaks": 3,
-    "semgrep": 3,
+    "semgrep": 2,
     "dependency": 7,
-    "compliance": 42,
-    "soc2_count": 27,
+    "compliance": 41,
+    "soc2_count": 26,
     "hipaa_count": 7,
     "by_severity": {
       "CRITICAL": 5,
-      "WARNING": 30,
-      "ERROR": 15,
+      "WARNING": 29,
+      "ERROR": 14,
       "HIGH": 5
     }
   },
@@ -68,17 +68,6 @@
         "A02:2021 - Cryptographic Failures",
         "A04:2025 - Cryptographic Failures"
       ]
-    },
-    {
-      "tool": "semgrep",
-      "severity": "WARNING",
-      "title": "Detected an HTTP request sent via HttpURLConnection. This could lead to sensitive information being sent over an insecure channel. Instead, it is recommended to send requests over HTTPS.",
-      "rule_id": "problem-based-packs.insecure-transport.java-stdlib.httpurlconnection-http-request.httpurlconnection-http-request",
-      "file": "app/Vulnerable.java",
-      "line": 15,
-      "code": "requires login",
-      "cwe": "CWE-319: Cleartext Transmission of Sensitive Information",
-      "owasp": "A03:2017 - Sensitive Data Exposure"
     },
     {
       "tool": "compliance",
@@ -335,11 +324,11 @@
     },
     {
       "tool": "compliance",
-      "severity": "ERROR",
-      "title": "SOC2: SOC2 Compliance: Unencrypted data transmission (HTTP). SOC2 requires Encryption in Transit (HTTPS/TLS) for all non-local traffic.",
-      "rule_id": "soc2-universal-unencrypted-transmission",
+      "severity": "WARNING",
+      "title": "SOC2: SOC2 Compliance: Potential missing audit logging. Operations related to auth/access must be logged for the 'Access and Monitoring' criterion.",
+      "rule_id": "soc2-universal-audit-logging-missing",
       "file": "app/Vulnerable.java",
-      "line": 15
+      "line": 16
     },
     {
       "tool": "compliance",
@@ -347,15 +336,7 @@
       "title": "SOC2: SOC2 Compliance: Potential missing audit logging. Operations related to auth/access must be logged for the 'Access and Monitoring' criterion.",
       "rule_id": "soc2-universal-audit-logging-missing",
       "file": "app/Vulnerable.java",
-      "line": 20
-    },
-    {
-      "tool": "compliance",
-      "severity": "WARNING",
-      "title": "SOC2: SOC2 Compliance: Potential missing audit logging. Operations related to auth/access must be logged for the 'Access and Monitoring' criterion.",
-      "rule_id": "soc2-universal-audit-logging-missing",
-      "file": "app/Vulnerable.java",
-      "line": 23
+      "line": 19
     },
     {
       "tool": "compliance",
@@ -531,7 +512,7 @@
       "title": "HIPAA: HIPAA Compliance: Missing audit log for PHI access. HIPAA requires logging of all interactions with Protected Health Information.",
       "rule_id": "hipaa-universal-missing-access-log",
       "file": "app/Vulnerable.java",
-      "line": 20
+      "line": 16
     },
     {
       "tool": "compliance",
@@ -539,7 +520,7 @@
       "title": "HIPAA: HIPAA Compliance: Missing audit log for PHI access. HIPAA requires logging of all interactions with Protected Health Information.",
       "rule_id": "hipaa-universal-missing-access-log",
       "file": "app/Vulnerable.java",
-      "line": 23
+      "line": 19
     },
     {
       "tool": "compliance",
