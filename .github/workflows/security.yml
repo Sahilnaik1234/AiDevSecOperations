@@ -15,8 +15,6 @@ permissions:
 jobs:
   # ============================================================
   # JOB 1: SECRET SCANNING — Gitleaks
-  # Scans full git history for exposed secrets/credentials
-  # Runs in parallel with sast and dependency-scan
   # ============================================================
   secret-scan:
     name: "Secret Scan (Gitleaks)"
@@ -44,9 +42,6 @@ jobs:
 
   # ============================================================
   # JOB 2: STATIC APPLICATION SECURITY TESTING — Semgrep
-  # Language-agnostic SAST — auto-detects Python, JS/TS, Java,
-  # Go, C/C++, C#, Ruby, PHP, Kotlin, Rust, Terraform, Docker
-  # Runs in parallel with secret-scan and dependency-scan
   # ============================================================
   sast:
     name: "SAST (Semgrep)"
@@ -82,9 +77,6 @@ jobs:
   # ============================================================
   # JOB 3: DEPENDENCY SCAN — Trivy (Inline universal SCA)
   # Synchronously scans all lockfiles (requirements.txt, package.json,
-  # pom.xml, go.mod, etc.) for CVEs in real-time.
-  # Breaks the CI process if HIGH/CRITICAL vulnerabilities are found.
-  # Runs in parallel with secret-scan and sast
   # ============================================================
   dependency-scan:
     name: " Dependency Scan (Trivy)"

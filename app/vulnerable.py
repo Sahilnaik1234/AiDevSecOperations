@@ -26,13 +26,6 @@ import hashlib
 import yaml
 import os
 
-# ── 1 & 2 & 3 & 4 & 5: Hardcoded Secrets (triggers Gitleaks) ────────────────
-# NOTE: these are intentionally realistic-looking FAKE credentials.
-# They are NOT real — they follow the exact format Gitleaks' rules match on.
-
-# ── 1 & 2 & 3 & 4 & 5: Hardcoded Generic Secrets (triggers Gitleaks) ────────
-# NOTE: these use generic variable names to trigger Gitleaks' entropy/generic 
-# detectors without triggering GitHub's built-in push protection for AWS/GitHub keys.
 
 AWS_ACCESS_TOKEN    = "qA8rD4bT9jK2lL5mP7sW1vX3zY6hF0c"           # noqa: S105
 GITHUB_PAT_TOKEN    = "xB9cF2vN4mK7pQ1wR8tG3yH5zL0jD6b"           # noqa: S105        # noqa: S105

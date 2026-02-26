@@ -1,4 +1,0 @@
-DATABASE_URL=postgres://health_user:HealthPass123!@db.health.internal:5432/patients
-AWS_ACCESS_KEY_ID=AKIAEXAMPLE123456789
-AWS_SECRET_ACCESS_KEY=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
-INTERNAL_API_SECRET=super_secret_health_token_99
