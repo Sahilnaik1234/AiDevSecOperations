@@ -173,6 +173,36 @@ def process_soc2(report_path: str) -> list:
 
 
 # ─────────────────────────────────────────────────────────────────────────────
+# HIPAA COMPLIANCE — Semgrep
+# ─────────────────────────────────────────────────────────────────────────────
+def process_hipaa(report_path: str) -> list:
+    findings = []
+    if not os.path.isfile(report_path):
+        print(f"[normalize] ⚠️  HIPAA report MISSING at {report_path}")
+        return findings
+
+    with open(report_path, encoding="utf-8") as f:
+        try:
+            data = json.load(f)
+        except json.JSONDecodeError:
+            return findings
+
+    results = data.get("results", [])
+    for r in results:
+        meta = r.get("extra", {})
+        findings.append({
+            "tool"       : "compliance", # Shared with SOC2 for the dashboard
+            "severity"   : meta.get("severity", "WARNING").upper(),
+            "title"      : f"HIPAA: {meta.get('message', r.get('check_id'))}",
+            "rule_id"    : r.get("check_id", ""),
+            "file"       : r.get("path", ""),
+            "line"       : r.get("start", {}).get("line", 0),
+        })
+    print(f"[normalize] ✅ Added {len(findings)} targeted HIPAA findings.")
+    return findings
+
+
+# ─────────────────────────────────────────────────────────────────────────────
 # MAIN
 # ─────────────────────────────────────────────────────────────────────────────
 def main():
@@ -184,7 +214,8 @@ def main():
         "gitleaks"    : ["gitleaks-report/gitleaks-report.json", "gitleaks-report.json"],
         "semgrep"     : ["semgrep-report/semgrep-report.json",   "semgrep-report.json"],
         "dependency"  : ["dependency-report/dependency-report.json", "dependency-report.json"],
-        "soc2"        : ["soc2-report/soc2-report.json",         "soc2-report.json"]
+        "soc2"        : ["soc2-report/soc2-report.json",         "soc2-report.json"],
+        "hipaa"       : ["hipaa-report/hipaa-report.json",       "hipaa-report.json"]
     }
 
     all_findings = []
@@ -202,24 +233,41 @@ def main():
     all_findings += process_semgrep(get_path("semgrep"))
     all_findings += process_trivy(get_path("dependency"))
     all_findings += process_soc2(get_path("soc2"))
+    all_findings += process_hipaa(get_path("hipaa"))
 
-    # 2. SOC2 KEYWORD UPGRADE (Capture compliance issues from other tools)
+    # 2. COMPLIANCE UPGRADES (Capture issues from other tools)
     soc2_keywords = ["audit", "logging", "encryption", "tls", "ssl", "auth", "login"]
+    hipaa_keywords = ["hipaa", "phi", "patient", "medical", "health", "history", "ssn"]
+    
     upgrades = 0
     for f in all_findings:
         text = (f.get("title", "") + " " + f.get("rule_id", "")).lower()
-        if any(kw in text for kw in soc2_keywords):
+        
+        # Upgrade to Compliance for SOC2
+        if any(kw in text for kw in soc2_keywords) and f["tool"] != "compliance":
+            f["tool"] = "compliance"
+            upgrades += 1
+            
+        # Upgrade for HIPAA (already categorized as compliance usually, but ensures prefix)
+        elif any(kw in text for kw in hipaa_keywords):
             if f["tool"] != "compliance":
                 f["tool"] = "compliance"
                 upgrades += 1
+            if not f["title"].startswith("HIPAA:") and not f["title"].startswith("SOC2:"):
+                f["title"] = f"HIPAA: {f['title']}"
+
     if upgrades > 0:
-        print(f"[normalize] 🧠 {upgrades} findings upgraded to 'Compliance' via SOC2 keywords.")
+        print(f"[normalize] 🧠 {upgrades} findings upgraded to 'Compliance' category.")
 
     # 3. Aggregation & Summary
     gitleaks_count     = sum(1 for f in all_findings if f["tool"] == "gitleaks")
     semgrep_count      = sum(1 for f in all_findings if f["tool"] == "semgrep")
     dependency_count   = sum(1 for f in all_findings if f["tool"] == "trivy")
     compliance_count   = sum(1 for f in all_findings if f["tool"] == "compliance")
+    
+    # Specific breakdown for summary JSON (Optional but useful)
+    soc2_count = sum(1 for f in all_findings if "SOC2" in f["title"] and f["tool"] == "compliance")
+    hipaa_count = sum(1 for f in all_findings if "HIPAA" in f["title"] and f["tool"] == "compliance")
 
     print(f"[normalize] 📊 Final Counts — Secrets: {gitleaks_count} | SAST: {semgrep_count} | SCA: {dependency_count} | Compliance: {compliance_count}")
 
@@ -236,6 +284,8 @@ def main():
             "semgrep"        : semgrep_count,
             "dependency"     : dependency_count,
             "compliance"     : compliance_count,
+            "soc2_count"     : soc2_count,
+            "hipaa_count"    : hipaa_count,
             "by_severity"    : severity_counts,
         },
         "findings"     : all_findings,

@@ -547,13 +547,25 @@
 
             <!-- SOC2 Compliance -->
             <div class="metric-card card-compliance"
-                style="border-top: 3px solid var(--accent); background: linear-gradient(to bottom, rgba(58, 123, 213, 0.1), transparent);">
+                style="border-top: 3px solid var(--sev-compliance); background: linear-gradient(to bottom, rgba(6, 182, 212, 0.05), transparent);">
                 <div class="metric-title text-compliance">SOC2 Compliance</div>
                 <div class="metric-value">
-                    <span id="val-compliance">0</span>
-                    <span style="font-size: 1rem; color: var(--text-dim); margin-left: 5px;">⚠️ Violations</span>
+                    <span id="val-soc2">0</span>
+                    <span style="font-size: 1rem; color: var(--text-dim); margin-left: 5px;">⚠️ Issues</span>
                 </div>
                 <p style="color:var(--text-dim); font-size: 0.9rem; margin-top: auto;">Audited by <b>Semgrep SOC2</b>
+                </p>
+            </div>
+
+            <!-- HIPAA Compliance -->
+            <div class="metric-card card-hipaa"
+                style="border-top: 3px solid #10b981; background: linear-gradient(to bottom, rgba(16, 185, 129, 0.05), transparent);">
+                <div class="metric-title" style="color:#10b981;">HIPAA Compliance</div>
+                <div class="metric-value">
+                    <span id="val-hipaa">0</span>
+                    <span style="font-size: 1rem; color: var(--text-dim); margin-left: 5px;">🏥 Violations</span>
+                </div>
+                <p style="color:var(--text-dim); font-size: 0.9rem; margin-top: auto;">Audited by <b>Semgrep HIPAA</b>
                 </p>
             </div>
         </div>
@@ -561,14 +573,15 @@
         <!-- Search & Filter Controls -->
         <div class="findings-controls">
             <div style="flex-grow: 1; min-width: 300px;">
-                <input type="text" id="finding-search" placeholder="Search findings (e.g. SOC2, Audit, SQL)..."
+                <input type="text" id="finding-search" placeholder="Search findings (e.g. HIPAA, SOC2, Audit, SQL)..."
                     style="width: 100%; background: var(--surface); border: 1px solid var(--border); padding: 0.7rem 1.2rem; border-radius: 2rem; color: #fff; font-family: inherit;">
             </div>
             <button class="filter-btn active" data-filter="all">All Findings</button>
             <button class="filter-btn" data-filter="gitleaks">🗝️ Secrets</button>
             <button class="filter-btn" data-filter="semgrep">🐛 Code</button>
             <button class="filter-btn" data-filter="trivy">📦 Deps</button>
-            <button class="filter-btn" data-filter="compliance">⚖️ SOC2 Compliance</button>
+            <button class="filter-btn" data-filter="soc2">⚖️ SOC2</button>
+            <button class="filter-btn" data-filter="hipaa">🏥 HIPAA</button>
         </div>
 
         <!-- Findings List Area -->
@@ -652,7 +665,8 @@
             if (document.getElementById('val-gitleaks-card')) document.getElementById('val-gitleaks-card').innerText = summary.gitleaks || 0;
             if (document.getElementById('val-semgrep-card')) document.getElementById('val-semgrep-card').innerText = summary.semgrep || 0;
             if (document.getElementById('val-trivy-card')) document.getElementById('val-trivy-card').innerText = summary.dependency || summary.dependabot || summary.trivy || 0;
-            if (document.getElementById('val-compliance')) document.getElementById('val-compliance').innerText = summary.compliance || 0;
+            if (document.getElementById('val-soc2')) document.getElementById('val-soc2').innerText = summary.soc2_count || 0;
+            if (document.getElementById('val-hipaa')) document.getElementById('val-hipaa').innerText = summary.hipaa_count || 0;
 
             // Render Severity Counts
             document.getElementById('sev-cr').innerText = (sv["CRITICAL"] || 0) + (sv["ERROR"] || 0);
@@ -675,7 +689,13 @@
 
             // Tool Filter
             if (currentFilter !== 'all') {
-                items = items.filter(f => f.tool === currentFilter || (currentFilter === 'trivy' && f.tool.includes('trivy')));
+                if (currentFilter === 'soc2') {
+                    items = items.filter(f => f.tool === 'compliance' && f.title.includes('SOC2:'));
+                } else if (currentFilter === 'hipaa') {
+                    items = items.filter(f => f.tool === 'compliance' && f.title.includes('HIPAA:'));
+                } else {
+                    items = items.filter(f => f.tool === currentFilter || (currentFilter === 'trivy' && f.tool.includes('trivy')));
+                }
             }
 
             // Keyword Search

@@ -1,0 +1,36 @@
+rules:
+  - id: hipaa-universal-phi-exposure
+    patterns:
+      - pattern-regex: (?i)(patient_name|patient_id|ssn|social_security|medical_record|mrn|health_id|dob|date_of_birth)\s*[:=]\s*["'][^"']{3,}["']
+    message: "HIPAA Compliance: Potential PHI (Protected Health Information) exposure. HIPAA requires strict encryption and access control for identifiable patient data."
+    languages: [python, javascript, java, go, csharp, yaml, dockerfile]
+    severity: ERROR
+
+  - id: hipaa-universal-unencrypted-transmission
+    patterns:
+      - pattern-regex: (?i)http://[a-zA-Z0-9.-]+
+      - pattern-regex: (?i)(patient|phi|medical|health|record)
+      - pattern-not-regex: (?i)localhost|127\.0\.0\.1
+    message: "HIPAA Compliance: Unencrypted transmission of sensitive data. HIPAA requires Encryption in Transit (HTTPS/TLS) for all PHI traffic."
+    languages: [python, javascript, java, go, ruby, php]
+    severity: ERROR
+
+  - id: hipaa-universal-missing-access-log
+    patterns:
+      - pattern-not-inside: |
+          import ...
+          ...
+      - pattern-not: |
+          logger.$METHOD(...)
+      - pattern-regex: (?i)(read|write|delete|update|access|view)\s*.*\s*(patient|medical|health|phi|record)
+    message: "HIPAA Compliance: Missing audit log for PHI access. HIPAA requires logging of all interactions with Protected Health Information."
+    languages: [python, javascript, java, csharp, go]
+    severity: WARNING
+
+  - id: hipaa-universal-insecure-phi-storage
+    patterns:
+      - pattern-either:
+          - pattern-regex: (?i)(log|print|console)\s*.*\s*(ssn|social_security|mrn|patient_id)
+    message: "HIPAA Compliance: Sensitive PHI being logged to plain text. HIPAA prohibits exposing PHI in application logs or insecure storage."
+    languages: [python, javascript, java, go]
+    severity: ERROR
