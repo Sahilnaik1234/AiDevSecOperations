@@ -1,21 +1,33 @@
 {
-  "generated_at": "2026-02-26T11:46:47.154693+00:00",
+  "generated_at": "2026-02-26T11:58:41.617719+00:00",
   "summary": {
-    "total_findings": 51,
+    "total_findings": 48,
     "gitleaks": 3,
     "semgrep": 2,
     "dependency": 7,
-    "compliance": 39,
-    "soc2_count": 25,
+    "compliance": 36,
+    "soc2_count": 23,
     "hipaa_count": 6,
     "by_severity": {
       "CRITICAL": 5,
-      "WARNING": 27,
+      "WARNING": 24,
       "ERROR": 14,
       "HIGH": 5
     }
   },
   "findings": [
+    {
+      "tool": "gitleaks",
+      "severity": "CRITICAL",
+      "title": "Found a Stripe Access Token, posing a risk to payment processing services and sensitive financial data.",
+      "rule_id": "stripe-access-token",
+      "file": "/src/app/Vulnerable.java",
+      "line": 8,
+      "commit": "",
+      "author": "",
+      "match": "sk_test_51MzS0vL3uYfTjSOC2KEY\"",
+      "fingerprint": "/src/app/Vulnerable.java:stripe-access-token:8"
+    },
     {
       "tool": "gitleaks",
       "severity": "CRITICAL",
@@ -39,35 +51,6 @@
       "author": "",
       "match": "GITHUB_PAT_TOKEN    = \"xB9cF2vN4mK7pQ1wR8tG3yH5zL0jD6b\"",
       "fingerprint": "/src/app/vulnerable.py:generic-api-key:31"
-    },
-    {
-      "tool": "gitleaks",
-      "severity": "CRITICAL",
-      "title": "Found a Stripe Access Token, posing a risk to payment processing services and sensitive financial data.",
-      "rule_id": "stripe-access-token",
-      "file": "/src/app/Vulnerable.java",
-      "line": 8,
-      "commit": "",
-      "author": "",
-      "match": "sk_test_51MzS0vL3uYfTjSOC2KEY\"",
-      "fingerprint": "/src/app/Vulnerable.java:stripe-access-token:8"
-    },
-    {
-      "tool": "compliance",
-      "severity": "WARNING",
-      "title": "Detected SHA1 hash algorithm which is considered insecure. SHA1 is not collision resistant and is therefore not suitable as a cryptographic signature. Instead, use PBKDF2 for password hashing or SHA256 or SHA512 for other hash function applications.",
-      "rule_id": "java.lang.security.audit.crypto.use-of-sha1.use-of-sha1",
-      "file": "app/Vulnerable.java",
-      "line": 11,
-      "code": "requires login",
-      "cwe": [
-        "CWE-328: Use of Weak Hash"
-      ],
-      "owasp": [
-        "A03:2017 - Sensitive Data Exposure",
-        "A02:2021 - Cryptographic Failures",
-        "A04:2025 - Cryptographic Failures"
-      ]
     },
     {
       "tool": "compliance",
@@ -309,26 +292,10 @@
     {
       "tool": "compliance",
       "severity": "WARNING",
-      "title": "SOC2: Detected SHA1 hash algorithm which is considered insecure. SHA1 is not collision resistant and is therefore not suitable as a cryptographic signature. Instead, use PBKDF2 for password hashing or SHA256 or SHA512 for other hash function applications.",
-      "rule_id": "java.lang.security.audit.crypto.use-of-sha1.use-of-sha1",
-      "file": "app/Vulnerable.java",
-      "line": 11
-    },
-    {
-      "tool": "compliance",
-      "severity": "WARNING",
       "title": "SOC2: SOC2 Compliance: Potential missing audit logging. Operations related to auth/access must be logged for the 'Access and Monitoring' criterion.",
       "rule_id": "soc2-universal-audit-logging-missing",
       "file": "app/Vulnerable.java",
-      "line": 12
-    },
-    {
-      "tool": "compliance",
-      "severity": "WARNING",
-      "title": "SOC2: SOC2 Compliance: Potential missing audit logging. Operations related to auth/access must be logged for the 'Access and Monitoring' criterion.",
-      "rule_id": "soc2-universal-audit-logging-missing",
-      "file": "app/Vulnerable.java",
-      "line": 16
+      "line": 13
     },
     {
       "tool": "compliance",
@@ -504,7 +471,7 @@
       "title": "HIPAA: HIPAA Compliance: Missing audit log for PHI access. HIPAA requires logging of all interactions with Protected Health Information.",
       "rule_id": "hipaa-universal-missing-access-log",
       "file": "app/Vulnerable.java",
-      "line": 16
+      "line": 13
     },
     {
       "tool": "compliance",
