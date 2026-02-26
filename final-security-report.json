@@ -1,17 +1,17 @@
 {
-  "generated_at": "2026-02-26T10:48:12.049493+00:00",
+  "generated_at": "2026-02-26T11:36:52.973814+00:00",
   "summary": {
-    "total_findings": 58,
+    "total_findings": 55,
     "gitleaks": 3,
     "semgrep": 3,
     "dependency": 7,
-    "compliance": 45,
+    "compliance": 42,
     "soc2_count": 27,
-    "hipaa_count": 10,
+    "hipaa_count": 7,
     "by_severity": {
       "CRITICAL": 5,
-      "WARNING": 31,
-      "ERROR": 17,
+      "WARNING": 30,
+      "ERROR": 15,
       "HIGH": 5
     }
   },
@@ -208,7 +208,7 @@
       "title": "Detected the use of eval(). eval() can be dangerous if used to evaluate dynamic content. If this content can be input from outside the program, this may be a code injection vulnerability. Ensure evaluated content is not definable by external sources.",
       "rule_id": "python.lang.security.audit.eval-detected.eval-detected",
       "file": "app/vulnerable.py",
-      "line": 105,
+      "line": 93,
       "code": "requires login",
       "cwe": [
         "CWE-95: Improper Neutralization of Directives in Dynamically Evaluated Code ('Eval Injection')"
@@ -483,7 +483,7 @@
       "title": "SOC2: SOC2 Compliance: Unencrypted data transmission (HTTP). SOC2 requires Encryption in Transit (HTTPS/TLS) for all non-local traffic.",
       "rule_id": "soc2-universal-unencrypted-transmission",
       "file": "app/vulnerable.py",
-      "line": 84
+      "line": 72
     },
     {
       "tool": "compliance",
@@ -491,7 +491,7 @@
       "title": "SOC2: Detected the use of eval(). eval() can be dangerous if used to evaluate dynamic content. If this content can be input from outside the program, this may be a code injection vulnerability. Ensure evaluated content is not definable by external sources.",
       "rule_id": "python.lang.security.audit.eval-detected.eval-detected",
       "file": "app/vulnerable.py",
-      "line": 105
+      "line": 93
     },
     {
       "tool": "compliance",
@@ -576,34 +576,10 @@
     {
       "tool": "compliance",
       "severity": "ERROR",
-      "title": "HIPAA: HIPAA Compliance: Sensitive PHI being logged to plain text. HIPAA prohibits exposing PHI in application logs or insecure storage.",
-      "rule_id": "hipaa-universal-insecure-phi-storage",
-      "file": "app/vulnerable.py",
-      "line": 71
-    },
-    {
-      "tool": "compliance",
-      "severity": "ERROR",
-      "title": "HIPAA: HIPAA Compliance: Sensitive PHI being logged to plain text. HIPAA prohibits exposing PHI in application logs or insecure storage.",
-      "rule_id": "hipaa-universal-insecure-phi-storage",
-      "file": "app/vulnerable.py",
-      "line": 72
-    },
-    {
-      "tool": "compliance",
-      "severity": "WARNING",
-      "title": "HIPAA: HIPAA Compliance: Missing audit log for PHI access. HIPAA requires logging of all interactions with Protected Health Information.",
-      "rule_id": "hipaa-universal-missing-access-log",
-      "file": "app/vulnerable.py",
-      "line": 76
-    },
-    {
-      "tool": "compliance",
-      "severity": "ERROR",
       "title": "HIPAA: HIPAA Compliance: Unencrypted transmission of sensitive data. HIPAA requires Encryption in Transit (HTTPS/TLS) for all PHI traffic.",
       "rule_id": "hipaa-universal-unencrypted-transmission",
       "file": "app/vulnerable.py",
-      "line": 84
+      "line": 72
     }
   ]
 }
