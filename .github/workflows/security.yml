@@ -128,6 +128,8 @@ jobs:
         run: |
           semgrep \
             --config=.semgrep-soc2.yml \
+            --config=p/security-audit \
+            --config=p/secrets \
             --json \
             --output=soc2-report.json \
             .
