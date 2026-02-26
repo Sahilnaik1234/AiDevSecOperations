@@ -143,71 +143,6 @@ def process_trivy(report_path: str) -> list:
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# HIPAA & COMPLIANCE — Semgrep & Checkov
-# ─────────────────────────────────────────────────────────────────────────────
-def process_hipaa(report_path: str) -> list:
-    findings = []
-    if not os.path.isfile(report_path):
-        print(f"[normalize] ⚠️  HIPAA report MISSING at {report_path}")
-        return findings
-
-    size = os.path.getsize(report_path)
-    print(f"[normalize] 🔍 Found HIPAA report ({size} bytes): {report_path}")
-
-    with open(report_path, encoding="utf-8") as f:
-        try:
-            data = json.load(f)
-        except json.JSONDecodeError as e:
-            print(f"[normalize] ❌ ERROR parsing HIPAA JSON: {e}")
-            return findings
-
-    results = data.get("results", [])
-    for r in results:
-        meta = r.get("extra", {})
-        findings.append({
-            "tool"       : "compliance",  # ATTENTION: Forced "compliance" tag for UI
-            "severity"   : meta.get("severity", "WARNING").upper(),
-            "title"      : f"HIPAA: {meta.get('message', r.get('check_id'))}",
-            "rule_id"    : r.get("check_id", ""),
-            "file"       : r.get("path", ""),
-            "line"       : r.get("start", {}).get("line", 0),
-        })
-    print(f"[normalize] ✅ Added {len(findings)} forced HIPAA findings.")
-    return findings
-
-
-def process_checkov(report_path: str) -> list:
-    findings = []
-    if not os.path.isfile(report_path):
-        print(f"[normalize] ⚠️  Compliance report not found at {report_path} — skipping")
-        return findings
-
-    with open(report_path, encoding="utf-8") as f:
-        try:
-            data = json.load(f)
-        except json.JSONDecodeError:
-            return findings
-
-    results_list = [data] if isinstance(data, dict) else data
-    for result in results_list:
-        res_inner = result.get("results")
-        if not res_inner: continue
-        failed_checks = res_inner.get("failed_checks") or []
-        for check in failed_checks:
-            findings.append({
-                "tool"       : "compliance",
-                "severity"   : "HIGH",
-                "title"      : f"Compliance: {check.get('check_name')}",
-                "rule_id"    : check.get("check_id", ""),
-                "file"       : check.get("file_path", ""),
-                "line"       : check.get("file_line_range", [0, 0])[0],
-                "alert_url"  : check.get("guideline", "")
-            })
-    print(f"[normalize] Infra Compliance: {len(findings)} finding(s)")
-    return findings
-
-
-# ─────────────────────────────────────────────────────────────────────────────
 # MAIN
 # ─────────────────────────────────────────────────────────────────────────────
 def main():
@@ -218,9 +153,7 @@ def main():
     report_locations = {
         "gitleaks"    : ["gitleaks-report/gitleaks-report.json", "gitleaks-report.json"],
         "semgrep"     : ["semgrep-report/semgrep-report.json",   "semgrep-report.json"],
-        "dependency"  : ["dependency-report/dependency-report.json", "dependency-report.json"],
-        "hipaa"       : ["hipaa-report/hipaa-report.json",       "hipaa-report.json"],
-        "compliance"  : ["compliance-report/compliance-report.json", "compliance-report.json"]
+        "dependency"  : ["dependency-report/dependency-report.json", "dependency-report.json"]
     }
 
     all_findings = []
@@ -237,31 +170,13 @@ def main():
     all_findings += process_gitleaks(get_path("gitleaks"))
     all_findings += process_semgrep(get_path("semgrep"))
     all_findings += process_trivy(get_path("dependency"))
-    all_findings += process_hipaa(get_path("hipaa"))
-    all_findings += process_checkov(get_path("compliance"))
 
-    # 2. ULTRA-AGGRESSIVE CATEGORIZATION POST-PROCESSING
-    # Keywords that indicate a HIPAA/Privacy violation regardless of which tool detected it.
-    keywords = ["hipaa", "phi", "patient", "medical", "ssn", "identifiable", "health", "history"]
-    compliance_upgrades = 0
-    
-    for f in all_findings:
-        search_text = (f.get("title", "") + " " + f.get("rule_id", "")).lower()
-        if any(kw in search_text for kw in keywords):
-            if f["tool"] != "compliance":
-                f["tool"] = "compliance"
-                compliance_upgrades += 1
-
-    if compliance_upgrades > 0:
-        print(f"[normalize] 🧠 {compliance_upgrades} findings upgraded to 'Compliance' via keyword matching.")
-
-    # 3. Aggregation & Summary
+    # 2. Aggregation & Summary
     gitleaks_count     = sum(1 for f in all_findings if f["tool"] == "gitleaks")
     semgrep_count      = sum(1 for f in all_findings if f["tool"] == "semgrep")
     dependency_count   = sum(1 for f in all_findings if f["tool"] == "trivy")
-    compliance_count   = sum(1 for f in all_findings if f["tool"] == "compliance")
 
-    print(f"[normalize] 📊 Final Counts — Secrets: {gitleaks_count} | SAST: {semgrep_count} | SCA: {dependency_count} | Compliance: {compliance_count}")
+    print(f"[normalize] 📊 Final Counts — Secrets: {gitleaks_count} | SAST: {semgrep_count} | SCA: {dependency_count}")
 
     severity_counts = {}
     for f in all_findings:
@@ -275,7 +190,6 @@ def main():
             "gitleaks"       : gitleaks_count,
             "semgrep"        : semgrep_count,
             "dependency"     : dependency_count,
-            "compliance"     : compliance_count,
             "by_severity"    : severity_counts,
         },
         "findings"     : all_findings,
@@ -286,7 +200,7 @@ def main():
 
     print(f"\n[normalize] ✅  Final report written to: {os.path.abspath(OUTPUT_FILE)}")
     print(f"[normalize]     Total findings: {len(all_findings)}")
-    print(f"[normalize]     Breakdown — Secrets: {gitleaks_count} | SAST: {semgrep_count} | SCA: {dependency_count} | Compliance: {compliance_count}")
+    print(f"[normalize]     Breakdown — Secrets: {gitleaks_count} | SAST: {semgrep_count} | SCA: {dependency_count}")
 
 
 if __name__ == "__main__":

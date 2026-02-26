@@ -112,84 +112,13 @@ jobs:
           if-no-files-found: warn
 
   # ============================================================
-  # JOB 4: HIPAA COMPLIANCE SCAN — Semgrep
-  # Specifically targets HIPAA Privacy and Security rules
-  # Runs in parallel with other scans
-  # ============================================================
-  hipaa-scan:
-    name: "⚖️ HIPAA Compliance (Semgrep)"
-    runs-on: ubuntu-latest
-    container:
-      image: semgrep/semgrep
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Run Targeted HIPAA Compliance Scan
-        run: |
-          # Use our custom local HIPAA ruleset for high-confidence detection
-          semgrep \
-            --config=.semgrep-hipaa.yml \
-            --json \
-            --output=hipaa-report.json \
-            .
-        continue-on-error: true
-
-      - name: Debug - Verify Report Generation
-        run: |
-          if [ -f hipaa-report.json ]; then
-            echo "SUCCESS: hipaa-report.json generated."
-            ls -lh hipaa-report.json
-            echo "--- Preview (First 500 chars) ---"
-            head -c 500 hipaa-report.json
-          else
-            echo "FAIL: hipaa-report.json NOT FOUND"
-            exit 1
-          fi
-
-      - name: Upload HIPAA report
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: hipaa-report
-          path: hipaa-report.json
-
-  # ============================================================
-  # JOB 5: INFRA COMPLIANCE SCAN — Checkov
-  # Scans Dockerfiles and configs for HIPAA best practices
-  # ============================================================
-  compliance-scan:
-    name: "🏥 Infra Compliance (Checkov)"
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Run Checkov scan
-        uses: bridgecrewio/checkov-action@master
-        with:
-          directory: .
-          framework: all
-          output_format: json
-          output_file_path: compliance-report.json
-          quiet: true
-        continue-on-error: true
-
-      - name: Upload Compliance report
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: compliance-report
-          path: compliance-report.json
-
-  # ============================================================
-  # JOB 6: NORMALIZE & SUMMARIZE
+  # JOB 4: NORMALIZE & SUMMARIZE
   # Merges all findings into one unified report
   # ============================================================
   normalize:
     name: " Normalize & Summarize Report"
     runs-on: ubuntu-latest
-    needs: [secret-scan, sast, dependency-scan, hipaa-scan, compliance-scan]
+    needs: [secret-scan, sast, dependency-scan]
     if: always()
     steps:
       - name: Checkout code
@@ -199,10 +128,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           path: scan-reports
-        continue-on-error: true    # If a scan job failed, its artifact may not exist
-
-      - name: Debug Artifact Directory Structure
-        run: ls -R scan-reports
+        continue-on-error: true
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -226,7 +152,6 @@ jobs:
               print(f\"Secrets (Gitleaks) : {summary.get('gitleaks', 0)}\")
               print(f\"SAST (Semgrep)     : {summary.get('semgrep', 0)}\")
               print(f\"SCA (Dependencies) : {summary.get('dependency', 0)}\")
-              print(f\"Compliance (HIPAA) : {summary.get('compliance', 0)}\")
           else:
               print('Error: final-security-report.json not generated.')
           "
