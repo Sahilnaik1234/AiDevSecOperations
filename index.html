@@ -557,13 +557,17 @@
             </div>
         </div>
 
-        <!-- Filter Controls -->
+        <!-- Search & Filter Controls -->
         <div class="findings-controls">
+            <div style="flex-grow: 1; min-width: 300px;">
+                <input type="text" id="finding-search" placeholder="Search findings (e.g. HIPAA, SSN, SQL)..."
+                    style="width: 100%; background: var(--surface); border: 1px solid var(--border); padding: 0.7rem 1.2rem; border-radius: 2rem; color: #fff; font-family: inherit;">
+            </div>
             <button class="filter-btn active" data-filter="all">All Findings</button>
-            <button class="filter-btn" data-filter="gitleaks">🗝️ Secrets (Gitleaks)</button>
-            <button class="filter-btn" data-filter="semgrep">🐛 Code (Semgrep)</button>
-            <button class="filter-btn" data-filter="trivy">📦 Deps (Trivy)</button>
-            <button class="filter-btn" data-filter="compliance">⚖️ Compliance (HIPAA)</button>
+            <button class="filter-btn" data-filter="gitleaks"> Secrets (Gitleaks)</button>
+            <button class="filter-btn" data-filter="semgrep"> Code (Semgrep)</button>
+            <button class="filter-btn" data-filter="trivy"> Deps (Trivy)</button>
+            <button class="filter-btn" data-filter="compliance">Compliance (HIPAA)</button>
         </div>
 
         <!-- Findings List Area -->
@@ -659,12 +663,28 @@
             renderFindingsList('all');
         }
 
-        function renderFindingsList(filterParam) {
+        const searchInput = document.getElementById('finding-search');
+
+        function renderFindingsList(filterParam, searchQuery = "") {
             findingsContainer.innerHTML = '';
+            const currentFilter = filterParam || document.querySelector('.filter-btn.active').dataset.filter;
+            const currentSearch = (searchQuery || searchInput.value).toLowerCase();
 
             let items = globalData.findings || [];
-            if (filterParam !== 'all') {
-                items = items.filter(f => f.tool === filterParam || (filterParam === 'trivy' && f.tool.includes('trivy')));
+
+            // Tool Filter
+            if (currentFilter !== 'all') {
+                items = items.filter(f => f.tool === currentFilter || (currentFilter === 'trivy' && f.tool.includes('trivy')));
+            }
+
+            // Keyword Search
+            if (currentSearch) {
+                items = items.filter(f => {
+                    const title = (f.title || "").toLowerCase();
+                    const path = (f.file || "").toLowerCase();
+                    const ruleId = (f.rule_id || "").toLowerCase();
+                    return title.includes(currentSearch) || path.includes(currentSearch) || ruleId.includes(currentSearch);
+                });
             }
 
             if (items.length === 0) {
@@ -682,7 +702,7 @@
 
             const pillColorMap = {
                 CRITICAL: 'pill-cr', ERROR: 'pill-cr',
-                HIGH: 'pill-hi',
+                High: 'pill-hi',
                 CHECK: 'pill-compliance'
             };
 
@@ -724,7 +744,7 @@
                             ${extraHtml}
                         </div>
                     </div>
-                    <div>
+                    <div style="text-align: right;">
                         ${f.alert_url ? `<a href="${f.alert_url}" target="_blank" class="external-link">Learn More ↗</a>` : ''}
                         ${f.match ? `<br><code style="font-size:0.7rem; color:var(--text-dim); background:rgba(0,0,0,0.5); padding:4px;">${f.match.substring(0, 30)}...</code>` : ''}
                     </div>
@@ -750,9 +770,17 @@
         filterBtns.forEach(btn => {
             btn.addEventListener('click', (e) => {
                 filterBtns.forEach(b => b.classList.remove('active'));
-                e.target.classList.add('active');
-                renderFindingsList(e.target.dataset.filter);
+                const target = e.target.closest('.filter-btn');
+                if (target) {
+                    target.classList.add('active');
+                    renderFindingsList(target.dataset.filter);
+                }
             });
+        });
+
+        // Search Logic
+        searchInput.addEventListener('input', (e) => {
+            renderFindingsList();
         });
 
     </script>
