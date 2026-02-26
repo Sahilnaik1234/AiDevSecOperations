@@ -16,8 +16,4 @@ public class Vulnerable {
         deleteUserRecord("user_999");
     }
 
-    public static void deleteUserRecord(String userId) {
-        // Does something sensitive without logging to a secure logger
-        System.out.println("Deleting record for " + userId);
-    }
 }
