@@ -1,33 +1,21 @@
 {
-  "generated_at": "2026-02-26T11:41:31.349754+00:00",
+  "generated_at": "2026-02-26T11:46:47.154693+00:00",
   "summary": {
-    "total_findings": 53,
+    "total_findings": 51,
     "gitleaks": 3,
     "semgrep": 2,
     "dependency": 7,
-    "compliance": 41,
-    "soc2_count": 26,
-    "hipaa_count": 7,
+    "compliance": 39,
+    "soc2_count": 25,
+    "hipaa_count": 6,
     "by_severity": {
       "CRITICAL": 5,
-      "WARNING": 29,
+      "WARNING": 27,
       "ERROR": 14,
       "HIGH": 5
     }
   },
   "findings": [
-    {
-      "tool": "gitleaks",
-      "severity": "CRITICAL",
-      "title": "Found a Stripe Access Token, posing a risk to payment processing services and sensitive financial data.",
-      "rule_id": "stripe-access-token",
-      "file": "/src/app/Vulnerable.java",
-      "line": 8,
-      "commit": "",
-      "author": "",
-      "match": "sk_test_51MzS0vL3uYfTjSOC2KEY\"",
-      "fingerprint": "/src/app/Vulnerable.java:stripe-access-token:8"
-    },
     {
       "tool": "gitleaks",
       "severity": "CRITICAL",
@@ -51,6 +39,18 @@
       "author": "",
       "match": "GITHUB_PAT_TOKEN    = \"xB9cF2vN4mK7pQ1wR8tG3yH5zL0jD6b\"",
       "fingerprint": "/src/app/vulnerable.py:generic-api-key:31"
+    },
+    {
+      "tool": "gitleaks",
+      "severity": "CRITICAL",
+      "title": "Found a Stripe Access Token, posing a risk to payment processing services and sensitive financial data.",
+      "rule_id": "stripe-access-token",
+      "file": "/src/app/Vulnerable.java",
+      "line": 8,
+      "commit": "",
+      "author": "",
+      "match": "sk_test_51MzS0vL3uYfTjSOC2KEY\"",
+      "fingerprint": "/src/app/Vulnerable.java:stripe-access-token:8"
     },
     {
       "tool": "compliance",
@@ -335,14 +335,6 @@
       "severity": "WARNING",
       "title": "SOC2: SOC2 Compliance: Potential missing audit logging. Operations related to auth/access must be logged for the 'Access and Monitoring' criterion.",
       "rule_id": "soc2-universal-audit-logging-missing",
-      "file": "app/Vulnerable.java",
-      "line": 19
-    },
-    {
-      "tool": "compliance",
-      "severity": "WARNING",
-      "title": "SOC2: SOC2 Compliance: Potential missing audit logging. Operations related to auth/access must be logged for the 'Access and Monitoring' criterion.",
-      "rule_id": "soc2-universal-audit-logging-missing",
       "file": "app/vulnerable.go",
       "line": 9
     },
@@ -513,14 +505,6 @@
       "rule_id": "hipaa-universal-missing-access-log",
       "file": "app/Vulnerable.java",
       "line": 16
-    },
-    {
-      "tool": "compliance",
-      "severity": "WARNING",
-      "title": "HIPAA: HIPAA Compliance: Missing audit log for PHI access. HIPAA requires logging of all interactions with Protected Health Information.",
-      "rule_id": "hipaa-universal-missing-access-log",
-      "file": "app/Vulnerable.java",
-      "line": 19
     },
     {
       "tool": "compliance",
