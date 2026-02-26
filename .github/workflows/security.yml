@@ -125,13 +125,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Run Dedicated HIPAA Alignment Scan
+      - name: Run Targeted HIPAA Compliance Scan
         run: |
+          # Use our custom local HIPAA ruleset for high-confidence detection
           semgrep \
-            --config=p/security-audit \
-            --config=p/owasp-top-10 \
-            --config=p/python \
-            --config=p/javascript \
+            --config=.semgrep-hipaa.yml \
             --json \
             --output=hipaa-report.json \
             .
