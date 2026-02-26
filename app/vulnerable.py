@@ -62,18 +62,6 @@ import logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-def process_patient_data(patient_name: str, patient_ssn: str, medical_history: str):
-    """
-    VULNERABLE (HIPAA): Logging Protected Health Information (PHI).
-    HIPAA technical safeguards prohibit logging or exposing PHI in cleartext.
-    """
-    logger.info(f"Processing record for patient: {patient_name}")
-    # CRITICAL HIPAA VIOLATION: Logging SSN and medical history
-    logger.debug(f"DEBUG: Patient SSN {patient_ssn} - History: {medical_history}")
-    
-    # Insecure storage of PHI
-    with open("patient_data.txt", "a") as f:
-        f.write(f"{patient_name},{patient_ssn},{medical_history}\n")
 
 def insecure_api_call():
     """
