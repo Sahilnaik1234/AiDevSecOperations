@@ -1,21 +1,33 @@
 {
-  "generated_at": "2026-02-26T10:46:02.523656+00:00",
+  "generated_at": "2026-02-26T10:48:12.049493+00:00",
   "summary": {
-    "total_findings": 60,
-    "gitleaks": 4,
+    "total_findings": 58,
+    "gitleaks": 3,
     "semgrep": 3,
     "dependency": 7,
-    "compliance": 46,
-    "soc2_count": 28,
+    "compliance": 45,
+    "soc2_count": 27,
     "hipaa_count": 10,
     "by_severity": {
-      "CRITICAL": 6,
+      "CRITICAL": 5,
       "WARNING": 31,
-      "ERROR": 18,
+      "ERROR": 17,
       "HIGH": 5
     }
   },
   "findings": [
+    {
+      "tool": "gitleaks",
+      "severity": "CRITICAL",
+      "title": "Found a Stripe Access Token, posing a risk to payment processing services and sensitive financial data.",
+      "rule_id": "stripe-access-token",
+      "file": "/src/app/Vulnerable.java",
+      "line": 8,
+      "commit": "",
+      "author": "",
+      "match": "sk_test_51MzS0vL3uYfTjSOC2KEY\"",
+      "fingerprint": "/src/app/Vulnerable.java:stripe-access-token:8"
+    },
     {
       "tool": "gitleaks",
       "severity": "CRITICAL",
@@ -39,30 +51,6 @@
       "author": "",
       "match": "GITHUB_PAT_TOKEN    = \"xB9cF2vN4mK7pQ1wR8tG3yH5zL0jD6b\"",
       "fingerprint": "/src/app/vulnerable.py:generic-api-key:31"
-    },
-    {
-      "tool": "gitleaks",
-      "severity": "CRITICAL",
-      "title": "Detected a Generic API Key, potentially exposing access to various services and sensitive operations.",
-      "rule_id": "generic-api-key",
-      "file": "/src/app/vulnerable.py",
-      "line": 44,
-      "commit": "",
-      "author": "",
-      "match": "GITHUB_PAT_TOKEN    = \"xB9cF2vN4mK7pQ1wR8tG3yH5zL0jD6b\"",
-      "fingerprint": "/src/app/vulnerable.py:generic-api-key:44"
-    },
-    {
-      "tool": "gitleaks",
-      "severity": "CRITICAL",
-      "title": "Found a Stripe Access Token, posing a risk to payment processing services and sensitive financial data.",
-      "rule_id": "stripe-access-token",
-      "file": "/src/app/Vulnerable.java",
-      "line": 8,
-      "commit": "",
-      "author": "",
-      "match": "sk_test_51MzS0vL3uYfTjSOC2KEY\"",
-      "fingerprint": "/src/app/Vulnerable.java:stripe-access-token:8"
     },
     {
       "tool": "compliance",
@@ -169,7 +157,7 @@
       "title": "Detected possible formatted SQL query. Use parameterized queries instead.",
       "rule_id": "python.lang.security.audit.formatted-sql-query.formatted-sql-query",
       "file": "app/vulnerable.py",
-      "line": 50,
+      "line": 49,
       "code": "requires login",
       "cwe": [
         "CWE-89: Improper Neutralization of Special Elements used in an SQL Command ('SQL Injection')"
@@ -186,7 +174,7 @@
       "title": "Avoiding SQL string concatenation: untrusted input concatenated with raw SQL query can result in SQL Injection. In order to execute raw query safely, prepared statement should be used. SQLAlchemy provides TextualSQL to easily used prepared statement with named parameters. For complex SQL composition, use SQL Expression Language or Schema Definition Language. In most cases, SQLAlchemy ORM will be a better option.",
       "rule_id": "python.sqlalchemy.security.sqlalchemy-execute-raw-query.sqlalchemy-execute-raw-query",
       "file": "app/vulnerable.py",
-      "line": 50,
+      "line": 49,
       "code": "requires login",
       "cwe": [
         "CWE-89: Improper Neutralization of Special Elements used in an SQL Command ('SQL Injection')"
@@ -203,7 +191,7 @@
       "title": "Avoid using `pickle`, which is known to lead to code execution vulnerabilities. When unpickling, the serialized data could be manipulated to run arbitrary code. Instead, consider serializing the relevant data as JSON or a similar text-based serialization format.",
       "rule_id": "python.lang.security.deserialization.pickle.avoid-pickle",
       "file": "app/vulnerable.py",
-      "line": 59,
+      "line": 58,
       "code": "requires login",
       "cwe": [
         "CWE-502: Deserialization of Untrusted Data"
@@ -220,7 +208,7 @@
       "title": "Detected the use of eval(). eval() can be dangerous if used to evaluate dynamic content. If this content can be input from outside the program, this may be a code injection vulnerability. Ensure evaluated content is not definable by external sources.",
       "rule_id": "python.lang.security.audit.eval-detected.eval-detected",
       "file": "app/vulnerable.py",
-      "line": 106,
+      "line": 105,
       "code": "requires login",
       "cwe": [
         "CWE-95: Improper Neutralization of Directives in Dynamically Evaluated Code ('Eval Injection')"
@@ -483,19 +471,11 @@
     },
     {
       "tool": "compliance",
-      "severity": "ERROR",
-      "title": "SOC2: SOC2 Compliance: Hardcoded sensitive string. SOC2 requires encryption of secrets and use of environment variables/vaults.",
-      "rule_id": "soc2-universal-hardcoded-secret",
-      "file": "app/vulnerable.py",
-      "line": 44
-    },
-    {
-      "tool": "compliance",
       "severity": "WARNING",
       "title": "SOC2: Avoid using `pickle`, which is known to lead to code execution vulnerabilities. When unpickling, the serialized data could be manipulated to run arbitrary code. Instead, consider serializing the relevant data as JSON or a similar text-based serialization format.",
       "rule_id": "python.lang.security.deserialization.pickle.avoid-pickle",
       "file": "app/vulnerable.py",
-      "line": 59
+      "line": 58
     },
     {
       "tool": "compliance",
@@ -503,7 +483,7 @@
       "title": "SOC2: SOC2 Compliance: Unencrypted data transmission (HTTP). SOC2 requires Encryption in Transit (HTTPS/TLS) for all non-local traffic.",
       "rule_id": "soc2-universal-unencrypted-transmission",
       "file": "app/vulnerable.py",
-      "line": 85
+      "line": 84
     },
     {
       "tool": "compliance",
@@ -511,7 +491,7 @@
       "title": "SOC2: Detected the use of eval(). eval() can be dangerous if used to evaluate dynamic content. If this content can be input from outside the program, this may be a code injection vulnerability. Ensure evaluated content is not definable by external sources.",
       "rule_id": "python.lang.security.audit.eval-detected.eval-detected",
       "file": "app/vulnerable.py",
-      "line": 106
+      "line": 105
     },
     {
       "tool": "compliance",
@@ -599,7 +579,7 @@
       "title": "HIPAA: HIPAA Compliance: Sensitive PHI being logged to plain text. HIPAA prohibits exposing PHI in application logs or insecure storage.",
       "rule_id": "hipaa-universal-insecure-phi-storage",
       "file": "app/vulnerable.py",
-      "line": 72
+      "line": 71
     },
     {
       "tool": "compliance",
@@ -607,7 +587,7 @@
       "title": "HIPAA: HIPAA Compliance: Sensitive PHI being logged to plain text. HIPAA prohibits exposing PHI in application logs or insecure storage.",
       "rule_id": "hipaa-universal-insecure-phi-storage",
       "file": "app/vulnerable.py",
-      "line": 73
+      "line": 72
     },
     {
       "tool": "compliance",
@@ -615,7 +595,7 @@
       "title": "HIPAA: HIPAA Compliance: Missing audit log for PHI access. HIPAA requires logging of all interactions with Protected Health Information.",
       "rule_id": "hipaa-universal-missing-access-log",
       "file": "app/vulnerable.py",
-      "line": 77
+      "line": 76
     },
     {
       "tool": "compliance",
@@ -623,7 +603,7 @@
       "title": "HIPAA: HIPAA Compliance: Unencrypted transmission of sensitive data. HIPAA requires Encryption in Transit (HTTPS/TLS) for all PHI traffic.",
       "rule_id": "hipaa-universal-unencrypted-transmission",
       "file": "app/vulnerable.py",
-      "line": 85
+      "line": 84
     }
   ]
 }
