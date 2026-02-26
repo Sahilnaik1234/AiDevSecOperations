@@ -41,7 +41,6 @@ def run_command(user_input: str):
     )
     return result.stdout
 
-GITHUB_PAT_TOKEN    = "xB9cF2vN4mK7pQ1wR8tG3yH5zL0jD6b" 
 # ── 6: SQL Injection ──────────────────────────────────────────────────────────
 def get_user(username: str, conn: sqlite3.Connection):
     """UNSAFE: f-string interpolation in SQL query."""
