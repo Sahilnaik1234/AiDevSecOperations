@@ -1,15 +1,17 @@
 {
-  "generated_at": "2026-02-26T07:42:27.685890+00:00",
+  "generated_at": "2026-02-26T07:49:52.095036+00:00",
   "summary": {
-    "total_findings": 50,
+    "total_findings": 61,
     "gitleaks": 4,
     "semgrep": 3,
     "dependency": 7,
-    "compliance": 36,
+    "compliance": 47,
+    "soc2_count": 29,
+    "hipaa_count": 11,
     "by_severity": {
       "CRITICAL": 6,
-      "ERROR": 12,
-      "WARNING": 27,
+      "ERROR": 19,
+      "WARNING": 31,
       "HIGH": 5
     }
   },
@@ -524,7 +526,7 @@
       "title": "SOC2: SOC2 Compliance: Potential missing audit logging. Operations related to auth/access must be logged for the 'Access and Monitoring' criterion.",
       "rule_id": "soc2-universal-audit-logging-missing",
       "file": "scripts/normalize.py",
-      "line": 207
+      "line": 239
     },
     {
       "tool": "compliance",
@@ -532,7 +534,95 @@
       "title": "SOC2: SOC2 Compliance: Potential missing audit logging. Operations related to auth/access must be logged for the 'Access and Monitoring' criterion.",
       "rule_id": "soc2-universal-audit-logging-missing",
       "file": "scripts/normalize.py",
-      "line": 207
+      "line": 239
+    },
+    {
+      "tool": "compliance",
+      "severity": "WARNING",
+      "title": "HIPAA: HIPAA Compliance: Missing audit log for PHI access. HIPAA requires logging of all interactions with Protected Health Information.",
+      "rule_id": "hipaa-universal-missing-access-log",
+      "file": "app/Vulnerable.java",
+      "line": 20
+    },
+    {
+      "tool": "compliance",
+      "severity": "WARNING",
+      "title": "HIPAA: HIPAA Compliance: Missing audit log for PHI access. HIPAA requires logging of all interactions with Protected Health Information.",
+      "rule_id": "hipaa-universal-missing-access-log",
+      "file": "app/Vulnerable.java",
+      "line": 23
+    },
+    {
+      "tool": "compliance",
+      "severity": "ERROR",
+      "title": "HIPAA: HIPAA Compliance: Unencrypted transmission of sensitive data. HIPAA requires Encryption in Transit (HTTPS/TLS) for all PHI traffic.",
+      "rule_id": "hipaa-universal-unencrypted-transmission",
+      "file": "app/vulnerable.go",
+      "line": 21
+    },
+    {
+      "tool": "compliance",
+      "severity": "ERROR",
+      "title": "HIPAA: HIPAA Compliance: Sensitive PHI being logged to plain text. HIPAA prohibits exposing PHI in application logs or insecure storage.",
+      "rule_id": "hipaa-universal-insecure-phi-storage",
+      "file": "app/vulnerable.js",
+      "line": 5
+    },
+    {
+      "tool": "compliance",
+      "severity": "ERROR",
+      "title": "HIPAA: HIPAA Compliance: Sensitive PHI being logged to plain text. HIPAA prohibits exposing PHI in application logs or insecure storage.",
+      "rule_id": "hipaa-universal-insecure-phi-storage",
+      "file": "app/vulnerable.js",
+      "line": 8
+    },
+    {
+      "tool": "compliance",
+      "severity": "ERROR",
+      "title": "HIPAA: HIPAA Compliance: Unencrypted transmission of sensitive data. HIPAA requires Encryption in Transit (HTTPS/TLS) for all PHI traffic.",
+      "rule_id": "hipaa-universal-unencrypted-transmission",
+      "file": "app/vulnerable.js",
+      "line": 13
+    },
+    {
+      "tool": "compliance",
+      "severity": "ERROR",
+      "title": "HIPAA: HIPAA Compliance: Sensitive PHI being logged to plain text. HIPAA prohibits exposing PHI in application logs or insecure storage.",
+      "rule_id": "hipaa-universal-insecure-phi-storage",
+      "file": "app/vulnerable.py",
+      "line": 79
+    },
+    {
+      "tool": "compliance",
+      "severity": "ERROR",
+      "title": "HIPAA: HIPAA Compliance: Sensitive PHI being logged to plain text. HIPAA prohibits exposing PHI in application logs or insecure storage.",
+      "rule_id": "hipaa-universal-insecure-phi-storage",
+      "file": "app/vulnerable.py",
+      "line": 80
+    },
+    {
+      "tool": "compliance",
+      "severity": "WARNING",
+      "title": "HIPAA: HIPAA Compliance: Missing audit log for PHI access. HIPAA requires logging of all interactions with Protected Health Information.",
+      "rule_id": "hipaa-universal-missing-access-log",
+      "file": "app/vulnerable.py",
+      "line": 84
+    },
+    {
+      "tool": "compliance",
+      "severity": "ERROR",
+      "title": "HIPAA: HIPAA Compliance: Unencrypted transmission of sensitive data. HIPAA requires Encryption in Transit (HTTPS/TLS) for all PHI traffic.",
+      "rule_id": "hipaa-universal-unencrypted-transmission",
+      "file": "app/vulnerable.py",
+      "line": 92
+    },
+    {
+      "tool": "compliance",
+      "severity": "WARNING",
+      "title": "HIPAA: HIPAA Compliance: Missing audit log for PHI access. HIPAA requires logging of all interactions with Protected Health Information.",
+      "rule_id": "hipaa-universal-missing-access-log",
+      "file": "app/vulnerable.py",
+      "line": 115
     }
   ]
 }
