@@ -143,6 +143,36 @@ def process_trivy(report_path: str) -> list:
 
 
 # ─────────────────────────────────────────────────────────────────────────────
+# SOC2 COMPLIANCE — Semgrep
+# ─────────────────────────────────────────────────────────────────────────────
+def process_soc2(report_path: str) -> list:
+    findings = []
+    if not os.path.isfile(report_path):
+        print(f"[normalize] ⚠️  SOC2 report MISSING at {report_path}")
+        return findings
+
+    with open(report_path, encoding="utf-8") as f:
+        try:
+            data = json.load(f)
+        except json.JSONDecodeError:
+            return findings
+
+    results = data.get("results", [])
+    for r in results:
+        meta = r.get("extra", {})
+        findings.append({
+            "tool"       : "compliance", # Tagged for the compliance dashboard tab
+            "severity"   : meta.get("severity", "WARNING").upper(),
+            "title"      : f"SOC2: {meta.get('message', r.get('check_id'))}",
+            "rule_id"    : r.get("check_id", ""),
+            "file"       : r.get("path", ""),
+            "line"       : r.get("start", {}).get("line", 0),
+        })
+    print(f"[normalize] ✅ Added {len(findings)} targeted SOC2 findings.")
+    return findings
+
+
+# ─────────────────────────────────────────────────────────────────────────────
 # MAIN
 # ─────────────────────────────────────────────────────────────────────────────
 def main():
@@ -153,7 +183,8 @@ def main():
     report_locations = {
         "gitleaks"    : ["gitleaks-report/gitleaks-report.json", "gitleaks-report.json"],
         "semgrep"     : ["semgrep-report/semgrep-report.json",   "semgrep-report.json"],
-        "dependency"  : ["dependency-report/dependency-report.json", "dependency-report.json"]
+        "dependency"  : ["dependency-report/dependency-report.json", "dependency-report.json"],
+        "soc2"        : ["soc2-report/soc2-report.json",         "soc2-report.json"]
     }
 
     all_findings = []
@@ -170,13 +201,27 @@ def main():
     all_findings += process_gitleaks(get_path("gitleaks"))
     all_findings += process_semgrep(get_path("semgrep"))
     all_findings += process_trivy(get_path("dependency"))
+    all_findings += process_soc2(get_path("soc2"))
 
-    # 2. Aggregation & Summary
+    # 2. SOC2 KEYWORD UPGRADE (Capture compliance issues from other tools)
+    soc2_keywords = ["audit", "logging", "encryption", "tls", "ssl", "auth", "login"]
+    upgrades = 0
+    for f in all_findings:
+        text = (f.get("title", "") + " " + f.get("rule_id", "")).lower()
+        if any(kw in text for kw in soc2_keywords):
+            if f["tool"] != "compliance":
+                f["tool"] = "compliance"
+                upgrades += 1
+    if upgrades > 0:
+        print(f"[normalize] 🧠 {upgrades} findings upgraded to 'Compliance' via SOC2 keywords.")
+
+    # 3. Aggregation & Summary
     gitleaks_count     = sum(1 for f in all_findings if f["tool"] == "gitleaks")
     semgrep_count      = sum(1 for f in all_findings if f["tool"] == "semgrep")
     dependency_count   = sum(1 for f in all_findings if f["tool"] == "trivy")
+    compliance_count   = sum(1 for f in all_findings if f["tool"] == "compliance")
 
-    print(f"[normalize] 📊 Final Counts — Secrets: {gitleaks_count} | SAST: {semgrep_count} | SCA: {dependency_count}")
+    print(f"[normalize] 📊 Final Counts — Secrets: {gitleaks_count} | SAST: {semgrep_count} | SCA: {dependency_count} | Compliance: {compliance_count}")
 
     severity_counts = {}
     for f in all_findings:
@@ -190,6 +235,7 @@ def main():
             "gitleaks"       : gitleaks_count,
             "semgrep"        : semgrep_count,
             "dependency"     : dependency_count,
+            "compliance"     : compliance_count,
             "by_severity"    : severity_counts,
         },
         "findings"     : all_findings,

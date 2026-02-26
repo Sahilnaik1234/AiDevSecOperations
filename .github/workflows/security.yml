@@ -112,13 +112,52 @@ jobs:
           if-no-files-found: warn
 
   # ============================================================
-  # JOB 4: NORMALIZE & SUMMARIZE
-  # Merges all findings into one unified report
+  # JOB 4: SOC2 COMPLIANCE SCAN — Universal
+  # Audits multi-language environment for Access Control & Encryption
+  # ============================================================
+  soc2-scan:
+    name: "⚖️ SOC2 Compliance (Universal)"
+    runs-on: ubuntu-latest
+    container:
+      image: semgrep/semgrep
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run Global SOC2 Compliance Scan
+        run: |
+          semgrep \
+            --config=.semgrep-soc2.yml \
+            --json \
+            --output=soc2-report.json \
+            .
+        continue-on-error: true
+
+      - name: Debug - Preview SOC2 Report
+        run: |
+          if [ -f soc2-report.json ]; then
+            echo "SUCCESS: soc2-report.json generated."
+            ls -lh soc2-report.json
+            head -c 500 soc2-report.json
+          else
+            echo "FAIL: soc2-report.json NOT FOUND"
+            exit 1
+          fi
+
+      - name: Upload SOC2 report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: soc2-report
+          path: soc2-report.json
+
+  # ============================================================
+  # JOB 5: NORMALIZE & SUMMARIZE
   # ============================================================
   normalize:
     name: " Normalize & Summarize Report"
     runs-on: ubuntu-latest
-    needs: [secret-scan, sast, dependency-scan]
+    needs: [secret-scan, sast, dependency-scan, soc2-scan]
     if: always()
     steps:
       - name: Checkout code

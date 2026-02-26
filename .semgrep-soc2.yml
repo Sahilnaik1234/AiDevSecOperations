@@ -1,0 +1,36 @@
+rules:
+  - id: soc2-universal-audit-logging-missing
+    patterns:
+      - pattern-not-inside: |
+          import ...
+          ...
+      - pattern-not: |
+          logger.$METHOD(...)
+      - pattern-regex: (?i)(login|password|auth|permission|access|delete|update|grant)
+    message: "SOC2 Compliance: Potential missing audit logging. Operations related to auth/access must be logged for the 'Access and Monitoring' criterion."
+    languages: [python, javascript, java, csharp, go, ruby, php]
+    severity: WARNING
+
+  - id: soc2-universal-insecure-encryption
+    patterns:
+      - pattern-either:
+          - pattern-regex: (?i)(md5|sha1)\(
+          - pattern-regex: (?i)createHash\(['"](md5|sha1)['"]\)
+    message: "SOC2 Compliance: Weak encryption/hashing detected. SOC2 requires strong modern algorithms (SHA-256+) to protect data confidentiality."
+    languages: [python, javascript, java, go, csharp]
+    severity: ERROR
+
+  - id: soc2-universal-unencrypted-transmission
+    patterns:
+      - pattern-regex: (?i)http://[a-zA-Z0-9.-]+
+      - pattern-not-regex: (?i)localhost|127\.0\.0\.1
+    message: "SOC2 Compliance: Unencrypted data transmission (HTTP). SOC2 requires Encryption in Transit (HTTPS/TLS) for all non-local traffic."
+    languages: [python, javascript, java, go, ruby, php, yaml, dockerfile]
+    severity: ERROR
+
+  - id: soc2-universal-hardcoded-secret
+    patterns:
+      - pattern-regex: (?i)(password|secret|token|key|api_key)\s*[:=]\s*["'][^"']{8,}["']
+    message: "SOC2 Compliance: Hardcoded sensitive string. SOC2 requires encryption of secrets and use of environment variables/vaults."
+    languages: [python, javascript, java, go, csharp, yaml, dockerfile]
+    severity: ERROR
