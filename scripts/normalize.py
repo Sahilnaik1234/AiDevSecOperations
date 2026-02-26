@@ -227,7 +227,14 @@ def main():
         all_findings += process_hipaa(hipaa_path)
         all_findings += process_checkov(compliance_path)
 
-    # Count by tool
+        # Post-Processing: Explicitly tag anything related to HIPAA as 'compliance'
+        # This ensures findings from general SAST/SCA that mention HIPAA are filtered correctly
+        for f in all_findings:
+            description = (f.get("title", "") + f.get("rule_id", "")).lower()
+            if "hipaa" in description or "phi" in description:
+                f["tool"] = "compliance"
+
+    # Count by tool after post-processing
     gitleaks_count     = sum(1 for f in all_findings if f["tool"] == "gitleaks")
     semgrep_count      = sum(1 for f in all_findings if f["tool"] == "semgrep")
     dependency_count   = sum(1 for f in all_findings if f["tool"] == "trivy")
