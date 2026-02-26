@@ -148,27 +148,31 @@ def process_trivy(report_path: str) -> list:
 def process_hipaa(report_path: str) -> list:
     findings = []
     if not os.path.isfile(report_path):
-        print(f"[normalize] ⚠️  HIPAA report not found at {report_path} — skipping")
+        print(f"[normalize] ⚠️  HIPAA report MISSING at {report_path}")
         return findings
+
+    size = os.path.getsize(report_path)
+    print(f"[normalize] 🔍 Found HIPAA report ({size} bytes): {report_path}")
 
     with open(report_path, encoding="utf-8") as f:
         try:
             data = json.load(f)
-        except json.JSONDecodeError:
+        except json.JSONDecodeError as e:
+            print(f"[normalize] ❌ ERROR parsing HIPAA JSON: {e}")
             return findings
 
     results = data.get("results", [])
     for r in results:
         meta = r.get("extra", {})
         findings.append({
-            "tool"       : "compliance",  # Tagged for HIPAA filter
+            "tool"       : "compliance",  # ATTENTION: Forced "compliance" tag for UI
             "severity"   : meta.get("severity", "WARNING").upper(),
             "title"      : f"HIPAA: {meta.get('message', r.get('check_id'))}",
             "rule_id"    : r.get("check_id", ""),
             "file"       : r.get("path", ""),
             "line"       : r.get("start", {}).get("line", 0),
         })
-    print(f"[normalize] HIPAA Scan: {len(findings)} finding(s)")
+    print(f"[normalize] ✅ Added {len(findings)} forced HIPAA findings.")
     return findings
 
 
@@ -207,32 +211,49 @@ def process_checkov(report_path: str) -> list:
 # MAIN
 # ─────────────────────────────────────────────────────────────────────────────
 def main():
-    if not os.path.exists(REPORTS_DIR):
-        print(f"[normalize] ⚠️  REPORTS_DIR not found: {REPORTS_DIR}")
-        print("[normalize] ⚠️  Creating an empty report to prevent dashboard failure.")
-        all_findings = []
-    else:
-        gitleaks_path   = os.path.join(REPORTS_DIR, "gitleaks-report",    "gitleaks-report.json")
-        semgrep_path    = os.path.join(REPORTS_DIR, "semgrep-report",     "semgrep-report.json")
-        dependency_path = os.path.join(REPORTS_DIR, "dependency-report",  "dependency-report.json")
-        hipaa_path      = os.path.join(REPORTS_DIR, "hipaa-report",       "hipaa-report.json")
-        compliance_path = os.path.join(REPORTS_DIR, "compliance-report",  "compliance-report.json")
+    print(f"\n[normalize] Dashboard Merging Started...")
+    
+    # In CI, artifacts are downloaded into subdirectories. Locally, they might be flat.
+    # We check multiple possible locations.
+    report_locations = {
+        "gitleaks"    : ["gitleaks-report/gitleaks-report.json", "gitleaks-report.json"],
+        "semgrep"     : ["semgrep-report/semgrep-report.json",   "semgrep-report.json"],
+        "dependency"  : ["dependency-report/dependency-report.json", "dependency-report.json"],
+        "hipaa"       : ["hipaa-report/hipaa-report.json",       "hipaa-report.json"],
+        "compliance"  : ["compliance-report/compliance-report.json", "compliance-report.json"]
+    }
 
-        print(f"[normalize] Searching for reports in: {REPORTS_DIR}")
-        
-        all_findings  = []
-        all_findings += process_gitleaks(gitleaks_path)
-        all_findings += process_semgrep(semgrep_path)
-        all_findings += process_trivy(dependency_path)
-        all_findings += process_hipaa(hipaa_path)
-        all_findings += process_checkov(compliance_path)
+    all_findings = []
 
-        # Post-Processing: Explicitly tag anything related to HIPAA as 'compliance'
-        # This ensures findings from general SAST/SCA that mention HIPAA are filtered correctly
-        for f in all_findings:
-            description = (f.get("title", "") + f.get("rule_id", "")).lower()
-            if "hipaa" in description or "phi" in description:
+    def get_path(key):
+        for subpath in report_locations.get(key, []):
+            full = os.path.join(REPORTS_DIR, subpath)
+            if os.path.isfile(full): 
+                print(f"[normalize] 📥 Located {key} report at: {subpath}")
+                return full
+        return ""
+
+    # 1. Process all available reports
+    all_findings += process_gitleaks(get_path("gitleaks"))
+    all_findings += process_semgrep(get_path("semgrep"))
+    all_findings += process_trivy(get_path("dependency"))
+    all_findings += process_hipaa(get_path("hipaa"))
+    all_findings += process_checkov(get_path("compliance"))
+
+    # 2. ULTRA-AGGRESSIVE CATEGORIZATION POST-PROCESSING
+    # Keywords that indicate a HIPAA/Privacy violation regardless of which tool detected it.
+    keywords = ["hipaa", "phi", "patient", "medical", "ssn", "identifiable", "health", "history"]
+    compliance_upgrades = 0
+    
+    for f in all_findings:
+        search_text = (f.get("title", "") + " " + f.get("rule_id", "")).lower()
+        if any(kw in search_text for kw in keywords):
+            if f["tool"] != "compliance":
                 f["tool"] = "compliance"
+                compliance_upgrades += 1
+
+    if compliance_upgrades > 0:
+        print(f"[normalize] 🧠 {compliance_upgrades} findings upgraded to 'Compliance' via keyword matching.")
 
     # Count by tool after post-processing
     gitleaks_count     = sum(1 for f in all_findings if f["tool"] == "gitleaks")
