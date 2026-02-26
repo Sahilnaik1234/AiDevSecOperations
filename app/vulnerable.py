@@ -103,18 +103,7 @@ def insecure_s3_phi_storage():
     # Violation: No 'ServerSideEncryption' specified
     s3.create_bucket(Bucket='patient-medical-records-backup')
 
-def expose_phi_in_response(patient_data):
-    """
-    VULNERABLE (HIPAA): Returning raw PHI in an insecure way.
-    """
-    try:
-        from flask import Flask, jsonify
-        app = Flask(__name__)
-        
-        @app.route('/patient/view')
-        def view_patient():
-            # Violation: Exposing full patient record on unauthenticated/unencrypted route
-            return jsonify(patient_data)
+
 def hipaa_phi_eval_violation(patient_record_string):
     """
     ULTRA-VULNERABLE (HIPAA): Using eval() on PHI.
