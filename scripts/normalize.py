@@ -255,13 +255,14 @@ def main():
     if compliance_upgrades > 0:
         print(f"[normalize] 🧠 {compliance_upgrades} findings upgraded to 'Compliance' via keyword matching.")
 
-    # Count by tool after post-processing
+    # 3. Aggregation & Summary
     gitleaks_count     = sum(1 for f in all_findings if f["tool"] == "gitleaks")
     semgrep_count      = sum(1 for f in all_findings if f["tool"] == "semgrep")
     dependency_count   = sum(1 for f in all_findings if f["tool"] == "trivy")
     compliance_count   = sum(1 for f in all_findings if f["tool"] == "compliance")
 
-    # Count by severity
+    print(f"[normalize] 📊 Final Counts — Secrets: {gitleaks_count} | SAST: {semgrep_count} | SCA: {dependency_count} | Compliance: {compliance_count}")
+
     severity_counts = {}
     for f in all_findings:
         sev = f.get("severity", "UNKNOWN")

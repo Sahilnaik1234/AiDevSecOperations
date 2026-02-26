@@ -115,5 +115,10 @@ def expose_phi_in_response(patient_data):
         def view_patient():
             # Violation: Exposing full patient record on unauthenticated/unencrypted route
             return jsonify(patient_data)
-    except ImportError:
-        pass
+def hipaa_phi_eval_violation(patient_record_string):
+    """
+    ULTRA-VULNERABLE (HIPAA): Using eval() on PHI.
+    This is a critical violation of technical safeguards.
+    """
+    # This WILL be caught by p/security-audit
+    return eval(patient_record_string) # nosec

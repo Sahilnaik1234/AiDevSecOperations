@@ -119,19 +119,13 @@ jobs:
   hipaa-scan:
     name: "⚖️ HIPAA Compliance (Semgrep)"
     runs-on: ubuntu-latest
+    container:
+      image: semgrep/semgrep
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
-
-      - name: Install Semgrep
-        run: pip install semgrep
-
-      - name: Run Multi-Language HIPAA Compliance Scan
+      - name: Run Dedicated HIPAA Alignment Scan
         run: |
           semgrep \
             --config=p/security-audit \
@@ -143,14 +137,16 @@ jobs:
             .
         continue-on-error: true
 
-      - name: Debug - Inspect HIPAA Report
+      - name: Debug - Verify Report Generation
         run: |
           if [ -f hipaa-report.json ]; then
-            echo "=== HIPAA REPORT CONTENT (First 500 chars) ==="
+            echo "SUCCESS: hipaa-report.json generated."
+            ls -lh hipaa-report.json
+            echo "--- Preview (First 500 chars) ---"
             head -c 500 hipaa-report.json
-            echo -e "\n=== END PREVIEW ==="
           else
-            echo "Error: hipaa-report.json was not generated."
+            echo "FAIL: hipaa-report.json NOT FOUND"
+            exit 1
           fi
 
       - name: Upload HIPAA report
