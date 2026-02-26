@@ -519,7 +519,7 @@
             <div class="metric-card card-gitleaks">
                 <div class="metric-title text-gitleaks">Secrets & Keys</div>
                 <div class="metric-value">
-                    <span id="val-gitleaks">0</span>
+                    <span id="val-gitleaks-card">0</span>
                     <span style="font-size: 1rem; color: var(--text-dim); margin-left: 5px;">Exposures</span>
                 </div>
                 <p style="color:var(--text-dim); font-size: 0.9rem; margin-top: auto;">Detected by <b>Gitleaks</b></p>
@@ -529,8 +529,8 @@
             <div class="metric-card card-semgrep">
                 <div class="metric-title text-semgrep">Code Flaws (SAST)</div>
                 <div class="metric-value">
-                    <span id="val-semgrep">0</span>
-                    <span style="font-size: 1rem; color: var(--text-dim); margin-left: 5px;">Vulnerabilities</span>
+                    <span id="val-semgrep-card">0</span>
+                    <span style="font-size: 1rem; color: var(--text-dim); margin-left: 5px;">Vulns</span>
                 </div>
                 <p style="color:var(--text-dim); font-size: 0.9rem; margin-top: auto;">Detected by <b>Semgrep</b></p>
             </div>
@@ -539,35 +539,23 @@
             <div class="metric-card card-trivy">
                 <div class="metric-title text-trivy">Dependencies (SCA)</div>
                 <div class="metric-value">
-                    <span id="val-trivy">0</span>
+                    <span id="val-trivy-card">0</span>
                     <span style="font-size: 1rem; color: var(--text-dim); margin-left: 5px;">Vulns</span>
                 </div>
                 <p style="color:var(--text-dim); font-size: 0.9rem; margin-top: auto;">Detected by <b>Trivy</b></p>
-            </div>
-
-            <!-- Compliance -->
-            <div class="metric-card card-compliance">
-                <div class="metric-title text-compliance">HIPAA Compliance</div>
-                <div class="metric-value">
-                    <span id="val-compliance">0</span>
-                    <span style="font-size: 1rem; color: var(--text-dim); margin-left: 5px;">⚠️ Violations</span>
-                </div>
-                <p style="color:var(--text-dim); font-size: 0.9rem; margin-top: auto;">Audited by <b>Semgrep &
-                        Checkov</b></p>
             </div>
         </div>
 
         <!-- Search & Filter Controls -->
         <div class="findings-controls">
             <div style="flex-grow: 1; min-width: 300px;">
-                <input type="text" id="finding-search" placeholder="Search findings (e.g. HIPAA, SSN, SQL)..."
+                <input type="text" id="finding-search" placeholder="Search findings (e.g. SSN, SQL, API)..."
                     style="width: 100%; background: var(--surface); border: 1px solid var(--border); padding: 0.7rem 1.2rem; border-radius: 2rem; color: #fff; font-family: inherit;">
             </div>
             <button class="filter-btn active" data-filter="all">All Findings</button>
-            <button class="filter-btn" data-filter="gitleaks"> Secrets (Gitleaks)</button>
-            <button class="filter-btn" data-filter="semgrep"> Code (Semgrep)</button>
-            <button class="filter-btn" data-filter="trivy"> Deps (Trivy)</button>
-            <button class="filter-btn" data-filter="compliance">Compliance (HIPAA)</button>
+            <button class="filter-btn" data-filter="gitleaks">🗝️ Secrets</button>
+            <button class="filter-btn" data-filter="semgrep">🐛 Code</button>
+            <button class="filter-btn" data-filter="trivy">📦 Deps</button>
         </div>
 
         <!-- Findings List Area -->
@@ -647,16 +635,15 @@
             document.getElementById('report-meta').innerText = `Generated: ${new Date(data.generated_at).toLocaleString()}`;
             document.getElementById('val-total').innerText = summary.total_findings || 0;
 
-            // Render specific tools (Trivy might be listed as 'dependency' or 'dependabot' depending on the script)
-            document.getElementById('val-gitleaks').innerText = summary.gitleaks || 0;
-            document.getElementById('val-semgrep').innerText = summary.semgrep || 0;
-            document.getElementById('val-trivy').innerText = summary.dependency || summary.dependabot || summary.trivy || 0;
-            document.getElementById('val-compliance').innerText = summary.compliance || 0;
+            // Render specific tools
+            if (document.getElementById('val-gitleaks-card')) document.getElementById('val-gitleaks-card').innerText = summary.gitleaks || 0;
+            if (document.getElementById('val-semgrep-card')) document.getElementById('val-semgrep-card').innerText = summary.semgrep || 0;
+            if (document.getElementById('val-trivy-card')) document.getElementById('val-trivy-card').innerText = summary.dependency || summary.dependabot || summary.trivy || 0;
 
             // Render Severity Counts
-            document.getElementById('sev-cr').innerText = (sv["CRITICAL"] || 0) + (sv["ERROR"] || 0); // Semgrep uses ERROR
+            document.getElementById('sev-cr').innerText = (sv["CRITICAL"] || 0) + (sv["ERROR"] || 0);
             document.getElementById('sev-hi').innerText = sv["HIGH"] || 0;
-            document.getElementById('sev-me').innerText = (sv["MEDIUM"] || 0) + (sv["WARNING"] || 0); // Semgrep uses WARNING
+            document.getElementById('sev-me').innerText = (sv["MEDIUM"] || 0) + (sv["WARNING"] || 0);
             document.getElementById('sev-lo').innerText = (sv["LOW"] || 0) + (sv["INFO"] || 0);
 
             // Render Findings Feed
