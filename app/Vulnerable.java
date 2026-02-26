@@ -11,10 +11,6 @@ public class Vulnerable {
         MessageDigest md = MessageDigest.getInstance("SHA1");
         md.update("secret_payload".getBytes());
 
-        // SOC2 Violation: Unencrypted transmission (HTTP)
-        URL url = new URL("http://billing-service.internal/v1/health");
-        HttpURLConnection con = (HttpURLConnection) url.openConnection();
-        con.setRequestMethod("GET");
 
         // SOC2 Violation: Missing audit log for sensitive action
         deleteUserRecord("user_999");
