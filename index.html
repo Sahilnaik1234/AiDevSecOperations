@@ -544,18 +544,31 @@
                 </div>
                 <p style="color:var(--text-dim); font-size: 0.9rem; margin-top: auto;">Detected by <b>Trivy</b></p>
             </div>
+
+            <!-- SOC2 Compliance -->
+            <div class="metric-card card-compliance"
+                style="border-top: 3px solid var(--accent); background: linear-gradient(to bottom, rgba(58, 123, 213, 0.1), transparent);">
+                <div class="metric-title text-compliance">SOC2 Compliance</div>
+                <div class="metric-value">
+                    <span id="val-compliance">0</span>
+                    <span style="font-size: 1rem; color: var(--text-dim); margin-left: 5px;">⚠️ Violations</span>
+                </div>
+                <p style="color:var(--text-dim); font-size: 0.9rem; margin-top: auto;">Audited by <b>Semgrep SOC2</b>
+                </p>
+            </div>
         </div>
 
         <!-- Search & Filter Controls -->
         <div class="findings-controls">
             <div style="flex-grow: 1; min-width: 300px;">
-                <input type="text" id="finding-search" placeholder="Search findings (e.g. SSN, SQL, API)..."
+                <input type="text" id="finding-search" placeholder="Search findings (e.g. SOC2, Audit, SQL)..."
                     style="width: 100%; background: var(--surface); border: 1px solid var(--border); padding: 0.7rem 1.2rem; border-radius: 2rem; color: #fff; font-family: inherit;">
             </div>
             <button class="filter-btn active" data-filter="all">All Findings</button>
             <button class="filter-btn" data-filter="gitleaks">🗝️ Secrets</button>
             <button class="filter-btn" data-filter="semgrep">🐛 Code</button>
             <button class="filter-btn" data-filter="trivy">📦 Deps</button>
+            <button class="filter-btn" data-filter="compliance">⚖️ SOC2 Compliance</button>
         </div>
 
         <!-- Findings List Area -->
@@ -639,6 +652,7 @@
             if (document.getElementById('val-gitleaks-card')) document.getElementById('val-gitleaks-card').innerText = summary.gitleaks || 0;
             if (document.getElementById('val-semgrep-card')) document.getElementById('val-semgrep-card').innerText = summary.semgrep || 0;
             if (document.getElementById('val-trivy-card')) document.getElementById('val-trivy-card').innerText = summary.dependency || summary.dependabot || summary.trivy || 0;
+            if (document.getElementById('val-compliance')) document.getElementById('val-compliance').innerText = summary.compliance || 0;
 
             // Render Severity Counts
             document.getElementById('sev-cr').innerText = (sv["CRITICAL"] || 0) + (sv["ERROR"] || 0);

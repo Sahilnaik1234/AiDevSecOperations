@@ -1,14 +1,15 @@
 {
-  "generated_at": "2026-02-26T07:18:35.887880+00:00",
+  "generated_at": "2026-02-26T07:27:44.372679+00:00",
   "summary": {
-    "total_findings": 16,
-    "gitleaks": 3,
-    "semgrep": 6,
+    "total_findings": 45,
+    "gitleaks": 4,
+    "semgrep": 3,
     "dependency": 7,
+    "compliance": 31,
     "by_severity": {
-      "CRITICAL": 5,
-      "ERROR": 2,
-      "WARNING": 4,
+      "CRITICAL": 6,
+      "ERROR": 10,
+      "WARNING": 24,
       "HIGH": 5
     }
   },
@@ -50,6 +51,18 @@
       "fingerprint": "/src/app/vulnerable.py:generic-api-key:51"
     },
     {
+      "tool": "gitleaks",
+      "severity": "CRITICAL",
+      "title": "Found a Stripe Access Token, posing a risk to payment processing services and sensitive financial data.",
+      "rule_id": "stripe-access-token",
+      "file": "/src/app/Vulnerable.java",
+      "line": 8,
+      "commit": "",
+      "author": "",
+      "match": "sk_test_51MzS0vL3uYfTjSOC2KEY\"",
+      "fingerprint": "/src/app/Vulnerable.java:stripe-access-token:8"
+    },
+    {
       "tool": "semgrep",
       "severity": "ERROR",
       "title": "The last user in the container is 'root'. This is a security hazard because if an attacker gains control of the container they will have root access. Switch back to another user after running commands as 'root'.",
@@ -66,7 +79,63 @@
       ]
     },
     {
+      "tool": "compliance",
+      "severity": "WARNING",
+      "title": "Detected SHA1 hash algorithm which is considered insecure. SHA1 is not collision resistant and is therefore not suitable as a cryptographic signature. Instead, use PBKDF2 for password hashing or SHA256 or SHA512 for other hash function applications.",
+      "rule_id": "java.lang.security.audit.crypto.use-of-sha1.use-of-sha1",
+      "file": "app/Vulnerable.java",
+      "line": 11,
+      "code": "requires login",
+      "cwe": [
+        "CWE-328: Use of Weak Hash"
+      ],
+      "owasp": [
+        "A03:2017 - Sensitive Data Exposure",
+        "A02:2021 - Cryptographic Failures",
+        "A04:2025 - Cryptographic Failures"
+      ]
+    },
+    {
       "tool": "semgrep",
+      "severity": "WARNING",
+      "title": "Detected an HTTP request sent via HttpURLConnection. This could lead to sensitive information being sent over an insecure channel. Instead, it is recommended to send requests over HTTPS.",
+      "rule_id": "problem-based-packs.insecure-transport.java-stdlib.httpurlconnection-http-request.httpurlconnection-http-request",
+      "file": "app/Vulnerable.java",
+      "line": 15,
+      "code": "requires login",
+      "cwe": "CWE-319: Cleartext Transmission of Sensitive Information",
+      "owasp": "A03:2017 - Sensitive Data Exposure"
+    },
+    {
+      "tool": "compliance",
+      "severity": "WARNING",
+      "title": "Detected MD5 hash algorithm which is considered insecure. MD5 is not collision resistant and is therefore not suitable as a cryptographic signature. Use SHA256 or SHA3 instead.",
+      "rule_id": "go.lang.security.audit.crypto.use_of_weak_crypto.use-of-md5",
+      "file": "app/vulnerable.go",
+      "line": 16,
+      "code": "requires login",
+      "cwe": [
+        "CWE-328: Use of Weak Hash"
+      ],
+      "owasp": [
+        "A03:2017 - Sensitive Data Exposure",
+        "A02:2021 - Cryptographic Failures",
+        "A04:2025 - Cryptographic Failures"
+      ]
+    },
+    {
+      "tool": "compliance",
+      "severity": "WARNING",
+      "title": "Checks for requests sent via http.Get to http:// URLS. This is dangerous because the server is attempting to connect to a website that does not encrypt traffic with TLS. Instead, send requests only to https:// URLS.",
+      "rule_id": "problem-based-packs.insecure-transport.go-stdlib.http-request.http-request",
+      "file": "app/vulnerable.go",
+      "line": 21,
+      "code": "requires login",
+      "cwe": "CWE-319: Cleartext Transmission of Sensitive Information",
+      "owasp": "A03:2017 - Sensitive Data Exposure"
+    },
+    {
+      "tool": "compliance",
       "severity": "WARNING",
       "title": "Checks for any usage of http servers instead of https servers. Encourages the usage of https protocol instead of http, which does not have TLS and is therefore unencrypted. Using http can lead to man-in-the-middle attacks in which the attacker is able to read sensitive information.",
       "rule_id": "problem-based-packs.insecure-transport.js-node.using-http-server.using-http-server",
@@ -81,7 +150,7 @@
       ]
     },
     {
-      "tool": "semgrep",
+      "tool": "compliance",
       "severity": "WARNING",
       "title": "Checks for requests sent to http:// URLs. This is dangerous as the server is attempting to connect to a website that does not encrypt traffic with TLS. Instead, only send requests to https:// URLs.",
       "rule_id": "problem-based-packs.insecure-transport.js-node.http-request.http-request",
@@ -92,7 +161,7 @@
       "owasp": "A03:2017 - Sensitive Data Exposure"
     },
     {
-      "tool": "semgrep",
+      "tool": "compliance",
       "severity": "ERROR",
       "title": "Found 'subprocess' function 'run' with 'shell=True'. This is dangerous because this call will spawn the command using a shell process. Doing so propagates current shell settings and variables, which makes it much easier for a malicious actor to execute commands. Use 'shell=False' instead.",
       "rule_id": "python.lang.security.audit.subprocess-shell-true.subprocess-shell-true",
@@ -109,7 +178,7 @@
       ]
     },
     {
-      "tool": "semgrep",
+      "tool": "compliance",
       "severity": "WARNING",
       "title": "Detected possible formatted SQL query. Use parameterized queries instead.",
       "rule_id": "python.lang.security.audit.formatted-sql-query.formatted-sql-query",
@@ -232,6 +301,198 @@
       "fixed_in": "2.6.3",
       "manifest_path": "requirements.txt",
       "alert_url": "https://avd.aquasec.com/nvd/cve-2026-21441"
+    },
+    {
+      "tool": "compliance",
+      "severity": "ERROR",
+      "title": "SOC2: SOC2 Compliance: Hardcoded sensitive string. SOC2 requires encryption of secrets and use of environment variables/vaults.",
+      "rule_id": "soc2-universal-hardcoded-secret",
+      "file": "app/Vulnerable.java",
+      "line": 8
+    },
+    {
+      "tool": "compliance",
+      "severity": "WARNING",
+      "title": "SOC2: SOC2 Compliance: Potential missing audit logging. Operations related to auth/access must be logged for the 'Access and Monitoring' criterion.",
+      "rule_id": "soc2-universal-audit-logging-missing",
+      "file": "app/Vulnerable.java",
+      "line": 12
+    },
+    {
+      "tool": "compliance",
+      "severity": "ERROR",
+      "title": "SOC2: SOC2 Compliance: Unencrypted data transmission (HTTP). SOC2 requires Encryption in Transit (HTTPS/TLS) for all non-local traffic.",
+      "rule_id": "soc2-universal-unencrypted-transmission",
+      "file": "app/Vulnerable.java",
+      "line": 15
+    },
+    {
+      "tool": "compliance",
+      "severity": "WARNING",
+      "title": "SOC2: SOC2 Compliance: Potential missing audit logging. Operations related to auth/access must be logged for the 'Access and Monitoring' criterion.",
+      "rule_id": "soc2-universal-audit-logging-missing",
+      "file": "app/Vulnerable.java",
+      "line": 20
+    },
+    {
+      "tool": "compliance",
+      "severity": "WARNING",
+      "title": "SOC2: SOC2 Compliance: Potential missing audit logging. Operations related to auth/access must be logged for the 'Access and Monitoring' criterion.",
+      "rule_id": "soc2-universal-audit-logging-missing",
+      "file": "app/Vulnerable.java",
+      "line": 23
+    },
+    {
+      "tool": "compliance",
+      "severity": "WARNING",
+      "title": "SOC2: SOC2 Compliance: Potential missing audit logging. Operations related to auth/access must be logged for the 'Access and Monitoring' criterion.",
+      "rule_id": "soc2-universal-audit-logging-missing",
+      "file": "app/vulnerable.go",
+      "line": 9
+    },
+    {
+      "tool": "compliance",
+      "severity": "WARNING",
+      "title": "SOC2: SOC2 Compliance: Potential missing audit logging. Operations related to auth/access must be logged for the 'Access and Monitoring' criterion.",
+      "rule_id": "soc2-universal-audit-logging-missing",
+      "file": "app/vulnerable.go",
+      "line": 10
+    },
+    {
+      "tool": "compliance",
+      "severity": "WARNING",
+      "title": "SOC2: SOC2 Compliance: Potential missing audit logging. Operations related to auth/access must be logged for the 'Access and Monitoring' criterion.",
+      "rule_id": "soc2-universal-audit-logging-missing",
+      "file": "app/vulnerable.go",
+      "line": 11
+    },
+    {
+      "tool": "compliance",
+      "severity": "WARNING",
+      "title": "SOC2: SOC2 Compliance: Potential missing audit logging. Operations related to auth/access must be logged for the 'Access and Monitoring' criterion.",
+      "rule_id": "soc2-universal-audit-logging-missing",
+      "file": "app/vulnerable.go",
+      "line": 17
+    },
+    {
+      "tool": "compliance",
+      "severity": "ERROR",
+      "title": "SOC2: SOC2 Compliance: Unencrypted data transmission (HTTP). SOC2 requires Encryption in Transit (HTTPS/TLS) for all non-local traffic.",
+      "rule_id": "soc2-universal-unencrypted-transmission",
+      "file": "app/vulnerable.go",
+      "line": 21
+    },
+    {
+      "tool": "compliance",
+      "severity": "ERROR",
+      "title": "SOC2: SOC2 Compliance: Unencrypted data transmission (HTTP). SOC2 requires Encryption in Transit (HTTPS/TLS) for all non-local traffic.",
+      "rule_id": "soc2-universal-unencrypted-transmission",
+      "file": "app/vulnerable.js",
+      "line": 13
+    },
+    {
+      "tool": "compliance",
+      "severity": "WARNING",
+      "title": "SOC2: SOC2 Compliance: Potential missing audit logging. Operations related to auth/access must be logged for the 'Access and Monitoring' criterion.",
+      "rule_id": "soc2-universal-audit-logging-missing",
+      "file": "app/vulnerable.py",
+      "line": 8
+    },
+    {
+      "tool": "compliance",
+      "severity": "WARNING",
+      "title": "SOC2: SOC2 Compliance: Potential missing audit logging. Operations related to auth/access must be logged for the 'Access and Monitoring' criterion.",
+      "rule_id": "soc2-universal-audit-logging-missing",
+      "file": "app/vulnerable.py",
+      "line": 11
+    },
+    {
+      "tool": "compliance",
+      "severity": "WARNING",
+      "title": "SOC2: SOC2 Compliance: Potential missing audit logging. Operations related to auth/access must be logged for the 'Access and Monitoring' criterion.",
+      "rule_id": "soc2-universal-audit-logging-missing",
+      "file": "app/vulnerable.py",
+      "line": 17
+    },
+    {
+      "tool": "compliance",
+      "severity": "WARNING",
+      "title": "SOC2: SOC2 Compliance: Potential missing audit logging. Operations related to auth/access must be logged for the 'Access and Monitoring' criterion.",
+      "rule_id": "soc2-universal-audit-logging-missing",
+      "file": "app/vulnerable.py",
+      "line": 37
+    },
+    {
+      "tool": "compliance",
+      "severity": "ERROR",
+      "title": "SOC2: SOC2 Compliance: Hardcoded sensitive string. SOC2 requires encryption of secrets and use of environment variables/vaults.",
+      "rule_id": "soc2-universal-hardcoded-secret",
+      "file": "app/vulnerable.py",
+      "line": 37
+    },
+    {
+      "tool": "compliance",
+      "severity": "ERROR",
+      "title": "SOC2: SOC2 Compliance: Hardcoded sensitive string. SOC2 requires encryption of secrets and use of environment variables/vaults.",
+      "rule_id": "soc2-universal-hardcoded-secret",
+      "file": "app/vulnerable.py",
+      "line": 38
+    },
+    {
+      "tool": "compliance",
+      "severity": "ERROR",
+      "title": "SOC2: SOC2 Compliance: Hardcoded sensitive string. SOC2 requires encryption of secrets and use of environment variables/vaults.",
+      "rule_id": "soc2-universal-hardcoded-secret",
+      "file": "app/vulnerable.py",
+      "line": 51
+    },
+    {
+      "tool": "compliance",
+      "severity": "ERROR",
+      "title": "SOC2: SOC2 Compliance: Unencrypted data transmission (HTTP). SOC2 requires Encryption in Transit (HTTPS/TLS) for all non-local traffic.",
+      "rule_id": "soc2-universal-unencrypted-transmission",
+      "file": "app/vulnerable.py",
+      "line": 92
+    },
+    {
+      "tool": "compliance",
+      "severity": "WARNING",
+      "title": "SOC2: SOC2 Compliance: Potential missing audit logging. Operations related to auth/access must be logged for the 'Access and Monitoring' criterion.",
+      "rule_id": "soc2-universal-audit-logging-missing",
+      "file": "app/vulnerable.py",
+      "line": 116
+    },
+    {
+      "tool": "compliance",
+      "severity": "WARNING",
+      "title": "SOC2: SOC2 Compliance: Potential missing audit logging. Operations related to auth/access must be logged for the 'Access and Monitoring' criterion.",
+      "rule_id": "soc2-universal-audit-logging-missing",
+      "file": "scripts/normalize.py",
+      "line": 54
+    },
+    {
+      "tool": "compliance",
+      "severity": "WARNING",
+      "title": "SOC2: SOC2 Compliance: Potential missing audit logging. Operations related to auth/access must be logged for the 'Access and Monitoring' criterion.",
+      "rule_id": "soc2-universal-audit-logging-missing",
+      "file": "scripts/normalize.py",
+      "line": 54
+    },
+    {
+      "tool": "compliance",
+      "severity": "WARNING",
+      "title": "SOC2: SOC2 Compliance: Potential missing audit logging. Operations related to auth/access must be logged for the 'Access and Monitoring' criterion.",
+      "rule_id": "soc2-universal-audit-logging-missing",
+      "file": "scripts/normalize.py",
+      "line": 207
+    },
+    {
+      "tool": "compliance",
+      "severity": "WARNING",
+      "title": "SOC2: SOC2 Compliance: Potential missing audit logging. Operations related to auth/access must be logged for the 'Access and Monitoring' criterion.",
+      "rule_id": "soc2-universal-audit-logging-missing",
+      "file": "scripts/normalize.py",
+      "line": 207
     }
   ]
 }
