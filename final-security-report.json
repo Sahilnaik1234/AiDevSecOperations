@@ -1,18 +1,20 @@
 {
-  "generated_at": "2026-02-26T11:58:41.617719+00:00",
+  "generated_at": "2026-02-27T06:26:38.566383+00:00",
   "summary": {
-    "total_findings": 48,
+    "total_findings": 53,
     "gitleaks": 3,
     "semgrep": 2,
-    "dependency": 7,
-    "compliance": 36,
-    "soc2_count": 23,
+    "dependency": 11,
+    "compliance": 37,
+    "soc2_count": 21,
     "hipaa_count": 6,
     "by_severity": {
       "CRITICAL": 5,
-      "WARNING": 24,
+      "WARNING": 22,
       "ERROR": 14,
-      "HIGH": 5
+      "INFO": 1,
+      "HIGH": 5,
+      "MEDIUM": 6
     }
   },
   "findings": [
@@ -23,10 +25,7 @@
       "rule_id": "stripe-access-token",
       "file": "/src/app/Vulnerable.java",
       "line": 8,
-      "commit": "",
-      "author": "",
-      "match": "sk_test_51MzS0vL3uYfTjSOC2KEY\"",
-      "fingerprint": "/src/app/Vulnerable.java:stripe-access-token:8"
+      "match": "sk_test_51MzS0vL3uYfTjSOC2KEY\""
     },
     {
       "tool": "gitleaks",
@@ -35,10 +34,7 @@
       "rule_id": "generic-api-key",
       "file": "/src/app/vulnerable.py",
       "line": 30,
-      "commit": "",
-      "author": "",
-      "match": "AWS_ACCESS_TOKEN    = \"qA8rD4bT9jK2lL5mP7sW1vX3zY6hF0c\"",
-      "fingerprint": "/src/app/vulnerable.py:generic-api-key:30"
+      "match": "AWS_ACCESS_TOKEN    = \"qA8rD4bT9jK2lL5mP7sW1vX3zY6hF0c\""
     },
     {
       "tool": "gitleaks",
@@ -47,278 +43,240 @@
       "rule_id": "generic-api-key",
       "file": "/src/app/vulnerable.py",
       "line": 31,
-      "commit": "",
-      "author": "",
-      "match": "GITHUB_PAT_TOKEN    = \"xB9cF2vN4mK7pQ1wR8tG3yH5zL0jD6b\"",
-      "fingerprint": "/src/app/vulnerable.py:generic-api-key:31"
+      "match": "GITHUB_PAT_TOKEN    = \"xB9cF2vN4mK7pQ1wR8tG3yH5zL0jD6b\""
     },
     {
       "tool": "compliance",
       "severity": "WARNING",
       "title": "Detected MD5 hash algorithm which is considered insecure. MD5 is not collision resistant and is therefore not suitable as a cryptographic signature. Use SHA256 or SHA3 instead.",
       "rule_id": "go.lang.security.audit.crypto.use_of_weak_crypto.use-of-md5",
-      "file": "app/vulnerable.go",
+      "file": "/src/app/vulnerable.go",
       "line": 16,
-      "code": "requires login",
-      "cwe": [
-        "CWE-328: Use of Weak Hash"
-      ],
-      "owasp": [
-        "A03:2017 - Sensitive Data Exposure",
-        "A02:2021 - Cryptographic Failures",
-        "A04:2025 - Cryptographic Failures"
-      ]
+      "code": "requires login"
     },
     {
       "tool": "compliance",
       "severity": "WARNING",
       "title": "Checks for requests sent via http.Get to http:// URLS. This is dangerous because the server is attempting to connect to a website that does not encrypt traffic with TLS. Instead, send requests only to https:// URLS.",
       "rule_id": "problem-based-packs.insecure-transport.go-stdlib.http-request.http-request",
-      "file": "app/vulnerable.go",
+      "file": "/src/app/vulnerable.go",
       "line": 21,
-      "code": "requires login",
-      "cwe": "CWE-319: Cleartext Transmission of Sensitive Information",
-      "owasp": "A03:2017 - Sensitive Data Exposure"
+      "code": "requires login"
     },
     {
       "tool": "compliance",
       "severity": "WARNING",
       "title": "Checks for any usage of http servers instead of https servers. Encourages the usage of https protocol instead of http, which does not have TLS and is therefore unencrypted. Using http can lead to man-in-the-middle attacks in which the attacker is able to read sensitive information.",
       "rule_id": "problem-based-packs.insecure-transport.js-node.using-http-server.using-http-server",
-      "file": "app/vulnerable.js",
+      "file": "/src/app/vulnerable.js",
       "line": 13,
-      "code": "requires login",
-      "cwe": "CWE-319: Cleartext Transmission of Sensitive Information",
-      "owasp": [
-        "A02:2021 - Cryptographic Failures",
-        "A03:2017 - Sensitive Data Exposure",
-        "A04:2025 - Cryptographic Failures"
-      ]
+      "code": "requires login"
     },
     {
       "tool": "compliance",
       "severity": "WARNING",
       "title": "Checks for requests sent to http:// URLs. This is dangerous as the server is attempting to connect to a website that does not encrypt traffic with TLS. Instead, only send requests to https:// URLs.",
       "rule_id": "problem-based-packs.insecure-transport.js-node.http-request.http-request",
-      "file": "app/vulnerable.js",
+      "file": "/src/app/vulnerable.js",
       "line": 13,
-      "code": "requires login",
-      "cwe": "CWE-319: Cleartext Transmission of Sensitive Information",
-      "owasp": "A03:2017 - Sensitive Data Exposure"
+      "code": "requires login"
     },
     {
       "tool": "compliance",
       "severity": "ERROR",
       "title": "Found 'subprocess' function 'run' with 'shell=True'. This is dangerous because this call will spawn the command using a shell process. Doing so propagates current shell settings and variables, which makes it much easier for a malicious actor to execute commands. Use 'shell=False' instead.",
       "rule_id": "python.lang.security.audit.subprocess-shell-true.subprocess-shell-true",
-      "file": "app/vulnerable.py",
+      "file": "/src/app/vulnerable.py",
       "line": 39,
-      "code": "requires login",
-      "cwe": [
-        "CWE-78: Improper Neutralization of Special Elements used in an OS Command ('OS Command Injection')"
-      ],
-      "owasp": [
-        "A01:2017 - Injection",
-        "A03:2021 - Injection",
-        "A05:2025 - Injection"
-      ]
+      "code": "requires login"
     },
     {
       "tool": "compliance",
       "severity": "WARNING",
       "title": "Detected possible formatted SQL query. Use parameterized queries instead.",
       "rule_id": "python.lang.security.audit.formatted-sql-query.formatted-sql-query",
-      "file": "app/vulnerable.py",
+      "file": "/src/app/vulnerable.py",
       "line": 49,
-      "code": "requires login",
-      "cwe": [
-        "CWE-89: Improper Neutralization of Special Elements used in an SQL Command ('SQL Injection')"
-      ],
-      "owasp": [
-        "A01:2017 - Injection",
-        "A03:2021 - Injection",
-        "A05:2025 - Injection"
-      ]
+      "code": "requires login"
     },
     {
       "tool": "semgrep",
       "severity": "ERROR",
       "title": "Avoiding SQL string concatenation: untrusted input concatenated with raw SQL query can result in SQL Injection. In order to execute raw query safely, prepared statement should be used. SQLAlchemy provides TextualSQL to easily used prepared statement with named parameters. For complex SQL composition, use SQL Expression Language or Schema Definition Language. In most cases, SQLAlchemy ORM will be a better option.",
       "rule_id": "python.sqlalchemy.security.sqlalchemy-execute-raw-query.sqlalchemy-execute-raw-query",
-      "file": "app/vulnerable.py",
+      "file": "/src/app/vulnerable.py",
       "line": 49,
-      "code": "requires login",
-      "cwe": [
-        "CWE-89: Improper Neutralization of Special Elements used in an SQL Command ('SQL Injection')"
-      ],
-      "owasp": [
-        "A01:2017 - Injection",
-        "A03:2021 - Injection",
-        "A05:2025 - Injection"
-      ]
+      "code": "requires login"
     },
     {
       "tool": "semgrep",
       "severity": "WARNING",
       "title": "Avoid using `pickle`, which is known to lead to code execution vulnerabilities. When unpickling, the serialized data could be manipulated to run arbitrary code. Instead, consider serializing the relevant data as JSON or a similar text-based serialization format.",
       "rule_id": "python.lang.security.deserialization.pickle.avoid-pickle",
-      "file": "app/vulnerable.py",
+      "file": "/src/app/vulnerable.py",
       "line": 58,
-      "code": "requires login",
-      "cwe": [
-        "CWE-502: Deserialization of Untrusted Data"
-      ],
-      "owasp": [
-        "A08:2017 - Insecure Deserialization",
-        "A08:2021 - Software and Data Integrity Failures",
-        "A08:2025 - Software or Data Integrity Failures"
-      ]
+      "code": "requires login"
+    },
+    {
+      "tool": "compliance",
+      "severity": "INFO",
+      "title": "Detected a request using 'http://'. This request will be unencrypted, and attackers could listen into traffic on the network and be able to obtain sensitive information. Use 'https://' instead.",
+      "rule_id": "python.lang.security.audit.insecure-transport.requests.request-with-http.request-with-http",
+      "file": "/src/app/vulnerable.py",
+      "line": 72,
+      "code": "requires login"
     },
     {
       "tool": "compliance",
       "severity": "WARNING",
       "title": "Detected the use of eval(). eval() can be dangerous if used to evaluate dynamic content. If this content can be input from outside the program, this may be a code injection vulnerability. Ensure evaluated content is not definable by external sources.",
       "rule_id": "python.lang.security.audit.eval-detected.eval-detected",
-      "file": "app/vulnerable.py",
+      "file": "/src/app/vulnerable.py",
       "line": 93,
-      "code": "requires login",
-      "cwe": [
-        "CWE-95: Improper Neutralization of Directives in Dynamically Evaluated Code ('Eval Injection')"
-      ],
-      "owasp": [
-        "A03:2021 - Injection",
-        "A05:2025 - Injection"
-      ]
+      "code": "requires login"
     },
     {
       "tool": "trivy",
       "severity": "CRITICAL",
       "title": "python-sqlalchemy: SQL Injection when the order_by parameter can be controlled",
       "rule_id": "CVE-2019-7164",
-      "cve": "CVE-2019-7164",
       "package": "sqlalchemy",
-      "ecosystem": "txt",
-      "affected_range": "1.2.0",
-      "fixed_in": "1.3.0b3, 1.2.18",
-      "manifest_path": "requirements.txt",
-      "alert_url": "https://avd.aquasec.com/nvd/cve-2019-7164"
+      "manifest_path": "requirements.txt"
     },
     {
       "tool": "trivy",
       "severity": "CRITICAL",
       "title": "python-sqlalchemy: SQL Injection when the group_by parameter can be controlled",
       "rule_id": "CVE-2019-7548",
-      "cve": "CVE-2019-7548",
       "package": "sqlalchemy",
-      "ecosystem": "txt",
-      "affected_range": "1.2.0",
-      "fixed_in": "1.2.19",
-      "manifest_path": "requirements.txt",
-      "alert_url": "https://avd.aquasec.com/nvd/cve-2019-7548"
+      "manifest_path": "requirements.txt"
     },
     {
       "tool": "trivy",
       "severity": "HIGH",
       "title": "python-urllib3: Certification mishandle when error should be thrown",
       "rule_id": "CVE-2019-11324",
-      "cve": "CVE-2019-11324",
       "package": "urllib3",
-      "ecosystem": "txt",
-      "affected_range": "1.24.1",
-      "fixed_in": "1.24.2",
-      "manifest_path": "requirements.txt",
-      "alert_url": "https://avd.aquasec.com/nvd/cve-2019-11324"
+      "manifest_path": "requirements.txt"
     },
     {
       "tool": "trivy",
       "severity": "HIGH",
       "title": "python-urllib3: Cookie request header isn't stripped during cross-origin redirects",
       "rule_id": "CVE-2023-43804",
-      "cve": "CVE-2023-43804",
       "package": "urllib3",
-      "ecosystem": "txt",
-      "affected_range": "1.24.1",
-      "fixed_in": "2.0.6, 1.26.17",
-      "manifest_path": "requirements.txt",
-      "alert_url": "https://avd.aquasec.com/nvd/cve-2023-43804"
+      "manifest_path": "requirements.txt"
     },
     {
       "tool": "trivy",
       "severity": "HIGH",
       "title": "urllib3: urllib3: Unbounded decompression chain leads to resource exhaustion",
       "rule_id": "CVE-2025-66418",
-      "cve": "CVE-2025-66418",
       "package": "urllib3",
-      "ecosystem": "txt",
-      "affected_range": "1.24.1",
-      "fixed_in": "2.6.0",
-      "manifest_path": "requirements.txt",
-      "alert_url": "https://avd.aquasec.com/nvd/cve-2025-66418"
+      "manifest_path": "requirements.txt"
     },
     {
       "tool": "trivy",
       "severity": "HIGH",
       "title": "urllib3: urllib3 Streaming API improperly handles highly compressed data",
       "rule_id": "CVE-2025-66471",
-      "cve": "CVE-2025-66471",
       "package": "urllib3",
-      "ecosystem": "txt",
-      "affected_range": "1.24.1",
-      "fixed_in": "2.6.0",
-      "manifest_path": "requirements.txt",
-      "alert_url": "https://avd.aquasec.com/nvd/cve-2025-66471"
+      "manifest_path": "requirements.txt"
     },
     {
       "tool": "trivy",
       "severity": "HIGH",
       "title": "urllib3: urllib3 vulnerable to decompression-bomb safeguard bypass when following HTTP redirects (streaming API)",
       "rule_id": "CVE-2026-21441",
-      "cve": "CVE-2026-21441",
       "package": "urllib3",
-      "ecosystem": "txt",
-      "affected_range": "1.24.1",
-      "fixed_in": "2.6.3",
-      "manifest_path": "requirements.txt",
-      "alert_url": "https://avd.aquasec.com/nvd/cve-2026-21441"
+      "manifest_path": "requirements.txt"
+    },
+    {
+      "tool": "compliance",
+      "severity": "MEDIUM",
+      "title": "urllib3: urllib3 does not remove the authorization HTTP header when following a cross-origin redirect",
+      "rule_id": "CVE-2018-25091",
+      "package": "urllib3",
+      "manifest_path": "requirements.txt"
+    },
+    {
+      "tool": "trivy",
+      "severity": "MEDIUM",
+      "title": "python-urllib3: CRLF injection due to not encoding the '\\r\\n' sequence leading to possible attack on internal service",
+      "rule_id": "CVE-2019-11236",
+      "package": "urllib3",
+      "manifest_path": "requirements.txt"
+    },
+    {
+      "tool": "trivy",
+      "severity": "MEDIUM",
+      "title": "python-urllib3: CRLF injection via HTTP request method",
+      "rule_id": "CVE-2020-26137",
+      "package": "urllib3",
+      "manifest_path": "requirements.txt"
+    },
+    {
+      "tool": "trivy",
+      "severity": "MEDIUM",
+      "title": "urllib3: Request body not stripped after redirect from 303 status changes request method to GET",
+      "rule_id": "CVE-2023-45803",
+      "package": "urllib3",
+      "manifest_path": "requirements.txt"
+    },
+    {
+      "tool": "compliance",
+      "severity": "MEDIUM",
+      "title": "urllib3: proxy-authorization request header is not stripped during cross-origin redirects",
+      "rule_id": "CVE-2024-37891",
+      "package": "urllib3",
+      "manifest_path": "requirements.txt"
+    },
+    {
+      "tool": "trivy",
+      "severity": "MEDIUM",
+      "title": "urllib3: urllib3 redirects are not disabled when retries are disabled on PoolManager instantiation",
+      "rule_id": "CVE-2025-50181",
+      "package": "urllib3",
+      "manifest_path": "requirements.txt"
     },
     {
       "tool": "compliance",
       "severity": "ERROR",
       "title": "SOC2: SOC2 Compliance: Hardcoded sensitive string. SOC2 requires encryption of secrets and use of environment variables/vaults.",
-      "rule_id": "soc2-universal-hardcoded-secret",
-      "file": "app/Vulnerable.java",
+      "rule_id": "tools.configs.soc2-universal-hardcoded-secret",
+      "file": "/src/app/Vulnerable.java",
       "line": 8
     },
     {
       "tool": "compliance",
       "severity": "WARNING",
       "title": "SOC2: SOC2 Compliance: Potential missing audit logging. Operations related to auth/access must be logged for the 'Access and Monitoring' criterion.",
-      "rule_id": "soc2-universal-audit-logging-missing",
-      "file": "app/Vulnerable.java",
+      "rule_id": "tools.configs.soc2-universal-audit-logging-missing",
+      "file": "/src/app/Vulnerable.java",
       "line": 13
     },
     {
       "tool": "compliance",
       "severity": "WARNING",
       "title": "SOC2: SOC2 Compliance: Potential missing audit logging. Operations related to auth/access must be logged for the 'Access and Monitoring' criterion.",
-      "rule_id": "soc2-universal-audit-logging-missing",
-      "file": "app/vulnerable.go",
+      "rule_id": "tools.configs.soc2-universal-audit-logging-missing",
+      "file": "/src/app/vulnerable.go",
       "line": 9
     },
     {
       "tool": "compliance",
       "severity": "WARNING",
       "title": "SOC2: SOC2 Compliance: Potential missing audit logging. Operations related to auth/access must be logged for the 'Access and Monitoring' criterion.",
-      "rule_id": "soc2-universal-audit-logging-missing",
-      "file": "app/vulnerable.go",
+      "rule_id": "tools.configs.soc2-universal-audit-logging-missing",
+      "file": "/src/app/vulnerable.go",
       "line": 10
     },
     {
       "tool": "compliance",
       "severity": "WARNING",
       "title": "SOC2: SOC2 Compliance: Potential missing audit logging. Operations related to auth/access must be logged for the 'Access and Monitoring' criterion.",
-      "rule_id": "soc2-universal-audit-logging-missing",
-      "file": "app/vulnerable.go",
+      "rule_id": "tools.configs.soc2-universal-audit-logging-missing",
+      "file": "/src/app/vulnerable.go",
       "line": 11
     },
     {
@@ -326,79 +284,79 @@
       "severity": "WARNING",
       "title": "SOC2: Detected MD5 hash algorithm which is considered insecure. MD5 is not collision resistant and is therefore not suitable as a cryptographic signature. Use SHA256 or SHA3 instead.",
       "rule_id": "go.lang.security.audit.crypto.use_of_weak_crypto.use-of-md5",
-      "file": "app/vulnerable.go",
+      "file": "/src/app/vulnerable.go",
       "line": 16
     },
     {
       "tool": "compliance",
       "severity": "WARNING",
       "title": "SOC2: SOC2 Compliance: Potential missing audit logging. Operations related to auth/access must be logged for the 'Access and Monitoring' criterion.",
-      "rule_id": "soc2-universal-audit-logging-missing",
-      "file": "app/vulnerable.go",
+      "rule_id": "tools.configs.soc2-universal-audit-logging-missing",
+      "file": "/src/app/vulnerable.go",
       "line": 17
     },
     {
       "tool": "compliance",
       "severity": "ERROR",
       "title": "SOC2: SOC2 Compliance: Unencrypted data transmission (HTTP). SOC2 requires Encryption in Transit (HTTPS/TLS) for all non-local traffic.",
-      "rule_id": "soc2-universal-unencrypted-transmission",
-      "file": "app/vulnerable.go",
+      "rule_id": "tools.configs.soc2-universal-unencrypted-transmission",
+      "file": "/src/app/vulnerable.go",
       "line": 21
     },
     {
       "tool": "compliance",
       "severity": "ERROR",
       "title": "SOC2: SOC2 Compliance: Unencrypted data transmission (HTTP). SOC2 requires Encryption in Transit (HTTPS/TLS) for all non-local traffic.",
-      "rule_id": "soc2-universal-unencrypted-transmission",
-      "file": "app/vulnerable.js",
+      "rule_id": "tools.configs.soc2-universal-unencrypted-transmission",
+      "file": "/src/app/vulnerable.js",
       "line": 13
     },
     {
       "tool": "compliance",
       "severity": "WARNING",
       "title": "SOC2: SOC2 Compliance: Potential missing audit logging. Operations related to auth/access must be logged for the 'Access and Monitoring' criterion.",
-      "rule_id": "soc2-universal-audit-logging-missing",
-      "file": "app/vulnerable.py",
+      "rule_id": "tools.configs.soc2-universal-audit-logging-missing",
+      "file": "/src/app/vulnerable.py",
       "line": 8
     },
     {
       "tool": "compliance",
       "severity": "WARNING",
       "title": "SOC2: SOC2 Compliance: Potential missing audit logging. Operations related to auth/access must be logged for the 'Access and Monitoring' criterion.",
-      "rule_id": "soc2-universal-audit-logging-missing",
-      "file": "app/vulnerable.py",
+      "rule_id": "tools.configs.soc2-universal-audit-logging-missing",
+      "file": "/src/app/vulnerable.py",
       "line": 11
     },
     {
       "tool": "compliance",
       "severity": "WARNING",
       "title": "SOC2: SOC2 Compliance: Potential missing audit logging. Operations related to auth/access must be logged for the 'Access and Monitoring' criterion.",
-      "rule_id": "soc2-universal-audit-logging-missing",
-      "file": "app/vulnerable.py",
+      "rule_id": "tools.configs.soc2-universal-audit-logging-missing",
+      "file": "/src/app/vulnerable.py",
       "line": 17
     },
     {
       "tool": "compliance",
       "severity": "WARNING",
       "title": "SOC2: SOC2 Compliance: Potential missing audit logging. Operations related to auth/access must be logged for the 'Access and Monitoring' criterion.",
-      "rule_id": "soc2-universal-audit-logging-missing",
-      "file": "app/vulnerable.py",
+      "rule_id": "tools.configs.soc2-universal-audit-logging-missing",
+      "file": "/src/app/vulnerable.py",
       "line": 30
     },
     {
       "tool": "compliance",
       "severity": "ERROR",
       "title": "SOC2: SOC2 Compliance: Hardcoded sensitive string. SOC2 requires encryption of secrets and use of environment variables/vaults.",
-      "rule_id": "soc2-universal-hardcoded-secret",
-      "file": "app/vulnerable.py",
+      "rule_id": "tools.configs.soc2-universal-hardcoded-secret",
+      "file": "/src/app/vulnerable.py",
       "line": 30
     },
     {
       "tool": "compliance",
       "severity": "ERROR",
       "title": "SOC2: SOC2 Compliance: Hardcoded sensitive string. SOC2 requires encryption of secrets and use of environment variables/vaults.",
-      "rule_id": "soc2-universal-hardcoded-secret",
-      "file": "app/vulnerable.py",
+      "rule_id": "tools.configs.soc2-universal-hardcoded-secret",
+      "file": "/src/app/vulnerable.py",
       "line": 31
     },
     {
@@ -406,7 +364,7 @@
       "severity": "ERROR",
       "title": "SOC2: Found 'subprocess' function 'run' with 'shell=True'. This is dangerous because this call will spawn the command using a shell process. Doing so propagates current shell settings and variables, which makes it much easier for a malicious actor to execute commands. Use 'shell=False' instead.",
       "rule_id": "python.lang.security.audit.subprocess-shell-true.subprocess-shell-true",
-      "file": "app/vulnerable.py",
+      "file": "/src/app/vulnerable.py",
       "line": 39
     },
     {
@@ -414,15 +372,15 @@
       "severity": "WARNING",
       "title": "SOC2: Avoid using `pickle`, which is known to lead to code execution vulnerabilities. When unpickling, the serialized data could be manipulated to run arbitrary code. Instead, consider serializing the relevant data as JSON or a similar text-based serialization format.",
       "rule_id": "python.lang.security.deserialization.pickle.avoid-pickle",
-      "file": "app/vulnerable.py",
+      "file": "/src/app/vulnerable.py",
       "line": 58
     },
     {
       "tool": "compliance",
       "severity": "ERROR",
       "title": "SOC2: SOC2 Compliance: Unencrypted data transmission (HTTP). SOC2 requires Encryption in Transit (HTTPS/TLS) for all non-local traffic.",
-      "rule_id": "soc2-universal-unencrypted-transmission",
-      "file": "app/vulnerable.py",
+      "rule_id": "tools.configs.soc2-universal-unencrypted-transmission",
+      "file": "/src/app/vulnerable.py",
       "line": 72
     },
     {
@@ -430,87 +388,71 @@
       "severity": "WARNING",
       "title": "SOC2: Detected the use of eval(). eval() can be dangerous if used to evaluate dynamic content. If this content can be input from outside the program, this may be a code injection vulnerability. Ensure evaluated content is not definable by external sources.",
       "rule_id": "python.lang.security.audit.eval-detected.eval-detected",
-      "file": "app/vulnerable.py",
+      "file": "/src/app/vulnerable.py",
       "line": 93
     },
     {
       "tool": "compliance",
       "severity": "WARNING",
       "title": "SOC2: SOC2 Compliance: Potential missing audit logging. Operations related to auth/access must be logged for the 'Access and Monitoring' criterion.",
-      "rule_id": "soc2-universal-audit-logging-missing",
-      "file": "scripts/normalize.py",
-      "line": 54
+      "rule_id": "tools.configs.soc2-universal-audit-logging-missing",
+      "file": "/src/scripts/normalize.py",
+      "line": 114
     },
     {
       "tool": "compliance",
       "severity": "WARNING",
       "title": "SOC2: SOC2 Compliance: Potential missing audit logging. Operations related to auth/access must be logged for the 'Access and Monitoring' criterion.",
-      "rule_id": "soc2-universal-audit-logging-missing",
-      "file": "scripts/normalize.py",
-      "line": 54
-    },
-    {
-      "tool": "compliance",
-      "severity": "WARNING",
-      "title": "SOC2: SOC2 Compliance: Potential missing audit logging. Operations related to auth/access must be logged for the 'Access and Monitoring' criterion.",
-      "rule_id": "soc2-universal-audit-logging-missing",
-      "file": "scripts/normalize.py",
-      "line": 239
-    },
-    {
-      "tool": "compliance",
-      "severity": "WARNING",
-      "title": "SOC2: SOC2 Compliance: Potential missing audit logging. Operations related to auth/access must be logged for the 'Access and Monitoring' criterion.",
-      "rule_id": "soc2-universal-audit-logging-missing",
-      "file": "scripts/normalize.py",
-      "line": 239
+      "rule_id": "tools.configs.soc2-universal-audit-logging-missing",
+      "file": "/src/scripts/normalize.py",
+      "line": 114
     },
     {
       "tool": "compliance",
       "severity": "WARNING",
       "title": "HIPAA: HIPAA Compliance: Missing audit log for PHI access. HIPAA requires logging of all interactions with Protected Health Information.",
-      "rule_id": "hipaa-universal-missing-access-log",
-      "file": "app/Vulnerable.java",
+      "rule_id": "tools.configs.hipaa-universal-missing-access-log",
+      "file": "/src/app/Vulnerable.java",
       "line": 13
     },
     {
       "tool": "compliance",
       "severity": "ERROR",
       "title": "HIPAA: HIPAA Compliance: Unencrypted transmission of sensitive data. HIPAA requires Encryption in Transit (HTTPS/TLS) for all PHI traffic.",
-      "rule_id": "hipaa-universal-unencrypted-transmission",
-      "file": "app/vulnerable.go",
+      "rule_id": "tools.configs.hipaa-universal-unencrypted-transmission",
+      "file": "/src/app/vulnerable.go",
       "line": 21
     },
     {
       "tool": "compliance",
       "severity": "ERROR",
       "title": "HIPAA: HIPAA Compliance: Sensitive PHI being logged to plain text. HIPAA prohibits exposing PHI in application logs or insecure storage.",
-      "rule_id": "hipaa-universal-insecure-phi-storage",
-      "file": "app/vulnerable.js",
+      "rule_id": "tools.configs.hipaa-universal-insecure-phi-storage",
+      "file": "/src/app/vulnerable.js",
       "line": 5
     },
     {
       "tool": "compliance",
       "severity": "ERROR",
       "title": "HIPAA: HIPAA Compliance: Sensitive PHI being logged to plain text. HIPAA prohibits exposing PHI in application logs or insecure storage.",
-      "rule_id": "hipaa-universal-insecure-phi-storage",
-      "file": "app/vulnerable.js",
+      "rule_id": "tools.configs.hipaa-universal-insecure-phi-storage",
+      "file": "/src/app/vulnerable.js",
       "line": 8
     },
     {
       "tool": "compliance",
       "severity": "ERROR",
       "title": "HIPAA: HIPAA Compliance: Unencrypted transmission of sensitive data. HIPAA requires Encryption in Transit (HTTPS/TLS) for all PHI traffic.",
-      "rule_id": "hipaa-universal-unencrypted-transmission",
-      "file": "app/vulnerable.js",
+      "rule_id": "tools.configs.hipaa-universal-unencrypted-transmission",
+      "file": "/src/app/vulnerable.js",
       "line": 13
     },
     {
       "tool": "compliance",
       "severity": "ERROR",
       "title": "HIPAA: HIPAA Compliance: Unencrypted transmission of sensitive data. HIPAA requires Encryption in Transit (HTTPS/TLS) for all PHI traffic.",
-      "rule_id": "hipaa-universal-unencrypted-transmission",
-      "file": "app/vulnerable.py",
+      "rule_id": "tools.configs.hipaa-universal-unencrypted-transmission",
+      "file": "/src/app/vulnerable.py",
       "line": 72
     }
   ]
