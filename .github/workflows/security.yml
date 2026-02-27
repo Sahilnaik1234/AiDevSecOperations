@@ -94,7 +94,7 @@ jobs:
   # NORMALIZE & DEPLOY
   # ============================================================
   normalize:
-    name: "⚖️ Normalize & Dashboard"
+    name: " Normalize & Dashboard"
     runs-on: ubuntu-latest
     needs: [security-scans]
     if: always()

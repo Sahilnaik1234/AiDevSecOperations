@@ -21,7 +21,5 @@ func main() {
 	resp, _ := http.Get("http://api.internal.health/records")
 	fmt.Println(resp.Status)
 
-	// SOC2 Violation: Hardcoded secret
-	apiKey := "AKIA_SOC2_TEST_TOKEN_12345678"
-	fmt.Println(apiKey)
+
 }
