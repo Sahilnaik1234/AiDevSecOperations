@@ -1,19 +1,19 @@
 {
-  "generated_at": "2026-02-27T11:44:14.542275+00:00",
+  "generated_at": "2026-02-27T12:02:50.185527+00:00",
   "summary": {
-    "total_findings": 48,
-    "gitleaks": 3,
-    "semgrep": 1,
+    "total_findings": 35,
+    "gitleaks": 1,
+    "semgrep": 0,
     "dependency": 11,
-    "compliance": 33,
-    "soc2_count": 21,
-    "hipaa_count": 6,
+    "compliance": 23,
+    "soc2_count": 12,
+    "hipaa_count": 5,
     "by_severity": {
-      "CRITICAL": 5,
-      "WARNING": 18,
-      "ERROR": 14,
+      "CRITICAL": 3,
+      "WARNING": 13,
       "HIGH": 5,
-      "MEDIUM": 6
+      "MEDIUM": 6,
+      "ERROR": 8
     }
   },
   "findings": [
@@ -25,24 +25,6 @@
       "file": "/src/app/Vulnerable.java",
       "line": 8,
       "match": "sk_test_51MzS0vL3uYfTjSOC2KEY\""
-    },
-    {
-      "tool": "gitleaks",
-      "severity": "CRITICAL",
-      "title": "Detected a Generic API Key, potentially exposing access to various services and sensitive operations.",
-      "rule_id": "generic-api-key",
-      "file": "/src/app/vulnerable.py",
-      "line": 31,
-      "match": "AWS_ACCESS_TOKEN    = \"qA8rD4bT9jK2lL5mP7sW1vX3zY6hF0c\""
-    },
-    {
-      "tool": "gitleaks",
-      "severity": "CRITICAL",
-      "title": "Detected a Generic API Key, potentially exposing access to various services and sensitive operations.",
-      "rule_id": "generic-api-key",
-      "file": "/src/app/vulnerable.py",
-      "line": 32,
-      "match": "GITHUB_PAT_TOKEN    = \"xB9cF2vN4mK7pQ1wR8tG3yH5zL0jD6b\""
     },
     {
       "tool": "compliance",
@@ -78,15 +60,6 @@
       "rule_id": "problem-based-packs.insecure-transport.js-node.http-request.http-request",
       "file": "/src/app/vulnerable.js",
       "line": 13,
-      "code": "requires login"
-    },
-    {
-      "tool": "semgrep",
-      "severity": "ERROR",
-      "title": "AWS Access Key ID Value detected. This is a sensitive credential and should not be hardcoded here. Instead, read this value from an environment variable or keep it in a separate, private file.",
-      "rule_id": "generic.secrets.security.detected-aws-access-key-id-value.detected-aws-access-key-id-value",
-      "file": "/src/app/vulnerable.py",
-      "line": 36,
       "code": "requires login"
     },
     {
@@ -260,90 +233,18 @@
     {
       "tool": "compliance",
       "severity": "ERROR",
+      "title": "SOC2: SOC2 Compliance: Hardcoded sensitive string. SOC2 requires encryption of secrets and use of environment variables/vaults.",
+      "rule_id": "tools.configs.soc2-universal-hardcoded-secret",
+      "file": "/src/app/vulnerable.js",
+      "line": 9
+    },
+    {
+      "tool": "compliance",
+      "severity": "ERROR",
       "title": "SOC2: SOC2 Compliance: Unencrypted data transmission (HTTP). SOC2 requires Encryption in Transit (HTTPS/TLS) for all non-local traffic.",
       "rule_id": "tools.configs.soc2-universal-unencrypted-transmission",
       "file": "/src/app/vulnerable.js",
       "line": 13
-    },
-    {
-      "tool": "compliance",
-      "severity": "WARNING",
-      "title": "SOC2: SOC2 Compliance: Potential missing audit logging. Operations related to auth/access must be logged for the 'Access and Monitoring' criterion.",
-      "rule_id": "tools.configs.soc2-universal-audit-logging-missing",
-      "file": "/src/app/vulnerable.py",
-      "line": 8
-    },
-    {
-      "tool": "compliance",
-      "severity": "WARNING",
-      "title": "SOC2: SOC2 Compliance: Potential missing audit logging. Operations related to auth/access must be logged for the 'Access and Monitoring' criterion.",
-      "rule_id": "tools.configs.soc2-universal-audit-logging-missing",
-      "file": "/src/app/vulnerable.py",
-      "line": 11
-    },
-    {
-      "tool": "compliance",
-      "severity": "WARNING",
-      "title": "SOC2: SOC2 Compliance: Potential missing audit logging. Operations related to auth/access must be logged for the 'Access and Monitoring' criterion.",
-      "rule_id": "tools.configs.soc2-universal-audit-logging-missing",
-      "file": "/src/app/vulnerable.py",
-      "line": 17
-    },
-    {
-      "tool": "compliance",
-      "severity": "WARNING",
-      "title": "SOC2: SOC2 Compliance: Potential missing audit logging. Operations related to auth/access must be logged for the 'Access and Monitoring' criterion.",
-      "rule_id": "tools.configs.soc2-universal-audit-logging-missing",
-      "file": "/src/app/vulnerable.py",
-      "line": 31
-    },
-    {
-      "tool": "compliance",
-      "severity": "ERROR",
-      "title": "SOC2: SOC2 Compliance: Hardcoded sensitive string. SOC2 requires encryption of secrets and use of environment variables/vaults.",
-      "rule_id": "tools.configs.soc2-universal-hardcoded-secret",
-      "file": "/src/app/vulnerable.py",
-      "line": 31
-    },
-    {
-      "tool": "compliance",
-      "severity": "ERROR",
-      "title": "SOC2: SOC2 Compliance: Hardcoded sensitive string. SOC2 requires encryption of secrets and use of environment variables/vaults.",
-      "rule_id": "tools.configs.soc2-universal-hardcoded-secret",
-      "file": "/src/app/vulnerable.py",
-      "line": 32
-    },
-    {
-      "tool": "compliance",
-      "severity": "ERROR",
-      "title": "SOC2: AWS Access Key ID Value detected. This is a sensitive credential and should not be hardcoded here. Instead, read this value from an environment variable or keep it in a separate, private file.",
-      "rule_id": "generic.secrets.security.detected-aws-access-key-id-value.detected-aws-access-key-id-value",
-      "file": "/src/app/vulnerable.py",
-      "line": 36
-    },
-    {
-      "tool": "compliance",
-      "severity": "ERROR",
-      "title": "SOC2: SOC2 Compliance: Hardcoded sensitive string. SOC2 requires encryption of secrets and use of environment variables/vaults.",
-      "rule_id": "tools.configs.soc2-universal-hardcoded-secret",
-      "file": "/src/app/vulnerable.py",
-      "line": 37
-    },
-    {
-      "tool": "compliance",
-      "severity": "WARNING",
-      "title": "SOC2: SOC2 Compliance: Potential missing audit logging. Operations related to auth/access must be logged for the 'Access and Monitoring' criterion.",
-      "rule_id": "tools.configs.soc2-universal-audit-logging-missing",
-      "file": "/src/app/vulnerable.py",
-      "line": 38
-    },
-    {
-      "tool": "compliance",
-      "severity": "ERROR",
-      "title": "SOC2: SOC2 Compliance: Unencrypted data transmission (HTTP). SOC2 requires Encryption in Transit (HTTPS/TLS) for all non-local traffic.",
-      "rule_id": "tools.configs.soc2-universal-unencrypted-transmission",
-      "file": "/src/app/vulnerable.py",
-      "line": 79
     },
     {
       "tool": "compliance",
@@ -400,14 +301,6 @@
       "rule_id": "tools.configs.hipaa-universal-unencrypted-transmission",
       "file": "/src/app/vulnerable.js",
       "line": 13
-    },
-    {
-      "tool": "compliance",
-      "severity": "ERROR",
-      "title": "HIPAA: HIPAA Compliance: Unencrypted transmission of sensitive data. HIPAA requires Encryption in Transit (HTTPS/TLS) for all PHI traffic.",
-      "rule_id": "tools.configs.hipaa-universal-unencrypted-transmission",
-      "file": "/src/app/vulnerable.py",
-      "line": 79
     }
   ]
 }
