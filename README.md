@@ -1,111 +1,79 @@
-# AiDevSecOperations
+# AiDevSecOperations: Modular DevSecOps "Toolbox"
 
-**Automated Testing and Security** — Phase 1: DevSecOps CI/CD Pipeline
+**Automated Security & Compliance** — Phase 2: Professional Modular Orchestration
 
-A **plug-and-play security pipeline** that runs automatically on every push to the `dev` branch. Three security scanners run **in parallel** in a single GitHub Actions workflow, then a final normalize job merges everything into one unified report.
-
----
-
-## Pipeline Architecture
-
-```
-push to dev ──► ┌─────────────────────────────────────┐
-                │         security.yml (1 file)        │
-                │                                      │
-                │  ┌──────────┐  ┌──────┐  ┌────────┐ │  ← PARALLEL
-                │  │ Gitleaks │  │Semgrep│  │Dependabot│ │
-                │  │ (Secrets)│  │(SAST) │  │  (Deps) │ │
-                │  └────┬─────┘  └──┬───┘  └────┬────┘ │
-                │       └───────────┴────────────┘      │
-                │                   │                   │
-                │          ┌────────▼──────────┐        │
-                │          │ Normalize & Report │        │
-                │          └───────────────────┘        │
-                └─────────────────────────────────────--┘
-```
-
-| Job | Tool | What It Detects | Breaks CI? |
-|---|---|---|---|
-| `secret-scan` | **Gitleaks** | Hardcoded secrets, API keys, tokens in git history | ✅ Yes |
-| `sast` | **Semgrep** | Code vulnerabilities in any language (auto-detected) | ✅ Yes |
-| `dependency-scan` | **Dependabot API** | CVEs in open-source dependencies | ✅ Yes (critical/high) |
-| `normalize` | Python script | Merges all reports → `final-security-report.json` | — |
+This is a **plug-and-play, tool-agnostic security pipeline**. Unlike standard pipelines that are hardcoded to specific scanners, this architecture uses an **Adapter Pattern**, allowing you to swap tools (e.g., swapping Gitleaks for TruffleHog) without ever touching the core CI/CD code.
 
 ---
 
-## Language & Ecosystem Coverage
+## 🛠 Modular Architecture
 
-| Tool | Coverage |
-|---|---|
-| **Gitleaks** | Any file type (universal pattern matching) |
-| **Semgrep** | Python, JS/TS, Java, Go, C/C++, C#, Ruby, PHP, Kotlin, Rust, Terraform, Docker |
-| **Dependabot** | pip, npm, Maven, Gradle, NuGet, Bundler, gomod, Composer, Cargo, Docker, Terraform, GitHub Actions |
+The pipeline is organized into a **Toolbox** structure. Each tool is an independent "Plugin" located in the `tools/` directory.
 
----
-
-## File Structure
-
-```
+```text
 AiDevSecOperations/
-├── .github/
-│   ├── workflows/
-│   │   └── security.yml       ← Single workflow, 4 parallel jobs
-│   └── dependabot.yml         ← Dependency scan config (12 ecosystems)
-├── app/
-│   └── vulnerable.py          ← Test app with intentional vulns (validates the pipeline)
+├── .github/workflows/
+│   └── security.yml       ← The Orchestrator (Tool-Agnostic)
+├── tools/                 ← The Toolbox
+│   ├── secrets/           ← gitleaks.sh, trufflehog.sh (wrappers)
+│   ├── sast/              ← semgrep.sh, sonarqube.sh (wrappers)
+│   ├── dependency/        ← trivy.sh, owasp-zap.sh (wrappers)
+│   ├── compliance/        ← soc2.sh, hipaa.sh (compliance engines)
+│   └── configs/           ← .semgrep-soc2.yml, .semgrep-hipaa.yml (rules)
 ├── scripts/
-│   └── normalize.py           ← Merges all tool reports → final-security-report.json
-├── .gitleaks.toml             ← Gitleaks config (allowlist + custom patterns)
-├── .semgrep.yml               ← Custom Semgrep SAST rules (in addition to --config=auto)
-└── requirements.txt           ← Old CVE packages (triggers Dependabot alerts)
+│   └── normalize.py       ← The Universal Discovery Engine (merges results)
+└── ui/                    ← The Unified Security Dashboard
 ```
 
 ---
 
-## Setup (One-Time)
+## 🚀 Key Features
 
-### 1. Enable Dependabot Alerts
-Go to your repo → **Settings → Security → Code security and analysis** → enable:
-- ✅ Dependency graph
-- ✅ Dependabot alerts
+1.  **Plug & Play (BYOT)**: "Bring Your Own Tool." To add a new scanner, simply drop a `.sh` script into the appropriate `tools/` subfolder.
+2.  **Manual Selection**: Run specific tools on-demand via **GitHub Actions Inputs** (select tools like `gitleaks` or `semgrep` from a dropdown).
+3.  **Universal Compliance**: Dedicated modules for **SOC2** and **HIPAA** that work across any programming language (Go, Java, Python, JS).
+4.  **Zero-Configuration CI**: The main pipeline automatically detects available tools and normalizes their output into a unified state.
 
-### 2. Optional Secrets (for extra features)
-| Secret | Where | Purpose |
+---
+
+## 📊 Security & Compliance Coverage
+
+| Category | Supported Tools (Plugins) | Regulatory Standards |
 |---|---|---|
-| `SEMGREP_APP_TOKEN` | Repo Settings → Secrets | Enables Semgrep Cloud dashboard |
-| `GITLEAKS_LICENSE` | Repo Settings → Secrets | Only needed for GitHub org/enterprise |
-
-> For public repos, no secrets are required — the pipeline works out of the box with `GITHUB_TOKEN`.
-
-### 3. Trigger
-```bash
-git checkout -b dev
-git add .
-git commit -m "feat: add devsecops security pipeline"
-git push origin dev
-```
-
-Then watch **GitHub → Actions → DevSecOps Security Pipeline**.
+| **Secret Scanning** | Gitleaks, TruffleHog (Template) | SOC2, HIPAA |
+| **SAST (Static Code)** | Semgrep, SonarQube (Template) | OWASP Top 10 |
+| **SCA (Dependencies)** | Trivy, OWASP Dependency Check | Supply Chain Security |
+| **Compliance Audits** | Custom Multi-Language Engine | SOC2 Security & HIPAA PHI |
 
 ---
 
-## Swap a Tool (Plug-and-Play)
+## 🚦 How to Use
 
-| Goal | Change only... |
-|---|---|
-| Swap Gitleaks → TruffleHog | Replace the `secret-scan` job in `security.yml` |
-| Swap Semgrep → SonarQube | Replace the `sast` job in `security.yml` |
-| Swap Dependabot → Snyk | Replace the `dependency-scan` job in `security.yml` |
-| Add/remove Semgrep rules | Edit `.semgrep.yml` |
-| Whitelist Gitleaks false positives | Edit `.gitleaks.toml` |
+### 1. Manual Execution (Workflow Dispatch)
+Go to **GitHub Actions** → **DevSecOps "Plug & Play" Pipeline** → **Run workflow**. 
+You can choose:
+*   `secret_tool`: (default: `gitleaks`)
+*   `sast_tool`: (default: `semgrep`)
+*   `dependency_tool`: (default: `trivy`)
+*   Toggle `run_soc2` or `run_hipaa` ON/OFF.
+
+### 2. Dashboard Visibility
+On every run, the pipeline generates a `final-security-report.json` and automatically deploys a fresh **Security Dashboard** to **GitHub Pages**.
 
 ---
 
-## Artifacts Produced Per Run
+## 🧩 Adding a New Tool
+To integrate a new tool (e.g., Snyk):
+1.  Create `tools/dependency/snyk.sh`.
+2.  Inside the script, run the tool and ensure it outputs a JSON file named `dependency-report.json`.
+3.  Run the pipeline and enter `snyk` as the tool choice.
+4.  The **Universal Discovery Engine** will automatically pick up the results.
 
-| Artifact | Contents |
-|---|---|
-| `gitleaks-report` | Raw Gitleaks JSON output |
-| `semgrep-report` | Raw Semgrep JSON output |
-| `dependency-report` | Raw Dependabot API JSON output |
-| `final-security-report` | Unified merged report with summary counts |
+---
+
+## 👩‍🏫 Mentor Overview (The "Adapter Pattern")
+Explain to your mentor that this pipeline treats security tools as **interchangeable modules**. 
+*   **The Orchestrator** (`security.yml`) provides the interface.
+*   **The Adapters** (`tools/*.sh`) provide the implementation.
+*   **The Normalizer** (`normalize.py`) provides the data consistency.
+This structure is preferred at an **Enterprise Level** because it prevents tool locked-in and allows security teams to update rules without bothering development teams.
