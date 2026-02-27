@@ -1,50 +1,23 @@
 {
-  "generated_at": "2026-02-27T06:52:56.374931+00:00",
+  "generated_at": "2026-02-27T06:54:26.812786+00:00",
   "summary": {
-    "total_findings": 53,
-    "gitleaks": 3,
+    "total_findings": 50,
+    "gitleaks": 0,
     "semgrep": 2,
     "dependency": 11,
     "compliance": 37,
     "soc2_count": 21,
     "hipaa_count": 6,
     "by_severity": {
-      "CRITICAL": 5,
       "WARNING": 22,
       "ERROR": 14,
       "INFO": 1,
+      "CRITICAL": 2,
       "HIGH": 5,
       "MEDIUM": 6
     }
   },
   "findings": [
-    {
-      "tool": "gitleaks",
-      "severity": "CRITICAL",
-      "title": "Found a Stripe Access Token, posing a risk to payment processing services and sensitive financial data.",
-      "rule_id": "stripe-access-token",
-      "file": "/src/app/Vulnerable.java",
-      "line": 8,
-      "match": "sk_test_51MzS0vL3uYfTjSOC2KEY\""
-    },
-    {
-      "tool": "gitleaks",
-      "severity": "CRITICAL",
-      "title": "Detected a Generic API Key, potentially exposing access to various services and sensitive operations.",
-      "rule_id": "generic-api-key",
-      "file": "/src/app/vulnerable.py",
-      "line": 30,
-      "match": "AWS_ACCESS_TOKEN    = \"qA8rD4bT9jK2lL5mP7sW1vX3zY6hF0c\""
-    },
-    {
-      "tool": "gitleaks",
-      "severity": "CRITICAL",
-      "title": "Detected a Generic API Key, potentially exposing access to various services and sensitive operations.",
-      "rule_id": "generic-api-key",
-      "file": "/src/app/vulnerable.py",
-      "line": 31,
-      "match": "GITHUB_PAT_TOKEN    = \"xB9cF2vN4mK7pQ1wR8tG3yH5zL0jD6b\""
-    },
     {
       "tool": "compliance",
       "severity": "WARNING",
