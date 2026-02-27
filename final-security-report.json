@@ -1,19 +1,20 @@
 {
-  "generated_at": "2026-02-27T06:38:24.114529+00:00",
+  "generated_at": "2026-02-27T06:52:56.374931+00:00",
   "summary": {
-    "total_findings": 43,
+    "total_findings": 53,
     "gitleaks": 3,
-    "semgrep": 0,
+    "semgrep": 2,
     "dependency": 11,
-    "compliance": 29,
+    "compliance": 37,
     "soc2_count": 21,
     "hipaa_count": 6,
     "by_severity": {
       "CRITICAL": 5,
+      "WARNING": 22,
+      "ERROR": 14,
+      "INFO": 1,
       "HIGH": 5,
-      "MEDIUM": 6,
-      "ERROR": 12,
-      "WARNING": 15
+      "MEDIUM": 6
     }
   },
   "findings": [
@@ -43,6 +44,96 @@
       "file": "/src/app/vulnerable.py",
       "line": 31,
       "match": "GITHUB_PAT_TOKEN    = \"xB9cF2vN4mK7pQ1wR8tG3yH5zL0jD6b\""
+    },
+    {
+      "tool": "compliance",
+      "severity": "WARNING",
+      "title": "Detected MD5 hash algorithm which is considered insecure. MD5 is not collision resistant and is therefore not suitable as a cryptographic signature. Use SHA256 or SHA3 instead.",
+      "rule_id": "go.lang.security.audit.crypto.use_of_weak_crypto.use-of-md5",
+      "file": "/src/app/vulnerable.go",
+      "line": 16,
+      "code": "requires login"
+    },
+    {
+      "tool": "compliance",
+      "severity": "WARNING",
+      "title": "Checks for requests sent via http.Get to http:// URLS. This is dangerous because the server is attempting to connect to a website that does not encrypt traffic with TLS. Instead, send requests only to https:// URLS.",
+      "rule_id": "problem-based-packs.insecure-transport.go-stdlib.http-request.http-request",
+      "file": "/src/app/vulnerable.go",
+      "line": 21,
+      "code": "requires login"
+    },
+    {
+      "tool": "compliance",
+      "severity": "WARNING",
+      "title": "Checks for any usage of http servers instead of https servers. Encourages the usage of https protocol instead of http, which does not have TLS and is therefore unencrypted. Using http can lead to man-in-the-middle attacks in which the attacker is able to read sensitive information.",
+      "rule_id": "problem-based-packs.insecure-transport.js-node.using-http-server.using-http-server",
+      "file": "/src/app/vulnerable.js",
+      "line": 13,
+      "code": "requires login"
+    },
+    {
+      "tool": "compliance",
+      "severity": "WARNING",
+      "title": "Checks for requests sent to http:// URLs. This is dangerous as the server is attempting to connect to a website that does not encrypt traffic with TLS. Instead, only send requests to https:// URLs.",
+      "rule_id": "problem-based-packs.insecure-transport.js-node.http-request.http-request",
+      "file": "/src/app/vulnerable.js",
+      "line": 13,
+      "code": "requires login"
+    },
+    {
+      "tool": "compliance",
+      "severity": "ERROR",
+      "title": "Found 'subprocess' function 'run' with 'shell=True'. This is dangerous because this call will spawn the command using a shell process. Doing so propagates current shell settings and variables, which makes it much easier for a malicious actor to execute commands. Use 'shell=False' instead.",
+      "rule_id": "python.lang.security.audit.subprocess-shell-true.subprocess-shell-true",
+      "file": "/src/app/vulnerable.py",
+      "line": 39,
+      "code": "requires login"
+    },
+    {
+      "tool": "compliance",
+      "severity": "WARNING",
+      "title": "Detected possible formatted SQL query. Use parameterized queries instead.",
+      "rule_id": "python.lang.security.audit.formatted-sql-query.formatted-sql-query",
+      "file": "/src/app/vulnerable.py",
+      "line": 49,
+      "code": "requires login"
+    },
+    {
+      "tool": "semgrep",
+      "severity": "ERROR",
+      "title": "Avoiding SQL string concatenation: untrusted input concatenated with raw SQL query can result in SQL Injection. In order to execute raw query safely, prepared statement should be used. SQLAlchemy provides TextualSQL to easily used prepared statement with named parameters. For complex SQL composition, use SQL Expression Language or Schema Definition Language. In most cases, SQLAlchemy ORM will be a better option.",
+      "rule_id": "python.sqlalchemy.security.sqlalchemy-execute-raw-query.sqlalchemy-execute-raw-query",
+      "file": "/src/app/vulnerable.py",
+      "line": 49,
+      "code": "requires login"
+    },
+    {
+      "tool": "semgrep",
+      "severity": "WARNING",
+      "title": "Avoid using `pickle`, which is known to lead to code execution vulnerabilities. When unpickling, the serialized data could be manipulated to run arbitrary code. Instead, consider serializing the relevant data as JSON or a similar text-based serialization format.",
+      "rule_id": "python.lang.security.deserialization.pickle.avoid-pickle",
+      "file": "/src/app/vulnerable.py",
+      "line": 58,
+      "code": "requires login"
+    },
+    {
+      "tool": "compliance",
+      "severity": "INFO",
+      "title": "Detected a request using 'http://'. This request will be unencrypted, and attackers could listen into traffic on the network and be able to obtain sensitive information. Use 'https://' instead.",
+      "rule_id": "python.lang.security.audit.insecure-transport.requests.request-with-http.request-with-http",
+      "file": "/src/app/vulnerable.py",
+      "line": 72,
+      "code": "requires login"
+    },
+    {
+      "tool": "compliance",
+      "severity": "WARNING",
+      "title": "Detected the use of eval(). eval() can be dangerous if used to evaluate dynamic content. If this content can be input from outside the program, this may be a code injection vulnerability. Ensure evaluated content is not definable by external sources.",
+      "rule_id": "python.lang.security.audit.eval-detected.eval-detected",
+      "file": "/src/app/vulnerable.py",
+      "line": 93,
+      "code": "requires login"
     },
     {
       "tool": "trivy",
@@ -306,7 +397,7 @@
       "title": "SOC2: SOC2 Compliance: Potential missing audit logging. Operations related to auth/access must be logged for the 'Access and Monitoring' criterion.",
       "rule_id": "tools.configs.soc2-universal-audit-logging-missing",
       "file": "/src/scripts/normalize.py",
-      "line": 114
+      "line": 139
     },
     {
       "tool": "compliance",
@@ -314,7 +405,7 @@
       "title": "SOC2: SOC2 Compliance: Potential missing audit logging. Operations related to auth/access must be logged for the 'Access and Monitoring' criterion.",
       "rule_id": "tools.configs.soc2-universal-audit-logging-missing",
       "file": "/src/scripts/normalize.py",
-      "line": 114
+      "line": 139
     },
     {
       "tool": "compliance",
