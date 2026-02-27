@@ -1,18 +1,17 @@
 {
-  "generated_at": "2026-02-27T11:41:35.973501+00:00",
+  "generated_at": "2026-02-27T11:44:14.542275+00:00",
   "summary": {
-    "total_findings": 57,
+    "total_findings": 48,
     "gitleaks": 3,
-    "semgrep": 3,
+    "semgrep": 1,
     "dependency": 11,
-    "compliance": 40,
-    "soc2_count": 24,
+    "compliance": 33,
+    "soc2_count": 21,
     "hipaa_count": 6,
     "by_severity": {
       "CRITICAL": 5,
-      "WARNING": 23,
-      "ERROR": 17,
-      "INFO": 1,
+      "WARNING": 18,
+      "ERROR": 14,
       "HIGH": 5,
       "MEDIUM": 6
     }
@@ -88,60 +87,6 @@
       "rule_id": "generic.secrets.security.detected-aws-access-key-id-value.detected-aws-access-key-id-value",
       "file": "/src/app/vulnerable.py",
       "line": 36,
-      "code": "requires login"
-    },
-    {
-      "tool": "compliance",
-      "severity": "ERROR",
-      "title": "Found 'subprocess' function 'run' with 'shell=True'. This is dangerous because this call will spawn the command using a shell process. Doing so propagates current shell settings and variables, which makes it much easier for a malicious actor to execute commands. Use 'shell=False' instead.",
-      "rule_id": "python.lang.security.audit.subprocess-shell-true.subprocess-shell-true",
-      "file": "/src/app/vulnerable.py",
-      "line": 46,
-      "code": "requires login"
-    },
-    {
-      "tool": "compliance",
-      "severity": "WARNING",
-      "title": "Detected possible formatted SQL query. Use parameterized queries instead.",
-      "rule_id": "python.lang.security.audit.formatted-sql-query.formatted-sql-query",
-      "file": "/src/app/vulnerable.py",
-      "line": 56,
-      "code": "requires login"
-    },
-    {
-      "tool": "semgrep",
-      "severity": "ERROR",
-      "title": "Avoiding SQL string concatenation: untrusted input concatenated with raw SQL query can result in SQL Injection. In order to execute raw query safely, prepared statement should be used. SQLAlchemy provides TextualSQL to easily used prepared statement with named parameters. For complex SQL composition, use SQL Expression Language or Schema Definition Language. In most cases, SQLAlchemy ORM will be a better option.",
-      "rule_id": "python.sqlalchemy.security.sqlalchemy-execute-raw-query.sqlalchemy-execute-raw-query",
-      "file": "/src/app/vulnerable.py",
-      "line": 56,
-      "code": "requires login"
-    },
-    {
-      "tool": "semgrep",
-      "severity": "WARNING",
-      "title": "Avoid using `pickle`, which is known to lead to code execution vulnerabilities. When unpickling, the serialized data could be manipulated to run arbitrary code. Instead, consider serializing the relevant data as JSON or a similar text-based serialization format.",
-      "rule_id": "python.lang.security.deserialization.pickle.avoid-pickle",
-      "file": "/src/app/vulnerable.py",
-      "line": 65,
-      "code": "requires login"
-    },
-    {
-      "tool": "compliance",
-      "severity": "INFO",
-      "title": "Detected a request using 'http://'. This request will be unencrypted, and attackers could listen into traffic on the network and be able to obtain sensitive information. Use 'https://' instead.",
-      "rule_id": "python.lang.security.audit.insecure-transport.requests.request-with-http.request-with-http",
-      "file": "/src/app/vulnerable.py",
-      "line": 79,
-      "code": "requires login"
-    },
-    {
-      "tool": "compliance",
-      "severity": "WARNING",
-      "title": "Detected the use of eval(). eval() can be dangerous if used to evaluate dynamic content. If this content can be input from outside the program, this may be a code injection vulnerability. Ensure evaluated content is not definable by external sources.",
-      "rule_id": "python.lang.security.audit.eval-detected.eval-detected",
-      "file": "/src/app/vulnerable.py",
-      "line": 100,
       "code": "requires login"
     },
     {
@@ -395,34 +340,10 @@
     {
       "tool": "compliance",
       "severity": "ERROR",
-      "title": "SOC2: Found 'subprocess' function 'run' with 'shell=True'. This is dangerous because this call will spawn the command using a shell process. Doing so propagates current shell settings and variables, which makes it much easier for a malicious actor to execute commands. Use 'shell=False' instead.",
-      "rule_id": "python.lang.security.audit.subprocess-shell-true.subprocess-shell-true",
-      "file": "/src/app/vulnerable.py",
-      "line": 46
-    },
-    {
-      "tool": "compliance",
-      "severity": "WARNING",
-      "title": "SOC2: Avoid using `pickle`, which is known to lead to code execution vulnerabilities. When unpickling, the serialized data could be manipulated to run arbitrary code. Instead, consider serializing the relevant data as JSON or a similar text-based serialization format.",
-      "rule_id": "python.lang.security.deserialization.pickle.avoid-pickle",
-      "file": "/src/app/vulnerable.py",
-      "line": 65
-    },
-    {
-      "tool": "compliance",
-      "severity": "ERROR",
       "title": "SOC2: SOC2 Compliance: Unencrypted data transmission (HTTP). SOC2 requires Encryption in Transit (HTTPS/TLS) for all non-local traffic.",
       "rule_id": "tools.configs.soc2-universal-unencrypted-transmission",
       "file": "/src/app/vulnerable.py",
       "line": 79
-    },
-    {
-      "tool": "compliance",
-      "severity": "WARNING",
-      "title": "SOC2: Detected the use of eval(). eval() can be dangerous if used to evaluate dynamic content. If this content can be input from outside the program, this may be a code injection vulnerability. Ensure evaluated content is not definable by external sources.",
-      "rule_id": "python.lang.security.audit.eval-detected.eval-detected",
-      "file": "/src/app/vulnerable.py",
-      "line": 100
     },
     {
       "tool": "compliance",
