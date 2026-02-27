@@ -27,8 +27,15 @@ import yaml
 import os
 
 
-AWS_ACCESS_TOKEN    = "qA8rD4bT9jK2lL5mP7sW1vX3zY6hF0c"           # noqa: S105
-GITHUB_PAT_TOKEN    = "xB9cF2vN4mK7pQ1wR8tG3yH5zL0jD6b"           # noqa: S105        # noqa: S105
+# Standard Secrets (will trigger Gitleaks)
+AWS_ACCESS_TOKEN    = "qA8rD4bT9jK2lL5mP7sW1vX3zY6hF0c"
+GITHUB_PAT_TOKEN    = "xB9cF2vN4mK7pQ1wR8tG3yH5zL0jD6b"
+
+# High-Confidence Secrets (will trigger TruffleHog)
+# Note: These are fake decoy strings in the correct format.
+AWS_KEY_ID          = "AKIA2J5F6B7C8D9E0A1B"
+AWS_SECRET_KEY      = "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
+DB_CONNECTION_URL   = "postgres://admin:SuperSecretPassword123!@localhost:5432/production_db"
 
 
 # ── 5: Command Injection ──────────────────────────────────────────────────────
