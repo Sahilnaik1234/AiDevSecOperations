@@ -38,20 +38,20 @@ jobs:
   # Dynamically calls wrappers based on input
   # ============================================================
   security-scans:
-    name: "🚀 Security Toolbox - Execution"
+    name: " Security Toolbox - Execution"
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: 🗝️ Run Secret Scan
+      - name:  Run Secret Scan
         env:
           TOOL: ${{ github.event.inputs.secret_tool || 'gitleaks' }}
         run: |
           chmod +x tools/secrets/$TOOL.sh
           ./tools/secrets/$TOOL.sh
 
-      - name: 🐛 Run SAST Scan
+      - name:  Run SAST Scan
         env:
           TOOL: ${{ github.event.inputs.sast_tool || 'semgrep' }}
           SEMGREP_APP_TOKEN: ${{ secrets.SEMGREP_APP_TOKEN }}
@@ -59,20 +59,20 @@ jobs:
           chmod +x tools/sast/$TOOL.sh
           ./tools/sast/$TOOL.sh
 
-      - name: 📦 Run Dependency Scan
+      - name:  Run Dependency Scan
         env:
           TOOL: ${{ github.event.inputs.dependency_tool || 'trivy' }}
         run: |
           chmod +x tools/dependency/$TOOL.sh
           ./tools/dependency/$TOOL.sh
 
-      - name: ⚖️ Run SOC2 Compliance
+      - name:  Run SOC2 Compliance
         if: github.event_name != 'workflow_dispatch' || github.event.inputs.run_soc2 == 'true'
         run: |
           chmod +x tools/compliance/soc2.sh
           ./tools/compliance/soc2.sh
 
-      - name: 🏥 Run HIPAA Compliance
+      - name:  Run HIPAA Compliance
         if: github.event_name != 'workflow_dispatch' || github.event.inputs.run_hipaa == 'true'
         run: |
           chmod +x tools/compliance/hipaa.sh

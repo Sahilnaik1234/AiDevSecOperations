@@ -13,6 +13,29 @@ from datetime import datetime, timezone
 BASE_DIR = os.path.join(os.path.dirname(__file__), "..")
 OUTPUT_FILE = os.path.join(BASE_DIR, "final-security-report.json")
 
+def process_trufflehog(report_path: str) -> list:
+    findings = []
+    if not os.path.isfile(report_path): return findings
+    with open(report_path, encoding="utf-8") as f:
+        # TruffleHog outputs NDJSON (newline-delimited JSON)
+        for line in f:
+            if not line.strip(): continue
+            try:
+                data = json.loads(line)
+                # TruffleHog v3 schema
+                source_info = data.get("SourceMetadata", {}).get("Data", {}).get("Filesystem", {})
+                findings.append({
+                    "tool"        : "trufflehog",
+                    "severity"    : "CRITICAL",
+                    "title"       : f"Secret found: {data.get('DetectorName', 'Unknown')}",
+                    "rule_id"     : data.get("DetectorName", "unknown"),
+                    "file"        : source_info.get("file", ""),
+                    "line"        : source_info.get("line", 0),
+                    "match"       : data.get("Raw", "Redacted")[:50],
+                })
+            except: continue
+    return findings
+
 def process_gitleaks(report_path: str) -> list:
     findings = []
     if not os.path.isfile(report_path): return findings
@@ -104,6 +127,8 @@ def main():
         return ""
 
     all_findings = []
+    all_findings += process_trufflehog(find_report("truffhog-report.json"))
+    all_findings += process_trufflehog(find_report("trufflehog-report.json"))
     all_findings += process_gitleaks(find_report("gitleaks-report.json"))
     all_findings += process_semgrep(find_report("semgrep-report.json"))
     all_findings += process_trivy(find_report("dependency-report.json"))
@@ -126,7 +151,7 @@ def main():
     # Calculate Summary
     summary = {
         "total_findings": len(all_findings),
-        "gitleaks":  sum(1 for f in all_findings if f["tool"] == "gitleaks"),
+        "gitleaks":  sum(1 for f in all_findings if f["tool"] in ["gitleaks", "trufflehog"]),
         "semgrep":   sum(1 for f in all_findings if f["tool"] == "semgrep"),
         "dependency": sum(1 for f in all_findings if f["tool"] == "trivy"),
         "compliance": sum(1 for f in all_findings if f["tool"] == "compliance"),
