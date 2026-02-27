@@ -1,23 +1,50 @@
 {
-  "generated_at": "2026-02-27T07:00:31.400575+00:00",
+  "generated_at": "2026-02-27T11:20:54.722983+00:00",
   "summary": {
-    "total_findings": 66,
-    "gitleaks": 0,
-    "semgrep": 9,
+    "total_findings": 57,
+    "gitleaks": 3,
+    "semgrep": 3,
     "dependency": 11,
-    "compliance": 46,
-    "soc2_count": 30,
+    "compliance": 40,
+    "soc2_count": 24,
     "hipaa_count": 6,
     "by_severity": {
+      "CRITICAL": 5,
       "WARNING": 23,
-      "ERROR": 29,
+      "ERROR": 17,
       "INFO": 1,
-      "CRITICAL": 2,
       "HIGH": 5,
       "MEDIUM": 6
     }
   },
   "findings": [
+    {
+      "tool": "gitleaks",
+      "severity": "CRITICAL",
+      "title": "Found a Stripe Access Token, posing a risk to payment processing services and sensitive financial data.",
+      "rule_id": "stripe-access-token",
+      "file": "/src/app/Vulnerable.java",
+      "line": 8,
+      "match": "sk_test_51MzS0vL3uYfTjSOC2KEY\""
+    },
+    {
+      "tool": "gitleaks",
+      "severity": "CRITICAL",
+      "title": "Detected a Generic API Key, potentially exposing access to various services and sensitive operations.",
+      "rule_id": "generic-api-key",
+      "file": "/src/app/vulnerable.py",
+      "line": 31,
+      "match": "AWS_ACCESS_TOKEN    = \"qA8rD4bT9jK2lL5mP7sW1vX3zY6hF0c\""
+    },
+    {
+      "tool": "gitleaks",
+      "severity": "CRITICAL",
+      "title": "Detected a Generic API Key, potentially exposing access to various services and sensitive operations.",
+      "rule_id": "generic-api-key",
+      "file": "/src/app/vulnerable.py",
+      "line": 32,
+      "match": "GITHUB_PAT_TOKEN    = \"xB9cF2vN4mK7pQ1wR8tG3yH5zL0jD6b\""
+    },
     {
       "tool": "compliance",
       "severity": "WARNING",
@@ -115,60 +142,6 @@
       "rule_id": "python.lang.security.audit.eval-detected.eval-detected",
       "file": "/src/app/vulnerable.py",
       "line": 100,
-      "code": "requires login"
-    },
-    {
-      "tool": "semgrep",
-      "severity": "ERROR",
-      "title": "AWS Access Key ID Value detected. This is a sensitive credential and should not be hardcoded here. Instead, read this value from an environment variable or keep it in a separate, private file.",
-      "rule_id": "generic.secrets.security.detected-aws-access-key-id-value.detected-aws-access-key-id-value",
-      "file": "/src/trufflehog-report.json",
-      "line": 2,
-      "code": "requires login"
-    },
-    {
-      "tool": "semgrep",
-      "severity": "ERROR",
-      "title": "AWS Access Key ID Value detected. This is a sensitive credential and should not be hardcoded here. Instead, read this value from an environment variable or keep it in a separate, private file.",
-      "rule_id": "generic.secrets.security.detected-aws-access-key-id-value.detected-aws-access-key-id-value",
-      "file": "/src/trufflehog-report.json",
-      "line": 2,
-      "code": "requires login"
-    },
-    {
-      "tool": "semgrep",
-      "severity": "ERROR",
-      "title": "AWS Access Key ID Value detected. This is a sensitive credential and should not be hardcoded here. Instead, read this value from an environment variable or keep it in a separate, private file.",
-      "rule_id": "generic.secrets.security.detected-aws-access-key-id-value.detected-aws-access-key-id-value",
-      "file": "/src/trufflehog-report.json",
-      "line": 2,
-      "code": "requires login"
-    },
-    {
-      "tool": "semgrep",
-      "severity": "ERROR",
-      "title": "AWS Access Key ID Value detected. This is a sensitive credential and should not be hardcoded here. Instead, read this value from an environment variable or keep it in a separate, private file.",
-      "rule_id": "generic.secrets.security.detected-aws-access-key-id-value.detected-aws-access-key-id-value",
-      "file": "/src/trufflehog-report.json",
-      "line": 3,
-      "code": "requires login"
-    },
-    {
-      "tool": "semgrep",
-      "severity": "ERROR",
-      "title": "AWS Access Key ID Value detected. This is a sensitive credential and should not be hardcoded here. Instead, read this value from an environment variable or keep it in a separate, private file.",
-      "rule_id": "generic.secrets.security.detected-aws-access-key-id-value.detected-aws-access-key-id-value",
-      "file": "/src/trufflehog-report.json",
-      "line": 3,
-      "code": "requires login"
-    },
-    {
-      "tool": "semgrep",
-      "severity": "ERROR",
-      "title": "AWS Access Key ID Value detected. This is a sensitive credential and should not be hardcoded here. Instead, read this value from an environment variable or keep it in a separate, private file.",
-      "rule_id": "generic.secrets.security.detected-aws-access-key-id-value.detected-aws-access-key-id-value",
-      "file": "/src/trufflehog-report.json",
-      "line": 3,
       "code": "requires login"
     },
     {
@@ -466,54 +439,6 @@
       "rule_id": "tools.configs.soc2-universal-audit-logging-missing",
       "file": "/src/scripts/normalize.py",
       "line": 139
-    },
-    {
-      "tool": "compliance",
-      "severity": "ERROR",
-      "title": "SOC2: AWS Access Key ID Value detected. This is a sensitive credential and should not be hardcoded here. Instead, read this value from an environment variable or keep it in a separate, private file.",
-      "rule_id": "generic.secrets.security.detected-aws-access-key-id-value.detected-aws-access-key-id-value",
-      "file": "/src/trufflehog-report.json",
-      "line": 2
-    },
-    {
-      "tool": "compliance",
-      "severity": "ERROR",
-      "title": "SOC2: AWS Access Key ID Value detected. This is a sensitive credential and should not be hardcoded here. Instead, read this value from an environment variable or keep it in a separate, private file.",
-      "rule_id": "generic.secrets.security.detected-aws-access-key-id-value.detected-aws-access-key-id-value",
-      "file": "/src/trufflehog-report.json",
-      "line": 2
-    },
-    {
-      "tool": "compliance",
-      "severity": "ERROR",
-      "title": "SOC2: AWS Access Key ID Value detected. This is a sensitive credential and should not be hardcoded here. Instead, read this value from an environment variable or keep it in a separate, private file.",
-      "rule_id": "generic.secrets.security.detected-aws-access-key-id-value.detected-aws-access-key-id-value",
-      "file": "/src/trufflehog-report.json",
-      "line": 2
-    },
-    {
-      "tool": "compliance",
-      "severity": "ERROR",
-      "title": "SOC2: AWS Access Key ID Value detected. This is a sensitive credential and should not be hardcoded here. Instead, read this value from an environment variable or keep it in a separate, private file.",
-      "rule_id": "generic.secrets.security.detected-aws-access-key-id-value.detected-aws-access-key-id-value",
-      "file": "/src/trufflehog-report.json",
-      "line": 3
-    },
-    {
-      "tool": "compliance",
-      "severity": "ERROR",
-      "title": "SOC2: AWS Access Key ID Value detected. This is a sensitive credential and should not be hardcoded here. Instead, read this value from an environment variable or keep it in a separate, private file.",
-      "rule_id": "generic.secrets.security.detected-aws-access-key-id-value.detected-aws-access-key-id-value",
-      "file": "/src/trufflehog-report.json",
-      "line": 3
-    },
-    {
-      "tool": "compliance",
-      "severity": "ERROR",
-      "title": "SOC2: AWS Access Key ID Value detected. This is a sensitive credential and should not be hardcoded here. Instead, read this value from an environment variable or keep it in a separate, private file.",
-      "rule_id": "generic.secrets.security.detected-aws-access-key-id-value.detected-aws-access-key-id-value",
-      "file": "/src/trufflehog-report.json",
-      "line": 3
     },
     {
       "tool": "compliance",
