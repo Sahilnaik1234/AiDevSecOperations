@@ -1,16 +1,16 @@
 {
-  "generated_at": "2026-02-27T12:02:50.185527+00:00",
+  "generated_at": "2026-03-06T12:45:50.038261+00:00",
   "summary": {
-    "total_findings": 35,
+    "total_findings": 33,
     "gitleaks": 1,
     "semgrep": 0,
     "dependency": 11,
-    "compliance": 23,
-    "soc2_count": 12,
-    "hipaa_count": 5,
+    "compliance": 21,
+    "soc2_count": 11,
+    "hipaa_count": 4,
     "by_severity": {
       "CRITICAL": 3,
-      "WARNING": 13,
+      "WARNING": 11,
       "HIGH": 5,
       "MEDIUM": 6,
       "ERROR": 8
@@ -23,7 +23,7 @@
       "title": "Found a Stripe Access Token, posing a risk to payment processing services and sensitive financial data.",
       "rule_id": "stripe-access-token",
       "file": "/src/app/Vulnerable.java",
-      "line": 8,
+      "line": 6,
       "match": "sk_test_51MzS0vL3uYfTjSOC2KEY\""
     },
     {
@@ -172,15 +172,7 @@
       "title": "SOC2: SOC2 Compliance: Hardcoded sensitive string. SOC2 requires encryption of secrets and use of environment variables/vaults.",
       "rule_id": "tools.configs.soc2-universal-hardcoded-secret",
       "file": "/src/app/Vulnerable.java",
-      "line": 8
-    },
-    {
-      "tool": "compliance",
-      "severity": "WARNING",
-      "title": "SOC2: SOC2 Compliance: Potential missing audit logging. Operations related to auth/access must be logged for the 'Access and Monitoring' criterion.",
-      "rule_id": "tools.configs.soc2-universal-audit-logging-missing",
-      "file": "/src/app/Vulnerable.java",
-      "line": 13
+      "line": 6
     },
     {
       "tool": "compliance",
@@ -261,14 +253,6 @@
       "rule_id": "tools.configs.soc2-universal-audit-logging-missing",
       "file": "/src/scripts/normalize.py",
       "line": 139
-    },
-    {
-      "tool": "compliance",
-      "severity": "WARNING",
-      "title": "HIPAA: HIPAA Compliance: Missing audit log for PHI access. HIPAA requires logging of all interactions with Protected Health Information.",
-      "rule_id": "tools.configs.hipaa-universal-missing-access-log",
-      "file": "/src/app/Vulnerable.java",
-      "line": 13
     },
     {
       "tool": "compliance",
