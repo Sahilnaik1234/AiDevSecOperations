@@ -1,22 +1,31 @@
 {
-  "generated_at": "2026-03-06T12:50:32.644748+00:00",
+  "generated_at": "2026-03-16T09:32:14.505940+00:00",
   "summary": {
-    "total_findings": 20,
-    "gitleaks": 0,
+    "total_findings": 22,
+    "gitleaks": 1,
     "semgrep": 0,
     "dependency": 11,
-    "compliance": 9,
-    "soc2_count": 4,
+    "compliance": 10,
+    "soc2_count": 5,
     "hipaa_count": 2,
     "by_severity": {
+      "CRITICAL": 3,
       "WARNING": 5,
-      "CRITICAL": 2,
       "HIGH": 5,
       "MEDIUM": 6,
-      "ERROR": 2
+      "ERROR": 3
     }
   },
   "findings": [
+    {
+      "tool": "gitleaks",
+      "severity": "CRITICAL",
+      "title": "Detected a Generic API Key, potentially exposing access to various services and sensitive operations.",
+      "rule_id": "generic-api-key",
+      "file": "/src/app/Vulnerable.java",
+      "line": 6,
+      "match": "apiKey = \"sk-1234567890abcdef\""
+    },
     {
       "tool": "compliance",
       "severity": "WARNING",
@@ -129,6 +138,14 @@
       "rule_id": "CVE-2025-50181",
       "package": "urllib3",
       "manifest_path": "requirements.txt"
+    },
+    {
+      "tool": "compliance",
+      "severity": "ERROR",
+      "title": "SOC2: SOC2 Compliance: Hardcoded sensitive string. SOC2 requires encryption of secrets and use of environment variables/vaults.",
+      "rule_id": "tools.configs.soc2-universal-hardcoded-secret",
+      "file": "/src/app/Vulnerable.java",
+      "line": 6
     },
     {
       "tool": "compliance",
