@@ -1,18 +1,16 @@
 {
-  "generated_at": "2026-03-16T09:32:14.505940+00:00",
+  "generated_at": "2026-04-06T13:15:18.083549+00:00",
   "summary": {
-    "total_findings": 22,
+    "total_findings": 9,
     "gitleaks": 1,
     "semgrep": 0,
-    "dependency": 11,
-    "compliance": 10,
+    "dependency": 0,
+    "compliance": 8,
     "soc2_count": 5,
     "hipaa_count": 2,
     "by_severity": {
-      "CRITICAL": 3,
+      "CRITICAL": 1,
       "WARNING": 5,
-      "HIGH": 5,
-      "MEDIUM": 6,
       "ERROR": 3
     }
   },
@@ -34,110 +32,6 @@
       "file": "/src/app/vulnerable.go",
       "line": 11,
       "code": "requires login"
-    },
-    {
-      "tool": "trivy",
-      "severity": "CRITICAL",
-      "title": "python-sqlalchemy: SQL Injection when the order_by parameter can be controlled",
-      "rule_id": "CVE-2019-7164",
-      "package": "sqlalchemy",
-      "manifest_path": "requirements.txt"
-    },
-    {
-      "tool": "trivy",
-      "severity": "CRITICAL",
-      "title": "python-sqlalchemy: SQL Injection when the group_by parameter can be controlled",
-      "rule_id": "CVE-2019-7548",
-      "package": "sqlalchemy",
-      "manifest_path": "requirements.txt"
-    },
-    {
-      "tool": "trivy",
-      "severity": "HIGH",
-      "title": "python-urllib3: Certification mishandle when error should be thrown",
-      "rule_id": "CVE-2019-11324",
-      "package": "urllib3",
-      "manifest_path": "requirements.txt"
-    },
-    {
-      "tool": "trivy",
-      "severity": "HIGH",
-      "title": "python-urllib3: Cookie request header isn't stripped during cross-origin redirects",
-      "rule_id": "CVE-2023-43804",
-      "package": "urllib3",
-      "manifest_path": "requirements.txt"
-    },
-    {
-      "tool": "trivy",
-      "severity": "HIGH",
-      "title": "urllib3: urllib3: Unbounded decompression chain leads to resource exhaustion",
-      "rule_id": "CVE-2025-66418",
-      "package": "urllib3",
-      "manifest_path": "requirements.txt"
-    },
-    {
-      "tool": "trivy",
-      "severity": "HIGH",
-      "title": "urllib3: urllib3 Streaming API improperly handles highly compressed data",
-      "rule_id": "CVE-2025-66471",
-      "package": "urllib3",
-      "manifest_path": "requirements.txt"
-    },
-    {
-      "tool": "trivy",
-      "severity": "HIGH",
-      "title": "urllib3: urllib3 vulnerable to decompression-bomb safeguard bypass when following HTTP redirects (streaming API)",
-      "rule_id": "CVE-2026-21441",
-      "package": "urllib3",
-      "manifest_path": "requirements.txt"
-    },
-    {
-      "tool": "compliance",
-      "severity": "MEDIUM",
-      "title": "urllib3: urllib3 does not remove the authorization HTTP header when following a cross-origin redirect",
-      "rule_id": "CVE-2018-25091",
-      "package": "urllib3",
-      "manifest_path": "requirements.txt"
-    },
-    {
-      "tool": "trivy",
-      "severity": "MEDIUM",
-      "title": "python-urllib3: CRLF injection due to not encoding the '\\r\\n' sequence leading to possible attack on internal service",
-      "rule_id": "CVE-2019-11236",
-      "package": "urllib3",
-      "manifest_path": "requirements.txt"
-    },
-    {
-      "tool": "trivy",
-      "severity": "MEDIUM",
-      "title": "python-urllib3: CRLF injection via HTTP request method",
-      "rule_id": "CVE-2020-26137",
-      "package": "urllib3",
-      "manifest_path": "requirements.txt"
-    },
-    {
-      "tool": "trivy",
-      "severity": "MEDIUM",
-      "title": "urllib3: Request body not stripped after redirect from 303 status changes request method to GET",
-      "rule_id": "CVE-2023-45803",
-      "package": "urllib3",
-      "manifest_path": "requirements.txt"
-    },
-    {
-      "tool": "compliance",
-      "severity": "MEDIUM",
-      "title": "urllib3: proxy-authorization request header is not stripped during cross-origin redirects",
-      "rule_id": "CVE-2024-37891",
-      "package": "urllib3",
-      "manifest_path": "requirements.txt"
-    },
-    {
-      "tool": "trivy",
-      "severity": "MEDIUM",
-      "title": "urllib3: urllib3 redirects are not disabled when retries are disabled on PoolManager instantiation",
-      "rule_id": "CVE-2025-50181",
-      "package": "urllib3",
-      "manifest_path": "requirements.txt"
     },
     {
       "tool": "compliance",
