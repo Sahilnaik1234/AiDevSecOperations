@@ -70,10 +70,3 @@ To integrate a new tool (e.g., Snyk):
 4.  The **Universal Discovery Engine** will automatically pick up the results.
 
 ---
-
-## 👩‍🏫 Mentor Overview (The "Adapter Pattern")
-Explain to your mentor that this pipeline treats security tools as **interchangeable modules**. 
-*   **The Orchestrator** (`security.yml`) provides the interface.
-*   **The Adapters** (`tools/*.sh`) provide the implementation.
-*   **The Normalizer** (`normalize.py`) provides the data consistency.
-This structure is preferred at an **Enterprise Level** because it prevents tool locked-in and allows security teams to update rules without bothering development teams.
