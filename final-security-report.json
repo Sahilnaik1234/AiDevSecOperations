@@ -1,17 +1,19 @@
 {
-  "generated_at": "2026-04-07T05:38:04.469443+00:00",
+  "generated_at": "2026-04-07T05:40:17.788979+00:00",
   "summary": {
-    "total_findings": 3,
+    "total_findings": 5,
     "gitleaks": 0,
     "semgrep": 0,
     "dependency": 0,
     "compliance": 3,
-    "claude": 0,
+    "claude": 2,
     "soc2_count": 2,
     "hipaa_count": 1,
     "by_severity": {
       "WARNING": 2,
-      "ERROR": 1
+      "ERROR": 1,
+      "HIGH": 1,
+      "CRITICAL": 1
     }
   },
   "findings": [
@@ -38,6 +40,24 @@
       "rule_id": "tools.configs.hipaa-universal-insecure-phi-storage",
       "file": "/src/app/vulnerable.js",
       "line": 6
+    },
+    {
+      "tool": "claude",
+      "severity": "HIGH",
+      "title": "Unsafe memory access in sensitive module",
+      "rule_id": "CL-001",
+      "file": "app/Vulnerable.java",
+      "line": 42,
+      "match": "unsafe_memory_access()"
+    },
+    {
+      "tool": "claude",
+      "severity": "CRITICAL",
+      "title": "Possible SQL injection detected by Claude",
+      "rule_id": "CL-012",
+      "file": "app/vulnerable.go",
+      "line": 15,
+      "match": "db.Query(\"SELECT * FROM users WHERE id=\" + userId)"
     }
   ]
 }
