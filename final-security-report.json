@@ -1,93 +1,43 @@
 {
-  "generated_at": "2026-04-07T05:37:40.860101+00:00",
+  "generated_at": "2026-04-07T05:38:04.469443+00:00",
   "summary": {
-    "total_findings": 9,
-    "gitleaks": 1,
+    "total_findings": 3,
+    "gitleaks": 0,
     "semgrep": 0,
     "dependency": 0,
-    "compliance": 8,
-    "soc2_count": 5,
-    "hipaa_count": 2,
+    "compliance": 3,
+    "claude": 0,
+    "soc2_count": 2,
+    "hipaa_count": 1,
     "by_severity": {
-      "CRITICAL": 1,
-      "WARNING": 5,
-      "ERROR": 3
+      "WARNING": 2,
+      "ERROR": 1
     }
   },
   "findings": [
     {
-      "tool": "gitleaks",
-      "severity": "CRITICAL",
-      "title": "Detected a Generic API Key, potentially exposing access to various services and sensitive operations.",
-      "rule_id": "generic-api-key",
-      "file": "/src/app/Vulnerable.java",
-      "line": 6,
-      "match": "apiKey = \"sk-1234567890abcdef\""
+      "tool": "compliance",
+      "severity": "WARNING",
+      "title": "SOC2: SOC2 Compliance: Potential missing audit logging. Operations related to auth/access must be logged for the 'Access and Monitoring' criterion.",
+      "rule_id": "tools.configs.soc2-universal-audit-logging-missing",
+      "file": "/src/scripts/normalize.py",
+      "line": 159
     },
     {
       "tool": "compliance",
       "severity": "WARNING",
-      "title": "Detected MD5 hash algorithm which is considered insecure. MD5 is not collision resistant and is therefore not suitable as a cryptographic signature. Use SHA256 or SHA3 instead.",
-      "rule_id": "go.lang.security.audit.crypto.use_of_weak_crypto.use-of-md5",
-      "file": "/src/app/vulnerable.go",
-      "line": 11,
-      "code": "requires login"
+      "title": "SOC2: SOC2 Compliance: Potential missing audit logging. Operations related to auth/access must be logged for the 'Access and Monitoring' criterion.",
+      "rule_id": "tools.configs.soc2-universal-audit-logging-missing",
+      "file": "/src/scripts/normalize.py",
+      "line": 159
     },
     {
       "tool": "compliance",
       "severity": "ERROR",
-      "title": "SOC2: SOC2 Compliance: Hardcoded sensitive string. SOC2 requires encryption of secrets and use of environment variables/vaults.",
-      "rule_id": "tools.configs.soc2-universal-hardcoded-secret",
-      "file": "/src/app/Vulnerable.java",
+      "title": "HIPAA: HIPAA Compliance: Sensitive PHI being logged to plain text. HIPAA prohibits exposing PHI in application logs or insecure storage.",
+      "rule_id": "tools.configs.hipaa-universal-insecure-phi-storage",
+      "file": "/src/app/vulnerable.js",
       "line": 6
-    },
-    {
-      "tool": "compliance",
-      "severity": "WARNING",
-      "title": "SOC2: Detected MD5 hash algorithm which is considered insecure. MD5 is not collision resistant and is therefore not suitable as a cryptographic signature. Use SHA256 or SHA3 instead.",
-      "rule_id": "go.lang.security.audit.crypto.use_of_weak_crypto.use-of-md5",
-      "file": "/src/app/vulnerable.go",
-      "line": 11
-    },
-    {
-      "tool": "compliance",
-      "severity": "WARNING",
-      "title": "SOC2: SOC2 Compliance: Potential missing audit logging. Operations related to auth/access must be logged for the 'Access and Monitoring' criterion.",
-      "rule_id": "tools.configs.soc2-universal-audit-logging-missing",
-      "file": "/src/app/vulnerable.go",
-      "line": 12
-    },
-    {
-      "tool": "compliance",
-      "severity": "WARNING",
-      "title": "SOC2: SOC2 Compliance: Potential missing audit logging. Operations related to auth/access must be logged for the 'Access and Monitoring' criterion.",
-      "rule_id": "tools.configs.soc2-universal-audit-logging-missing",
-      "file": "/src/scripts/normalize.py",
-      "line": 139
-    },
-    {
-      "tool": "compliance",
-      "severity": "WARNING",
-      "title": "SOC2: SOC2 Compliance: Potential missing audit logging. Operations related to auth/access must be logged for the 'Access and Monitoring' criterion.",
-      "rule_id": "tools.configs.soc2-universal-audit-logging-missing",
-      "file": "/src/scripts/normalize.py",
-      "line": 139
-    },
-    {
-      "tool": "compliance",
-      "severity": "ERROR",
-      "title": "HIPAA: HIPAA Compliance: Sensitive PHI being logged to plain text. HIPAA prohibits exposing PHI in application logs or insecure storage.",
-      "rule_id": "tools.configs.hipaa-universal-insecure-phi-storage",
-      "file": "/src/app/vulnerable.js",
-      "line": 5
-    },
-    {
-      "tool": "compliance",
-      "severity": "ERROR",
-      "title": "HIPAA: HIPAA Compliance: Sensitive PHI being logged to plain text. HIPAA prohibits exposing PHI in application logs or insecure storage.",
-      "rule_id": "tools.configs.hipaa-universal-insecure-phi-storage",
-      "file": "/src/app/vulnerable.js",
-      "line": 8
     }
   ]
 }
