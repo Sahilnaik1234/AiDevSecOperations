@@ -1,17 +1,17 @@
 {
-  "generated_at": "2026-04-07T06:05:49.196901+00:00",
+  "generated_at": "2026-04-07T06:15:09.836061+00:00",
   "summary": {
-    "total_findings": 3,
+    "total_findings": 9,
     "gitleaks": 0,
     "semgrep": 0,
     "dependency": 0,
-    "compliance": 3,
+    "compliance": 9,
     "claude": 0,
-    "soc2_count": 2,
+    "soc2_count": 8,
     "hipaa_count": 1,
     "by_severity": {
-      "WARNING": 2,
-      "ERROR": 1
+      "WARNING": 5,
+      "ERROR": 4
     }
   },
   "findings": [
@@ -30,6 +30,54 @@
       "rule_id": "tools.configs.soc2-universal-audit-logging-missing",
       "file": "/src/scripts/normalize.py",
       "line": 159
+    },
+    {
+      "tool": "compliance",
+      "severity": "WARNING",
+      "title": "SOC2: SOC2 Compliance: Potential missing audit logging. Operations related to auth/access must be logged for the 'Access and Monitoring' criterion.",
+      "rule_id": "tools.configs.soc2-universal-audit-logging-missing",
+      "file": "/src/src/King.java",
+      "line": 11
+    },
+    {
+      "tool": "compliance",
+      "severity": "ERROR",
+      "title": "SOC2: SOC2 Compliance: Hardcoded sensitive string. SOC2 requires encryption of secrets and use of environment variables/vaults.",
+      "rule_id": "tools.configs.soc2-universal-hardcoded-secret",
+      "file": "/src/src/King.java",
+      "line": 12
+    },
+    {
+      "tool": "compliance",
+      "severity": "WARNING",
+      "title": "SOC2: SOC2 Compliance: Potential missing audit logging. Operations related to auth/access must be logged for the 'Access and Monitoring' criterion.",
+      "rule_id": "tools.configs.soc2-universal-audit-logging-missing",
+      "file": "/src/src/King.java",
+      "line": 16
+    },
+    {
+      "tool": "compliance",
+      "severity": "ERROR",
+      "title": "SOC2: Detected a formatted string in a SQL statement. This could lead to SQL injection if variables in the SQL statement are not properly sanitized. Use a prepared statements (java.sql.PreparedStatement) instead. You can obtain a PreparedStatement using 'connection.prepareStatement'.",
+      "rule_id": "java.lang.security.audit.formatted-sql-string.formatted-sql-string",
+      "file": "/src/src/King.java",
+      "line": 21
+    },
+    {
+      "tool": "compliance",
+      "severity": "ERROR",
+      "title": "SOC2: SOC2 Compliance: Hardcoded sensitive string. SOC2 requires encryption of secrets and use of environment variables/vaults.",
+      "rule_id": "tools.configs.soc2-universal-hardcoded-secret",
+      "file": "/src/src/King.java",
+      "line": 33
+    },
+    {
+      "tool": "compliance",
+      "severity": "WARNING",
+      "title": "SOC2: DES is considered deprecated. AES is the recommended cipher. Upgrade to use AES. See https://www.nist.gov/news-events/news/2005/06/nist-withdraws-outdated-data-encryption-standard for more information.",
+      "rule_id": "java.lang.security.audit.crypto.des-is-deprecated.des-is-deprecated",
+      "file": "/src/src/King.java",
+      "line": 35
     },
     {
       "tool": "compliance",
