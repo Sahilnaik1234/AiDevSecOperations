@@ -16,7 +16,7 @@ for i in "${INCS[@]}"; do
 done
 
 # Default to /src if nothing specified
-if [ -z "$TARGET_PATHS" ]; then TARGET_PATHS="/src"; fi
+TARGET_PATH="/src"
 
-docker run --rm -v "$(pwd):/src" -e SEMGREP_APP_TOKEN=$SEMGREP_APP_TOKEN semgrep/semgrep semgrep --config=auto --json --output=/src/semgrep-report.json $EXCLUDE_FLAGS $TARGET_PATHS
+docker run --rm -v "$(pwd):/src" -e SEMGREP_APP_TOKEN=$SEMGREP_APP_TOKEN semgrep/semgrep semgrep --config=auto --json --output=/src/semgrep-report.json $EXCLUDE_FLAGS --no-git-ignore $TARGET_PATH
 echo "[Toolbox]  Semgrep SAST complete."
