@@ -114,6 +114,25 @@ def process_compliance(report_path: str, type_prefix: str) -> list:
         except: pass
     return findings
 
+def process_claude(report_path: str) -> list:
+    findings = []
+    if not os.path.isfile(report_path): return findings
+    with open(report_path, encoding="utf-8") as f:
+        try:
+            data = json.load(f)
+            for leaf in data:
+                findings.append({
+                    "tool"        : "claude",
+                    "severity"    : leaf.get("severity", "MEDIUM").upper(),
+                    "title"       : leaf.get("title", "Claude Finding"),
+                    "rule_id"     : leaf.get("rule_id", "unknown"),
+                    "file"        : leaf.get("file", ""),
+                    "line"        : leaf.get("line", 0),
+                    "match"       : leaf.get("match", ""),
+                })
+        except: pass
+    return findings
+
 def main():
     print(f"[normalize] 🚀 Normalizing findings...")
     
@@ -134,6 +153,7 @@ def main():
     all_findings += process_trivy(find_report("dependency-report.json"))
     all_findings += process_compliance(find_report("soc2-report.json"), "SOC2")
     all_findings += process_compliance(find_report("hipaa-report.json"), "HIPAA")
+    all_findings += process_claude(find_report("claude-report.json"))
 
     # Smart Upgrades (e.g. if Semgrep finds an 'audit' issue, tag it as compliance)
     soc2_keywords = ["audit", "logging", "encryption", "tls", "ssl", "auth", "login"]
@@ -155,6 +175,7 @@ def main():
         "semgrep":   sum(1 for f in all_findings if f["tool"] == "semgrep"),
         "dependency": sum(1 for f in all_findings if f["tool"] == "trivy"),
         "compliance": sum(1 for f in all_findings if f["tool"] == "compliance"),
+        "claude":     sum(1 for f in all_findings if f["tool"] == "claude"),
         "soc2_count":  sum(1 for f in all_findings if "SOC2" in f["title"] and f["tool"] == "compliance"),
         "hipaa_count": sum(1 for f in all_findings if "HIPAA" in f["title"] and f["tool"] == "compliance"),
         "by_severity": {}

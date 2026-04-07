@@ -7,8 +7,8 @@ import (
 )
 
 func main() {
-	// SOC2 Violation: Insecure encryption (MD5)
-	h := md5.New()
-	h.Write([]byte("password123"))
-	fmt.Printf("Hash: %x\n", h.Sum(nil))
+	i=4
+	if i>5 {
+		print("Greater")
+	}
 }

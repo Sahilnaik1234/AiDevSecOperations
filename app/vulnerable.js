@@ -2,8 +2,6 @@
 const logger = require('console');
 
 function processPatientData(patientName, patientSSN, medicalConditions) {
-    // HIPAA Violation: Logging PHI (SSN and Medical History)
-    // Most security scanners and HIPAA-specific policies flag this
     console.log(`Processing patient: ${patientName}`);
     console.debug(`DEBUG: SSN ${patientSSN} - History: ${medicalConditions}`);
 

@@ -4,7 +4,7 @@ on:
   push:
     branches: [dev]
   pull_request:
-    branches: [dev]
+    branches: [dev, master]
   workflow_dispatch:
     inputs:
       secret_tool:
@@ -78,6 +78,12 @@ jobs:
           chmod +x tools/compliance/hipaa.sh
           ./tools/compliance/hipaa.sh
 
+      - name:  Claude Code Security Scan
+        if: github.base_ref == 'master'
+        run: |
+          chmod +x tools/sast/claude.sh
+          ./tools/sast/claude.sh
+
       - name: Upload all reports
         if: always()
         uses: actions/upload-artifact@v4
@@ -89,6 +95,7 @@ jobs:
             dependency-report.json
             soc2-report.json
             hipaa-report.json
+            claude-report.json
 
   # ============================================================
   # NORMALIZE & DEPLOY
