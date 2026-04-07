@@ -161,11 +161,21 @@ def main():
     
     for f in all_findings:
         text = (f.get("title", "") + " " + f.get("rule_id", "")).lower()
-        if any(kw in text for kw in soc2_keywords) and f["tool"] != "compliance":
-            f["tool"] = "compliance"
-        elif any(kw in text for kw in hipaa_keywords):
-            if f["tool"] != "compliance": f["tool"] = "compliance"
-            if not any(f["title"].startswith(p) for p in ["HIPAA:", "SOC2:"]):
+        # Only upgrade to 'compliance' if the tool isn't already a specialized security tool
+        if f["tool"] not in ["gitleaks", "trufflehog", "trivy", "claude", "semgrep"]:
+            if any(kw in text for kw in soc2_keywords):
+                f["tool"] = "compliance"
+            elif any(kw in text for kw in hipaa_keywords):
+                f["tool"] = "compliance"
+                if not f["title"].startswith("HIPAA:"):
+                    f["title"] = f"HIPAA: {f['title']}"
+        
+        # Add compliance tags to findings without changing the original tool source
+        if any(kw in text for kw in soc2_keywords) and "SOC2" not in f["title"]:
+            if not f["title"].startswith(("SOC2:", "HIPAA:")):
+                f["title"] = f"SOC2: {f['title']}"
+        if any(kw in text for kw in hipaa_keywords) and "HIPAA" not in f["title"]:
+            if not f["title"].startswith(("SOC2:", "HIPAA:")):
                 f["title"] = f"HIPAA: {f['title']}"
 
     # Calculate Summary
