@@ -1,20 +1,56 @@
 {
-  "generated_at": "2026-04-07T06:24:53.873526+00:00",
+  "generated_at": "2026-04-07T06:28:48.863558+00:00",
   "summary": {
-    "total_findings": 9,
+    "total_findings": 13,
     "gitleaks": 0,
-    "semgrep": 0,
+    "semgrep": 4,
     "dependency": 0,
     "compliance": 9,
     "claude": 0,
     "soc2_count": 8,
     "hipaa_count": 1,
     "by_severity": {
-      "WARNING": 5,
-      "ERROR": 4
+      "ERROR": 5,
+      "WARNING": 8
     }
   },
   "findings": [
+    {
+      "tool": "semgrep",
+      "severity": "ERROR",
+      "title": "SOC2: Detected a formatted string in a SQL statement. This could lead to SQL injection if variables in the SQL statement are not properly sanitized. Use a prepared statements (java.sql.PreparedStatement) instead. You can obtain a PreparedStatement using 'connection.prepareStatement'.",
+      "rule_id": "java.lang.security.audit.formatted-sql-string.formatted-sql-string",
+      "file": "/src/src/King.java",
+      "line": 21,
+      "code": "requires login"
+    },
+    {
+      "tool": "semgrep",
+      "severity": "WARNING",
+      "title": "SOC2: Detected a formatted string in a SQL statement. This could lead to SQL injection if variables in the SQL statement are not properly sanitized. Use a prepared statements (java.sql.PreparedStatement) instead. You can obtain a PreparedStatement using 'connection.prepareStatement'.",
+      "rule_id": "java.lang.security.audit.sqli.jdbc-sqli.jdbc-sqli",
+      "file": "/src/src/King.java",
+      "line": 21,
+      "code": "requires login"
+    },
+    {
+      "tool": "semgrep",
+      "severity": "WARNING",
+      "title": "SOC2: Cipher in ECB mode is detected. ECB mode produces the same output for the same input each time which allows an attacker to intercept and replay the data. Further, ECB mode does not provide any integrity checking. See https://find-sec-bugs.github.io/bugs.htm#CIPHER_INTEGRITY.",
+      "rule_id": "java.lang.security.audit.crypto.ecb-cipher.ecb-cipher",
+      "file": "/src/src/King.java",
+      "line": 35,
+      "code": "requires login"
+    },
+    {
+      "tool": "semgrep",
+      "severity": "WARNING",
+      "title": "SOC2: DES is considered deprecated. AES is the recommended cipher. Upgrade to use AES. See https://www.nist.gov/news-events/news/2005/06/nist-withdraws-outdated-data-encryption-standard for more information.",
+      "rule_id": "java.lang.security.audit.crypto.des-is-deprecated.des-is-deprecated",
+      "file": "/src/src/King.java",
+      "line": 35,
+      "code": "requires login"
+    },
     {
       "tool": "compliance",
       "severity": "WARNING",
