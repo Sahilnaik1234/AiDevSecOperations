@@ -1,31 +1,14 @@
-#!/bin/bash
 # tools/sast/claude.sh
-# Placeholder for the actual Claude Code Security Scan
+# Real-time Claude Code Security Scan
 
-echo "[Claude Scan] Starting Security analysis..."
+echo "[Claude Scan] Starting Real-time analysis with Claude 3.5..."
 
-# Simulate scan results (this would be where you call the Claude API)
-cat <<EOF > claude-report.json
-[
-  {
-    "tool": "claude",
-    "severity": "HIGH",
-    "title": "Unsafe memory access in sensitive module",
-    "rule_id": "CL-001",
-    "file": "app/Vulnerable.java",
-    "line": 42,
-    "match": "unsafe_memory_access()"
-  },
-  {
-    "tool": "claude",
-    "severity": "CRITICAL",
-    "title": "Possible SQL injection detected by Claude",
-    "rule_id": "CL-012",
-    "file": "app/vulnerable.go",
-    "line": 15,
-    "match": "db.Query(\"SELECT * FROM users WHERE id=\" + userId)"
-  }
-]
-EOF
+# Ensure we have the analyzer
+if [ ! -f "tools/sast/claude_analyzer.py" ]; then
+  echo "❌ Error: tools/sast/claude_analyzer.py not found."
+  exit 1
+fi
 
-echo "[Claude Scan] ✅ Done. Results saved to claude-report.json"
+python3 tools/sast/claude_analyzer.py
+
+echo "[Claude Scan] ✅ Done."

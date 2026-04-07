@@ -80,7 +80,10 @@ jobs:
 
       - name:  Claude Code Security Scan
         if: github.base_ref == 'master'
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: |
+          pip install anthropic
           chmod +x tools/sast/claude.sh
           ./tools/sast/claude.sh
 
