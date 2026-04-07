@@ -8,8 +8,9 @@ import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 
 public class King {
-    // 🗝️ SECRET: Hardcoded AWS access key for testing Gitleaks/TruffleHog
-    private static final String AWS_SECRET_KEY = "AKIAEXAMPLE1234567890BCDEFGHIJKLMNOPQ";
+    // 🗝️ SECRETS: Realistic keys for testing Gitleaks/TruffleHog
+    private static final String AWS_SECRET_KEY = "AKIAJKL78NM90P2Q3R4S";
+    private static final String GH_TOKEN = "ghp_1234567890abcdefghijklmnopqrstuvwxyzABCD";
 
     public void processUserRequest(String userId) {
         try {
