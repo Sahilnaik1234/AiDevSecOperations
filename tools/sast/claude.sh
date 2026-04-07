@@ -9,6 +9,10 @@ if [ ! -f "tools/sast/claude_analyzer.py" ]; then
   exit 1
 fi
 
-python3 tools/sast/claude_analyzer.py
+# Determine scan target (default to '.')
+TARGET_DIR="${SCAN_INCLUDE:-.}"
+echo "[Claude Scan] Target Directory: $TARGET_DIR"
+
+python3 tools/sast/claude_analyzer.py "$TARGET_DIR"
 
 echo "[Claude Scan] ✅ Done."

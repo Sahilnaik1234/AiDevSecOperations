@@ -40,6 +40,9 @@ jobs:
   security-scans:
     name: " Security Toolbox - Execution"
     runs-on: ubuntu-latest
+    env:
+      SCAN_INCLUDE: 'app'
+      SCAN_EXCLUDE: 'node_modules,tests,docs'
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
