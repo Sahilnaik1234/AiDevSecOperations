@@ -13,29 +13,52 @@ def run_scan():
     client = anthropic.Anthropic(api_key=api_key)
     results = []
     
-    # Files to scan
-    SCAN_DIRS = ["app"]
+    # Patterns from environment or arguments
+    inc_input = os.getenv("SCAN_INCLUDE", ".")
+    inc_patterns = [p.strip() for p in inc_input.split(",") if p.strip()]
+    exc_patterns = [e.strip() for e in os.getenv("SCAN_EXCLUDE", "").split(",") if e.strip()]
+    
+    SCAN_DIRS = inc_patterns
     exts = [".js", ".py", ".java", ".go", ".php", ".rb"]
     
     files_to_scan = []
     for d in SCAN_DIRS:
-        if not os.path.isdir(d): continue
-        for root, _, files in os.walk(d):
+        if not os.path.exists(d): 
+            print(f"[Claude Scan] ⚠️ Skipping non-existent path: {d}")
+            continue
+            
+        if os.path.isfile(d):
+            files_to_scan.append(d)
+            continue
+            
+        for root, dirs, files in os.walk(d):
+            # Dynamic Exclusion (dirs in-place modification)
+            dirs[:] = [d for d in dirs if not any(exc in os.path.join(root, d) for exc in exc_patterns if exc)]
             for f in files:
+                f_path = os.path.join(root, f)
+                # Check file exclusion
+                if any(exc in f_path for exc in exc_patterns if exc):
+                    continue
+                # Check extension
                 if any(f.endswith(ext) for ext in exts):
-                    files_to_scan.append(os.path.join(root, f))
+                    files_to_scan.append(f_path)
                     
     if not files_to_scan:
         print("[Claude Scan] No files found to scan.")
-        os.system("echo '[]' > claude-report.json")
+        with open("claude-report.json", "w", encoding="utf-8") as out:
+            json.dump([], out)
         return
 
-    print(f"[Claude Scan] 🚀 Scanning {len(files_to_scan)} files...")
+    print(f"[Claude Scan] 🚀 Scanning {len(files_to_scan)} files in: {SCAN_DIRS}")
     
     for f_path in files_to_scan:
         print(f"  - Analyzing: {f_path}")
-        with open(f_path, "r", encoding="utf-8") as f:
-            code = f.read()
+        try:
+            with open(f_path, "r", encoding="utf-8") as f:
+                code = f.read()
+        except Exception as e:
+            print(f"    ❌ Error reading {f_path}: {e}")
+            continue
             
         prompt = f"""You are a professional security researcher. Analyze the following source code for security vulnerabilities.
         Return ONLY a JSON array of objects with the following keys:
@@ -62,7 +85,6 @@ def run_scan():
             )
             
             resp_text = message.content[0].text.strip()
-            # Basic cleanup if Claude adds markdown code blocks
             if resp_text.startswith("```json"):
                 resp_text = resp_text.replace("```json", "").replace("```", "").strip()
             
@@ -72,7 +94,7 @@ def run_scan():
                 results.append(f)
                 
         except Exception as e:
-            print(f"  ❌ Error scanning {f_path}: {e}")
+            print(f"    ❌ Error scanning {f_path}: {e}")
             
     # Save results
     with open("claude-report.json", "w", encoding="utf-8") as out:
