@@ -41,7 +41,7 @@ jobs:
     name: " Security Toolbox - Execution"
     runs-on: ubuntu-latest
     env:
-      SCAN_INCLUDE: 'app'
+      SCAN_INCLUDE: 'app, src'
       SCAN_EXCLUDE: 'node_modules,tests,docs'
     steps:
       - name: Checkout code
