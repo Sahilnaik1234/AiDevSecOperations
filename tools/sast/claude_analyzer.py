@@ -78,7 +78,7 @@ def run_scan():
         
         try:
             message = client.messages.create(
-                model="claude-3-5-sonnet-latest",
+                model="claude-3-opus-20240229",
                 max_tokens=2048,
                 system="You are a security vulnerability scanner. Output MUST be valid JSON array of findings only.",
                 messages=[{"role": "user", "content": prompt}]
