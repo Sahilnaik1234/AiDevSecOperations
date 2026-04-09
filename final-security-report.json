@@ -1,18 +1,21 @@
 {
-  "generated_at": "2026-04-09T13:37:51.758592+00:00",
+  "generated_at": "2026-04-09T13:38:28.992262+00:00",
   "summary": {
-    "total_findings": 37,
+    "total_findings": 58,
     "gitleaks": 2,
     "semgrep": 14,
     "dependency": 0,
     "compliance": 21,
-    "claude": 0,
+    "claude": 21,
     "soc2_count": 20,
     "hipaa_count": 1,
     "by_severity": {
-      "CRITICAL": 2,
+      "CRITICAL": 8,
       "ERROR": 23,
-      "WARNING": 12
+      "WARNING": 12,
+      "HIGH": 9,
+      "MEDIUM": 5,
+      "LOW": 1
     }
   },
   "findings": [
@@ -21,7 +24,7 @@
       "severity": "CRITICAL",
       "title": "Detected a Generic API Key, potentially exposing access to various services and sensitive operations.",
       "rule_id": "generic-api-key",
-      "file": "/src/app/Vulnerable.java",
+      "file": "/src/src/King.java",
       "line": 12,
       "match": "AWS_SECRET_KEY = \"AKIAJKL78NM90P2Q3R4S\""
     },
@@ -30,7 +33,7 @@
       "severity": "CRITICAL",
       "title": "Detected a Generic API Key, potentially exposing access to various services and sensitive operations.",
       "rule_id": "generic-api-key",
-      "file": "/src/src/King.java",
+      "file": "/src/app/Vulnerable.java",
       "line": 12,
       "match": "AWS_SECRET_KEY = \"AKIAJKL78NM90P2Q3R4S\""
     },
@@ -327,6 +330,195 @@
       "rule_id": "tools.configs.hipaa-universal-insecure-phi-storage",
       "file": "/src/app/vulnerable.js",
       "line": 6
+    },
+    {
+      "tool": "claude",
+      "severity": "CRITICAL",
+      "title": "Hardcoded AWS Secret Key in Source Code",
+      "rule_id": "HARDCODED_AWS_SECRET_KEY",
+      "file": "app/Vulnerable.java",
+      "line": 11,
+      "match": "private static final String AWS_SECRET_KEY = \"AKIAJ"
+    },
+    {
+      "tool": "claude",
+      "severity": "CRITICAL",
+      "title": "Hardcoded GitHub Personal Access Token in Source Code",
+      "rule_id": "HARDCODED_GITHUB_TOKEN",
+      "file": "app/Vulnerable.java",
+      "line": 12,
+      "match": "private static final String GH_TOKEN = \"ghp_123456"
+    },
+    {
+      "tool": "claude",
+      "severity": "CRITICAL",
+      "title": "SQL Injection via String Concatenation",
+      "rule_id": "SQL_INJECTION",
+      "file": "app/Vulnerable.java",
+      "line": 20,
+      "match": "\"SELECT * FROM users WHERE id = '\" + userId + \"'\""
+    },
+    {
+      "tool": "claude",
+      "severity": "HIGH",
+      "title": "Hardcoded Database Credentials in Connection String",
+      "rule_id": "HARDCODED_DB_CREDENTIALS",
+      "file": "app/Vulnerable.java",
+      "line": 16,
+      "match": "getConnection(\"jdbc:mysql://localhost/db\", \"root\", \"p"
+    },
+    {
+      "tool": "claude",
+      "severity": "HIGH",
+      "title": "SOC2: Use of Weak DES Encryption Algorithm",
+      "rule_id": "WEAK_CRYPTO_DES",
+      "file": "app/Vulnerable.java",
+      "line": 33,
+      "match": "new SecretKeySpec(key.getBytes(), \"DES\")"
+    },
+    {
+      "tool": "claude",
+      "severity": "HIGH",
+      "title": "Use of ECB Mode in Cipher (Insecure Block Cipher Mode)",
+      "rule_id": "WEAK_CRYPTO_ECB_MODE",
+      "file": "app/Vulnerable.java",
+      "line": 34,
+      "match": "Cipher.getInstance(\"DES/ECB/PKCS5Padding\")"
+    },
+    {
+      "tool": "claude",
+      "severity": "MEDIUM",
+      "title": "HIPAA: Hardcoded Cryptographic Key in Source Code",
+      "rule_id": "HARDCODED_CRYPTO_KEY",
+      "file": "app/Vulnerable.java",
+      "line": 32,
+      "match": "String key = \"static_key\";"
+    },
+    {
+      "tool": "claude",
+      "severity": "MEDIUM",
+      "title": "Sensitive Exception Stack Trace Exposed via printStackTrace",
+      "rule_id": "INSECURE_EXCEPTION_HANDLING",
+      "file": "app/Vulnerable.java",
+      "line": 26,
+      "match": "e.printStackTrace();"
+    },
+    {
+      "tool": "claude",
+      "severity": "CRITICAL",
+      "title": "HIPAA: PHI/PII logged to console - SSN and medical conditions exposed in logs",
+      "rule_id": "HIPAA_PHI_LOG_EXPOSURE",
+      "file": "app/vulnerable.js",
+      "line": 6,
+      "match": "console.debug(`DEBUG: SSN ${patientSSN} - History:"
+    },
+    {
+      "tool": "claude",
+      "severity": "HIGH",
+      "title": "HIPAA: Patient name logged to console without sanitization",
+      "rule_id": "HIPAA_PII_LOG_EXPOSURE",
+      "file": "app/vulnerable.js",
+      "line": 5,
+      "match": "console.log(`Processing patient: ${patientName}`)"
+    },
+    {
+      "tool": "claude",
+      "severity": "MEDIUM",
+      "title": "HIPAA: Use of weak cryptographic hash function MD5",
+      "rule_id": "WEAK_CRYPTO_MD5",
+      "file": "app/vulnerable.go",
+      "line": 4,
+      "match": "\"crypto/md5\""
+    },
+    {
+      "tool": "claude",
+      "severity": "LOW",
+      "title": "Unused imports increase attack surface and indicate dead code",
+      "rule_id": "UNUSED_IMPORTS",
+      "file": "app/vulnerable.go",
+      "line": 4,
+      "match": "\"crypto/md5\"\n\t\"fmt\"\n\t\"net/http\""
+    },
+    {
+      "tool": "claude",
+      "severity": "HIGH",
+      "title": "Use of undeclared variable (missing := or var declaration) may cause runtime panic",
+      "rule_id": "UNDECLARED_VARIABLE",
+      "file": "app/vulnerable.go",
+      "line": 10,
+      "match": "i=4"
+    },
+    {
+      "tool": "claude",
+      "severity": "CRITICAL",
+      "title": "Hardcoded AWS Secret Key in Source Code",
+      "rule_id": "HARDCODED_AWS_SECRET_KEY",
+      "file": "src/King.java",
+      "line": 11,
+      "match": "AKIAJKL78NM90P2Q3R4S"
+    },
+    {
+      "tool": "claude",
+      "severity": "CRITICAL",
+      "title": "Hardcoded GitHub Personal Access Token in Source Code",
+      "rule_id": "HARDCODED_GITHUB_TOKEN",
+      "file": "src/King.java",
+      "line": 12,
+      "match": "ghp_1234567890abcdefghijklmnopqrstuv"
+    },
+    {
+      "tool": "claude",
+      "severity": "HIGH",
+      "title": "SQL Injection via String Concatenation",
+      "rule_id": "SQL_INJECTION",
+      "file": "src/King.java",
+      "line": 20,
+      "match": "\"SELECT * FROM users WHERE id = '\" + userId"
+    },
+    {
+      "tool": "claude",
+      "severity": "HIGH",
+      "title": "Hardcoded Database Credentials",
+      "rule_id": "HARDCODED_DB_CREDENTIALS",
+      "file": "src/King.java",
+      "line": 16,
+      "match": "\"jdbc:mysql://localhost/db\", \"root\", \"pass"
+    },
+    {
+      "tool": "claude",
+      "severity": "HIGH",
+      "title": "SOC2: Use of Weak DES Encryption Algorithm",
+      "rule_id": "WEAK_CRYPTO_DES",
+      "file": "src/King.java",
+      "line": 33,
+      "match": "new SecretKeySpec(key.getBytes(), \"DES\")"
+    },
+    {
+      "tool": "claude",
+      "severity": "HIGH",
+      "title": "Use of Insecure ECB Block Cipher Mode",
+      "rule_id": "WEAK_CRYPTO_ECB_MODE",
+      "file": "src/King.java",
+      "line": 34,
+      "match": "Cipher.getInstance(\"DES/ECB/PKCS5Padding\")"
+    },
+    {
+      "tool": "claude",
+      "severity": "MEDIUM",
+      "title": "HIPAA: Hardcoded Cryptographic Key",
+      "rule_id": "HARDCODED_CRYPTO_KEY",
+      "file": "src/King.java",
+      "line": 32,
+      "match": "String key = \"static_key\";"
+    },
+    {
+      "tool": "claude",
+      "severity": "MEDIUM",
+      "title": "Sensitive Exception Stack Trace Printed to Output",
+      "rule_id": "EXCEPTION_INFORMATION_DISCLOSURE",
+      "file": "src/King.java",
+      "line": 26,
+      "match": "e.printStackTrace();"
     }
   ]
 }
