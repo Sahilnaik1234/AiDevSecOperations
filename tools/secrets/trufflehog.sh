@@ -4,7 +4,17 @@
 
 echo "[Toolbox]  Running TruffleHog..."
 # Run TruffleHog via Docker, scanning the current directory filesystem
-docker run --rm -v "$(pwd):/src" trufflesecurity/trufflehog:latest filesystem /src --json > trufflehog-report.json
+# Reset report
+> trufflehog-report.json
+
+IFS=',' read -ra INCS <<< "$SCAN_INCLUDE"
+for i in "${INCS[@]}"; do
+  i=$(echo "$i" | xargs)
+  if [ -n "$i" ]; then
+    echo "[Trufflehog] Scanning: /src/$i"
+    docker run --rm -v "$(pwd):/src" trufflesecurity/trufflehog:latest filesystem "/src/$i" --json >> trufflehog-report.json
+  fi
+done
 
 if [ -f trufflehog-report.json ]; then
   echo "[Toolbox]  TruffleHog scan complete. Report created."

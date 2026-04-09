@@ -7,7 +7,7 @@ import java.sql.Statement;
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 
-public class Vulnerable {
+public class King {
     
     private static final String AWS_SECRET_KEY = "AKIAJKL78NM90P2Q3R4S";
     private static final String GH_TOKEN = "ghp_1234567890abcdefghijklmnopqrstuvwxyzABCD";
@@ -37,4 +37,3 @@ public class Vulnerable {
         cipher.init(Cipher.ENCRYPT_MODE, secretKey);
     }
 }
-

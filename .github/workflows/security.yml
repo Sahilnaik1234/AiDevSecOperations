@@ -4,7 +4,7 @@ on:
   push:
     branches: [dev]
   pull_request:
-    branches: [dev]
+    branches: [dev, master]
   workflow_dispatch:
     inputs:
       secret_tool:
@@ -40,6 +40,9 @@ jobs:
   security-scans:
     name: " Security Toolbox - Execution"
     runs-on: ubuntu-latest
+    env:
+      SCAN_INCLUDE: 'app, src'
+      SCAN_EXCLUDE: 'node_modules,tests,docs'
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -78,6 +81,15 @@ jobs:
           chmod +x tools/compliance/hipaa.sh
           ./tools/compliance/hipaa.sh
 
+      - name:  Claude Code Security Scan
+        if: github.base_ref == 'master'
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          pip install anthropic
+          chmod +x tools/sast/claude.sh
+          ./tools/sast/claude.sh
+
       - name: Upload all reports
         if: always()
         uses: actions/upload-artifact@v4
@@ -89,6 +101,7 @@ jobs:
             dependency-report.json
             soc2-report.json
             hipaa-report.json
+            claude-report.json
 
   # ============================================================
   # NORMALIZE & DEPLOY

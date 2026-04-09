@@ -114,6 +114,25 @@ def process_compliance(report_path: str, type_prefix: str) -> list:
         except: pass
     return findings
 
+def process_claude(report_path: str) -> list:
+    findings = []
+    if not os.path.isfile(report_path): return findings
+    with open(report_path, encoding="utf-8") as f:
+        try:
+            data = json.load(f)
+            for leaf in data:
+                findings.append({
+                    "tool"        : "claude",
+                    "severity"    : leaf.get("severity", "MEDIUM").upper(),
+                    "title"       : leaf.get("title", "Claude Finding"),
+                    "rule_id"     : leaf.get("rule_id", "unknown"),
+                    "file"        : leaf.get("file", ""),
+                    "line"        : leaf.get("line", 0),
+                    "match"       : leaf.get("match", ""),
+                })
+        except: pass
+    return findings
+
 def main():
     print(f"[normalize] 🚀 Normalizing findings...")
     
@@ -134,6 +153,7 @@ def main():
     all_findings += process_trivy(find_report("dependency-report.json"))
     all_findings += process_compliance(find_report("soc2-report.json"), "SOC2")
     all_findings += process_compliance(find_report("hipaa-report.json"), "HIPAA")
+    all_findings += process_claude(find_report("claude-report.json"))
 
     # Smart Upgrades (e.g. if Semgrep finds an 'audit' issue, tag it as compliance)
     soc2_keywords = ["audit", "logging", "encryption", "tls", "ssl", "auth", "login"]
@@ -141,11 +161,21 @@ def main():
     
     for f in all_findings:
         text = (f.get("title", "") + " " + f.get("rule_id", "")).lower()
-        if any(kw in text for kw in soc2_keywords) and f["tool"] != "compliance":
-            f["tool"] = "compliance"
-        elif any(kw in text for kw in hipaa_keywords):
-            if f["tool"] != "compliance": f["tool"] = "compliance"
-            if not any(f["title"].startswith(p) for p in ["HIPAA:", "SOC2:"]):
+        # Only upgrade to 'compliance' if the tool isn't already a specialized security tool
+        if f["tool"] not in ["gitleaks", "trufflehog", "trivy", "claude", "semgrep"]:
+            if any(kw in text for kw in soc2_keywords):
+                f["tool"] = "compliance"
+            elif any(kw in text for kw in hipaa_keywords):
+                f["tool"] = "compliance"
+                if not f["title"].startswith("HIPAA:"):
+                    f["title"] = f"HIPAA: {f['title']}"
+        
+        # Add compliance tags to findings without changing the original tool source
+        if any(kw in text for kw in soc2_keywords) and "SOC2" not in f["title"]:
+            if not f["title"].startswith(("SOC2:", "HIPAA:")):
+                f["title"] = f"SOC2: {f['title']}"
+        if any(kw in text for kw in hipaa_keywords) and "HIPAA" not in f["title"]:
+            if not f["title"].startswith(("SOC2:", "HIPAA:")):
                 f["title"] = f"HIPAA: {f['title']}"
 
     # Calculate Summary
@@ -155,6 +185,7 @@ def main():
         "semgrep":   sum(1 for f in all_findings if f["tool"] == "semgrep"),
         "dependency": sum(1 for f in all_findings if f["tool"] == "trivy"),
         "compliance": sum(1 for f in all_findings if f["tool"] == "compliance"),
+        "claude":     sum(1 for f in all_findings if f["tool"] == "claude"),
         "soc2_count":  sum(1 for f in all_findings if "SOC2" in f["title"] and f["tool"] == "compliance"),
         "hipaa_count": sum(1 for f in all_findings if "HIPAA" in f["title"] and f["tool"] == "compliance"),
         "by_severity": {}
