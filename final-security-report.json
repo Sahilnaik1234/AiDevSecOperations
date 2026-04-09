@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-04-09T06:09:20.107626+00:00",
+  "generated_at": "2026-04-09T06:13:32.744967+00:00",
   "summary": {
     "total_findings": 37,
     "gitleaks": 2,
@@ -21,7 +21,7 @@
       "severity": "CRITICAL",
       "title": "Detected a Generic API Key, potentially exposing access to various services and sensitive operations.",
       "rule_id": "generic-api-key",
-      "file": "/src/app/Vulnerable.java",
+      "file": "/src/src/King.java",
       "line": 12,
       "match": "AWS_SECRET_KEY = \"AKIAJKL78NM90P2Q3R4S\""
     },
@@ -30,7 +30,7 @@
       "severity": "CRITICAL",
       "title": "Detected a Generic API Key, potentially exposing access to various services and sensitive operations.",
       "rule_id": "generic-api-key",
-      "file": "/src/src/King.java",
+      "file": "/src/app/Vulnerable.java",
       "line": 12,
       "match": "AWS_SECRET_KEY = \"AKIAJKL78NM90P2Q3R4S\""
     },
