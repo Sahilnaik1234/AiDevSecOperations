@@ -1,18 +1,18 @@
 {
-  "generated_at": "2026-04-09T06:09:07.264651+00:00",
+  "generated_at": "2026-04-09T06:09:20.107626+00:00",
   "summary": {
-    "total_findings": 20,
-    "gitleaks": 1,
-    "semgrep": 7,
+    "total_findings": 37,
+    "gitleaks": 2,
+    "semgrep": 14,
     "dependency": 0,
-    "compliance": 12,
+    "compliance": 21,
     "claude": 0,
-    "soc2_count": 11,
+    "soc2_count": 20,
     "hipaa_count": 1,
     "by_severity": {
-      "CRITICAL": 1,
-      "ERROR": 12,
-      "WARNING": 7
+      "CRITICAL": 2,
+      "ERROR": 23,
+      "WARNING": 12
     }
   },
   "findings": [
@@ -21,9 +21,63 @@
       "severity": "CRITICAL",
       "title": "Detected a Generic API Key, potentially exposing access to various services and sensitive operations.",
       "rule_id": "generic-api-key",
+      "file": "/src/app/Vulnerable.java",
+      "line": 12,
+      "match": "AWS_SECRET_KEY = \"AKIAJKL78NM90P2Q3R4S\""
+    },
+    {
+      "tool": "gitleaks",
+      "severity": "CRITICAL",
+      "title": "Detected a Generic API Key, potentially exposing access to various services and sensitive operations.",
+      "rule_id": "generic-api-key",
       "file": "/src/src/King.java",
       "line": 12,
       "match": "AWS_SECRET_KEY = \"AKIAJKL78NM90P2Q3R4S\""
+    },
+    {
+      "tool": "semgrep",
+      "severity": "ERROR",
+      "title": "AWS Access Key ID Value detected. This is a sensitive credential and should not be hardcoded here. Instead, read this value from an environment variable or keep it in a separate, private file.",
+      "rule_id": "generic.secrets.security.detected-aws-access-key-id-value.detected-aws-access-key-id-value",
+      "file": "/src/app/Vulnerable.java",
+      "line": 12,
+      "code": "requires login"
+    },
+    {
+      "tool": "semgrep",
+      "severity": "ERROR",
+      "title": "SOC2: Detected a formatted string in a SQL statement. This could lead to SQL injection if variables in the SQL statement are not properly sanitized. Use a prepared statements (java.sql.PreparedStatement) instead. You can obtain a PreparedStatement using 'connection.prepareStatement'.",
+      "rule_id": "java.lang.security.audit.formatted-sql-string.formatted-sql-string",
+      "file": "/src/app/Vulnerable.java",
+      "line": 22,
+      "code": "requires login"
+    },
+    {
+      "tool": "semgrep",
+      "severity": "WARNING",
+      "title": "SOC2: Detected a formatted string in a SQL statement. This could lead to SQL injection if variables in the SQL statement are not properly sanitized. Use a prepared statements (java.sql.PreparedStatement) instead. You can obtain a PreparedStatement using 'connection.prepareStatement'.",
+      "rule_id": "java.lang.security.audit.sqli.jdbc-sqli.jdbc-sqli",
+      "file": "/src/app/Vulnerable.java",
+      "line": 22,
+      "code": "requires login"
+    },
+    {
+      "tool": "semgrep",
+      "severity": "WARNING",
+      "title": "SOC2: Cipher in ECB mode is detected. ECB mode produces the same output for the same input each time which allows an attacker to intercept and replay the data. Further, ECB mode does not provide any integrity checking. See https://find-sec-bugs.github.io/bugs.htm#CIPHER_INTEGRITY.",
+      "rule_id": "java.lang.security.audit.crypto.ecb-cipher.ecb-cipher",
+      "file": "/src/app/Vulnerable.java",
+      "line": 36,
+      "code": "requires login"
+    },
+    {
+      "tool": "semgrep",
+      "severity": "WARNING",
+      "title": "SOC2: DES is considered deprecated. AES is the recommended cipher. Upgrade to use AES. See https://www.nist.gov/news-events/news/2005/06/nist-withdraws-outdated-data-encryption-standard for more information.",
+      "rule_id": "java.lang.security.audit.crypto.des-is-deprecated.des-is-deprecated",
+      "file": "/src/app/Vulnerable.java",
+      "line": 36,
+      "code": "requires login"
     },
     {
       "tool": "semgrep",
@@ -41,6 +95,24 @@
       "rule_id": "generic.secrets.security.detected-aws-access-key-id-value.detected-aws-access-key-id-value",
       "file": "/src/gitleaks-report.json",
       "line": 10,
+      "code": "requires login"
+    },
+    {
+      "tool": "semgrep",
+      "severity": "ERROR",
+      "title": "AWS Access Key ID Value detected. This is a sensitive credential and should not be hardcoded here. Instead, read this value from an environment variable or keep it in a separate, private file.",
+      "rule_id": "generic.secrets.security.detected-aws-access-key-id-value.detected-aws-access-key-id-value",
+      "file": "/src/gitleaks-report.json",
+      "line": 29,
+      "code": "requires login"
+    },
+    {
+      "tool": "semgrep",
+      "severity": "ERROR",
+      "title": "AWS Access Key ID Value detected. This is a sensitive credential and should not be hardcoded here. Instead, read this value from an environment variable or keep it in a separate, private file.",
+      "rule_id": "generic.secrets.security.detected-aws-access-key-id-value.detected-aws-access-key-id-value",
+      "file": "/src/gitleaks-report.json",
+      "line": 30,
       "code": "requires login"
     },
     {
@@ -91,6 +163,62 @@
     {
       "tool": "compliance",
       "severity": "ERROR",
+      "title": "SOC2: SOC2 Compliance: Hardcoded sensitive string. SOC2 requires encryption of secrets and use of environment variables/vaults.",
+      "rule_id": "tools.configs.soc2-universal-hardcoded-secret",
+      "file": "/src/app/Vulnerable.java",
+      "line": 12
+    },
+    {
+      "tool": "compliance",
+      "severity": "ERROR",
+      "title": "SOC2: AWS Access Key ID Value detected. This is a sensitive credential and should not be hardcoded here. Instead, read this value from an environment variable or keep it in a separate, private file.",
+      "rule_id": "generic.secrets.security.detected-aws-access-key-id-value.detected-aws-access-key-id-value",
+      "file": "/src/app/Vulnerable.java",
+      "line": 12
+    },
+    {
+      "tool": "compliance",
+      "severity": "ERROR",
+      "title": "SOC2: SOC2 Compliance: Hardcoded sensitive string. SOC2 requires encryption of secrets and use of environment variables/vaults.",
+      "rule_id": "tools.configs.soc2-universal-hardcoded-secret",
+      "file": "/src/app/Vulnerable.java",
+      "line": 13
+    },
+    {
+      "tool": "compliance",
+      "severity": "WARNING",
+      "title": "SOC2: SOC2 Compliance: Potential missing audit logging. Operations related to auth/access must be logged for the 'Access and Monitoring' criterion.",
+      "rule_id": "tools.configs.soc2-universal-audit-logging-missing",
+      "file": "/src/app/Vulnerable.java",
+      "line": 17
+    },
+    {
+      "tool": "compliance",
+      "severity": "ERROR",
+      "title": "SOC2: Detected a formatted string in a SQL statement. This could lead to SQL injection if variables in the SQL statement are not properly sanitized. Use a prepared statements (java.sql.PreparedStatement) instead. You can obtain a PreparedStatement using 'connection.prepareStatement'.",
+      "rule_id": "java.lang.security.audit.formatted-sql-string.formatted-sql-string",
+      "file": "/src/app/Vulnerable.java",
+      "line": 22
+    },
+    {
+      "tool": "compliance",
+      "severity": "ERROR",
+      "title": "SOC2: SOC2 Compliance: Hardcoded sensitive string. SOC2 requires encryption of secrets and use of environment variables/vaults.",
+      "rule_id": "tools.configs.soc2-universal-hardcoded-secret",
+      "file": "/src/app/Vulnerable.java",
+      "line": 34
+    },
+    {
+      "tool": "compliance",
+      "severity": "WARNING",
+      "title": "SOC2: DES is considered deprecated. AES is the recommended cipher. Upgrade to use AES. See https://www.nist.gov/news-events/news/2005/06/nist-withdraws-outdated-data-encryption-standard for more information.",
+      "rule_id": "java.lang.security.audit.crypto.des-is-deprecated.des-is-deprecated",
+      "file": "/src/app/Vulnerable.java",
+      "line": 36
+    },
+    {
+      "tool": "compliance",
+      "severity": "ERROR",
       "title": "SOC2: AWS Access Key ID Value detected. This is a sensitive credential and should not be hardcoded here. Instead, read this value from an environment variable or keep it in a separate, private file.",
       "rule_id": "generic.secrets.security.detected-aws-access-key-id-value.detected-aws-access-key-id-value",
       "file": "/src/gitleaks-report.json",
@@ -103,6 +231,22 @@
       "rule_id": "generic.secrets.security.detected-aws-access-key-id-value.detected-aws-access-key-id-value",
       "file": "/src/gitleaks-report.json",
       "line": 10
+    },
+    {
+      "tool": "compliance",
+      "severity": "ERROR",
+      "title": "SOC2: AWS Access Key ID Value detected. This is a sensitive credential and should not be hardcoded here. Instead, read this value from an environment variable or keep it in a separate, private file.",
+      "rule_id": "generic.secrets.security.detected-aws-access-key-id-value.detected-aws-access-key-id-value",
+      "file": "/src/gitleaks-report.json",
+      "line": 29
+    },
+    {
+      "tool": "compliance",
+      "severity": "ERROR",
+      "title": "SOC2: AWS Access Key ID Value detected. This is a sensitive credential and should not be hardcoded here. Instead, read this value from an environment variable or keep it in a separate, private file.",
+      "rule_id": "generic.secrets.security.detected-aws-access-key-id-value.detected-aws-access-key-id-value",
+      "file": "/src/gitleaks-report.json",
+      "line": 30
     },
     {
       "tool": "compliance",
